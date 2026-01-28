@@ -1,0 +1,261 @@
+// ============================================
+// CONTROL CENTER - SCHEMA COMPLETO
+// Jerarquía: Empresas → Marcas
+// ============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  
+  // Relaciones
+  companies     Company[]
+  brands        Brand[]
+  credentials   Credential[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// ============================================
+// EMPRESAS (Nivel 1 - Raíz)
+// ============================================
+model Company {
+  id                String   @id @default(cuid())
+  
+  // Info básica
+  name              String   // "Rico.Vidarte SL"
+  legalName         String?  // Nombre legal si es diferente
+  cif               String?  // NIF/CIF
+  logo              String?  // URL del logo
+  brandColors       String?  // JSON con colores hex
+  
+  // Contacto
+  fiscalAddress     String?
+  phone             String?
+  email             String?  // Email principal
+  
+  // Estado
+  status            String   @default("Activa") // Activa, Inactiva
+  
+  // Relaciones
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  bankAccounts      BankAccount[]
+  emails            CompanyEmail[]
+  socialMedia       SocialMedia[]
+  brands            Brand[]
+  credentials       Credential[]
+  documents         Document[]
+  memoriaContable   MemoriaContable[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// ============================================
+// CUENTAS BANCARIAS
+// ============================================
+model BankAccount {
+  id                String   @id @default(cuid())
+  
+  bankName          String   // "BBVA", "Santander"
+  iban              String
+  accountNumber     String?
+  purpose           String?  // "Operativa", "Nóminas", "Ahorro"
+  
+  companyId         String
+  company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// ============================================
+// EMAILS CORPORATIVOS
+// ============================================
+model CompanyEmail {
+  id                String   @id @default(cuid())
+  
+  email             String
+  purpose           String?  // "Principal", "Facturación", "Soporte"
+  provider          String?  // "Google Workspace", "Outlook"
+  
+  companyId         String?
+  company           Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  brandId           String?
+  brand             Brand?   @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// ============================================
+// MARCAS (Nivel 2 - Cuelgan de empresas)
+// ============================================
+model Brand {
+  id                String   @id @default(cuid())
+  
+  // Info básica
+  name              String
+  description       String?
+  type              String?  // "App", "Servicio", "Producto"
+  logo              String?
+  brandColors       String?  // JSON con colores hex
+  
+  // Estado y desarrollo
+  status            String   @default("Concepto") // Activa, Beta, Desarrollo, Concepto, Pausa
+  phase             String?  // "BETA", "MVP", etc
+  
+  // Tech
+  domain            String?
+  backend           String?  // "Supabase", "Firebase"
+  hosting           String?  // "Vercel", "Netlify"
+  
+  // Servicios (para marcas de servicio)
+  services          String?  // "Diseño · Moda · Branding"
+  
+  // Facturación
+  billedByCompanyId String   // ← Clave: qué empresa factura esta marca
+  billedByCompany   Company  @relation(fields: [billedByCompanyId], references: [id])
+  
+  // Notas
+  note              String?
+  
+  // Relaciones
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  emails            CompanyEmail[]
+  socialMedia       SocialMedia[]
+  credentials       Credential[]
+  documents         Document[]
+  subscriptions     Subscription[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// ============================================
+// REDES SOCIALES
+// ============================================
+model SocialMedia {
+  id                String   @id @default(cuid())
+  
+  platform          String   // "Instagram", "LinkedIn", "Twitter"
+  username          String
+  url               String
+  followers         Int?
+  
+  companyId         String?
+  company           Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  brandId           String?
+  brand             Brand?   @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// ============================================
+// CREDENCIALES (Passwords/Usuarios)
+// ============================================
+model Credential {
+  id                String   @id @default(cuid())
+  
+  service           String   // "Instagram", "Stripe", "AWS"
+  username          String?
+  email             String?
+  password          String   // ← Encriptado
+  url               String?
+  notes             String?
+  
+  category          String   @default("Otro") // "Social Media", "Banking", "Tech", "Admin"
+  
+  // Asociación (puede ser empresa o marca)
+  companyId         String?
+  company           Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  brandId           String?
+  brand             Brand?   @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// ============================================
+// SUSCRIPCIONES
+// ============================================
+model Subscription {
+  id                String   @id @default(cuid())
+  
+  name              String
+  cost              String?  // "29€/mes"
+  plan              String?  // "Free", "Pro"
+  renewalDay        String?
+  url               String
+  
+  // Asociada a marca
+  brandId           String?
+  brand             Brand?   @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// ============================================
+// DOCUMENTOS
+// ============================================
+model Document {
+  id                String   @id @default(cuid())
+  
+  name              String
+  type              String   // "Estatutos", "Contrato", "Factura"
+  platform          String   // "Notion", "Drive", "Dropbox"
+  url               String
+  
+  companyId         String?
+  company           Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  brandId           String?
+  brand             Brand?   @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// ============================================
+// MEMORIA CONTABLE
+// ============================================
+model MemoriaContable {
+  id                String   @id @default(cuid())
+  
+  title             String
+  type              String   // "Nota", "Cambio Contable", "Decisión"
+  content           String   @db.Text
+  date              DateTime
+  ref               String?  // Referencia opcional
+  tags              String[] // Array de tags
+  
+  companyId         String
+  company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}

@@ -1,0 +1,2940 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Center - HQ Completo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #000;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid #1F1F1F;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 16px 20px;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .header-subtitle {
+      font-size: 12px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 8px;
+      padding: 12px 20px;
+      overflow-x: auto;
+      border-bottom: 1px solid #1F1F1F;
+    }
+
+    .nav::-webkit-scrollbar { display: none; }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: #888;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: #1A1A1A;
+      color: #fff;
+    }
+
+    .content {
+      padding: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #666;
+    }
+
+    .btn-add {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: #1A1A1A;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-add:hover {
+      background: #252525;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: #1A1A1A;
+      border: none;
+      border-radius: 8px;
+      color: #888;
+      font-size: 13px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: all 0.15s;
+    }
+
+    .btn-back:hover {
+      background: #252525;
+      color: #fff;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-2 {
+      grid-template-columns: 1fr;
+    }
+
+    .grid-3 {
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 600px) {
+      .grid-2 { grid-template-columns: repeat(2, 1fr); }
+      .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .card {
+      background: #0D0D0D;
+      border: 1px solid #1A1A1A;
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.2s;
+    }
+
+    .card-clickable {
+      cursor: pointer;
+    }
+
+    .card-clickable:hover {
+      border-color: #333;
+      transform: translateY(-2px);
+    }
+
+    .stat-card {
+      text-align: center;
+    }
+
+    .stat-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .company-logo, .brand-logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      background: #1A1A1A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .brand-logo {
+      width: 50px;
+      height: 50px;
+      font-size: 20px;
+    }
+
+    .info-section {
+      background: #0D0D0D;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .info-section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #1A1A1A;
+      font-size: 13px;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      color: #888;
+    }
+
+    .info-value {
+      color: #fff;
+      text-align: right;
+    }
+
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .status-activa { background: rgba(74, 222, 128, 0.15); color: #4ADE80; }
+    .status-desarrollo { background: rgba(251, 191, 36, 0.15); color: #FBBF24; }
+    .status-concepto { background: rgba(167, 139, 250, 0.15); color: #A78BFA; }
+    .status-pausa { background: rgba(248, 113, 113, 0.15); color: #F87171; }
+
+    .cost-badge {
+      padding: 6px 12px;
+      background: #1A1A1A;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #4ADE80;
+    }
+
+    .service-item {
+      background: #1A1A1A;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    .service-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .service-name {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .service-meta {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .renewal-badge {
+      padding: 4px 8px;
+      background: rgba(251, 191, 36, 0.15);
+      color: #FBBF24;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #1A1A1A;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #888;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    .alert-box {
+      background: rgba(251, 191, 36, 0.1);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .alert-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #FBBF24;
+      margin-bottom: 12px;
+    }
+
+    .alert-item {
+      font-size: 13px;
+      color: #C8C8C8;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.1);
+    }
+
+    .alert-item:last-child {
+      border-bottom: none;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #0D0D0D;
+      border: 1px solid #1A1A1A;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: #888;
+      cursor: pointer;
+      padding: 4px;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      color: #fff;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 6px;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 10px 12px;
+      background: #1A1A1A;
+      border: 1px solid #252525;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: #fff;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 24px;
+    }
+
+    .btn-cancel,
+    .btn-submit {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-cancel {
+      background: #1A1A1A;
+      color: #fff;
+    }
+
+    .btn-cancel:hover {
+      background: #252525;
+    }
+
+    .btn-submit {
+      background: #fff;
+      color: #000;
+    }
+
+    .btn-submit:hover {
+      background: #e5e5e5;
+    }
+
+    .dynamic-field {
+      background: #1A1A1A;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .dynamic-field-remove {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: transparent;
+      border: none;
+      color: #666;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      padding: 4px;
+    }
+
+    .dynamic-field-remove:hover {
+      color: #F87171;
+    }
+
+    .dynamic-field .form-group {
+      margin-bottom: 8px;
+    }
+
+    .dynamic-field .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .tag-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    .tag-item button {
+      background: transparent;
+      border: none;
+      color: currentColor;
+      opacity: 0.7;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      padding: 0;
+      margin-left: 4px;
+    }
+
+    .tag-item button:hover {
+      opacity: 1;
+    }
+
+    .tag-input-wrapper {
+      background: #1A1A1A;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .tag-input-wrapper input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .tag-input-wrapper button {
+      padding: 6px 12px;
+      background: #252525;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .tag-input-wrapper button:hover {
+      background: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div style="flex: 1;">
+        <h1 class="header-title" id="center-name">FGD VII — Control Center</h1>
+        <p class="header-subtitle" id="center-subtitle">Empresas · Marcas · Suscripciones · Credenciales</p>
+      </div>
+      <div style="position: relative; margin-right: 16px;">
+        <input 
+          type="text" 
+          id="global-search" 
+          placeholder="🔍 Buscar..."
+          style="padding: 10px 16px; background: #1A1A1A; border: 1px solid #252525; border-radius: 8px; color: #fff; font-size: 14px; width: 300px;"
+          onkeyup="globalSearch(this.value)"
+        >
+        <div id="search-results" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: #0D0D0D; border: 1px solid #1A1A1A; border-radius: 8px; width: 400px; max-height: 400px; overflow-y: auto; z-index: 100;"></div>
+      </div>
+      <button onclick="openModal('config')" style="padding: 10px 16px; background: #1A1A1A; border: 1px solid #252525; border-radius: 8px; color: #fff; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+        ⚙️ Mi perfil
+      </button>
+    </div>
+  </header>
+
+  <nav class="nav">
+    <button class="nav-btn active" data-view="dashboard">Dashboard</button>
+    <button class="nav-btn" data-view="tareas">Tareas</button>
+    <button class="nav-btn" data-view="empresas">Empresas</button>
+    <button class="nav-btn" data-view="marcas">Marcas</button>
+    <button class="nav-btn" data-view="documentos">Documentos</button>
+    <button class="nav-btn" data-view="suscripciones">Suscripciones</button>
+    <button class="nav-btn" data-view="credenciales">Credenciales</button>
+  </nav>
+
+  <main class="content">
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="view active">
+      
+      <!-- Alertas de renovación -->
+      <div class="alert-box">
+        <div class="alert-title">
+          ⚠️ Próximas renovaciones (este mes)
+        </div>
+        <div class="alert-item">
+          <strong>Google Workspace</strong> (5€) - Renueva día 18
+        </div>
+        <div class="alert-item">
+          <strong>fliia.app</strong> - Renueva en 45 días
+        </div>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="card stat-card">
+          <div class="stat-icon">📋</div>
+          <div class="stat-label">Tareas de hoy</div>
+          <div class="stat-value" id="tasks-today">0</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-label">Completadas</div>
+          <div class="stat-value" id="tasks-completed">0</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-icon">⏰</div>
+          <div class="stat-label">Pendientes</div>
+          <div class="stat-value" id="tasks-pending">0</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <div class="section-title" style="margin-bottom: 16px;">Accesos rápidos</div>
+        <div class="grid grid-3">
+          <div class="card card-clickable" onclick="document.querySelector('[data-view=\\'empresas\\']').click()">
+            <div style="font-size: 32px; margin-bottom: 8px;">🏢</div>
+            <div style="font-size: 14px; font-weight: 500;">Ver Empresas</div>
+            <div style="font-size: 12px; color: #888;">Gestionar empresas</div>
+          </div>
+          <div class="card card-clickable" onclick="document.querySelector('[data-view=\\'marcas\\']').click()">
+            <div style="font-size: 32px; margin-bottom: 8px;">🏷</div>
+            <div style="font-size: 14px; font-weight: 500;">Ver Marcas</div>
+            <div style="font-size: 12px; color: #888;">Todas las marcas</div>
+          </div>
+          <div class="card card-clickable" onclick="openModal('tarea')">
+            <div style="font-size: 32px; margin-bottom: 8px;">➕</div>
+            <div style="font-size: 14px; font-weight: 500;">Nueva Tarea</div>
+            <div style="font-size: 12px; color: #888;">Agregar tarea rápida</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <div class="section-title" style="margin-bottom: 16px;">Tareas de hoy</div>
+        <div id="dashboard-tasks-today"></div>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <div class="section-title" style="margin-bottom: 16px;">Actividad reciente</div>
+        <div id="dashboard-activity"></div>
+      </div>
+
+    </div>
+
+    <!-- TAREAS -->
+    <div id="tareas" class="view">
+      <div class="section-header">
+        <h2 class="section-title">Mis tareas</h2>
+        <button class="btn-add" onclick="openModal('tarea')">+ Nueva tarea</button>
+      </div>
+      <div id="tareas-list"></div>
+    </div>
+
+    <!-- EMPRESAS -->
+    <div id="empresas" class="view">
+      <div class="section-header">
+        <h2 class="section-title">Mis empresas</h2>
+        <button class="btn-add" onclick="openModal('empresa')">+ Nueva empresa</button>
+      </div>
+      <div class="grid grid-2" id="empresas-list"></div>
+    </div>
+
+    <!-- DOCUMENTOS -->
+    <div id="documentos" class="view">
+      <div class="section-header">
+        <h2 class="section-title">Documentos</h2>
+        <button class="btn-add" onclick="openModal('documento')">+ Nuevo documento</button>
+      </div>
+      <div id="documentos-list"></div>
+    </div>
+
+    <!-- DETALLE EMPRESA -->
+    <div id="empresa-detalle" class="view">
+      <button class="btn-back" onclick="goBack()">← Volver a empresas</button>
+      <div id="empresa-detalle-content"></div>
+    </div>
+
+    <!-- MARCAS -->
+    <div id="marcas" class="view">
+      <div class="section-header">
+        <h2 class="section-title">Todas las marcas</h2>
+        <button class="btn-add" onclick="openModal('marca')">+ Nueva marca</button>
+      </div>
+      <div class="grid grid-2" id="marcas-list"></div>
+    </div>
+
+    <!-- DETALLE MARCA -->
+    <div id="marca-detalle" class="view">
+      <button class="btn-back" onclick="goBack()">← Volver a marcas</button>
+      <div id="marca-detalle-content"></div>
+    </div>
+
+    <!-- SUSCRIPCIONES -->
+    <div id="suscripciones" class="view">
+      <div class="section-header">
+        <h2 class="section-title">Todas las suscripciones</h2>
+        <button class="btn-add" onclick="openModal('suscripcion')">+ Nueva suscripción</button>
+      </div>
+      <div id="suscripciones-list"></div>
+    </div>
+
+    <!-- CREDENCIALES -->
+    <div id="credenciales" class="view">
+      <div class="section-header">
+        <h2 class="section-title">Todas las credenciales</h2>
+        <button class="btn-add" onclick="openModal('credencial')">+ Nueva credencial</button>
+      </div>
+      <div id="credenciales-list"></div>
+    </div>
+
+  </main>
+
+  <script>
+    // ============================================
+    // AUTENTICACIÓN
+    // ============================================
+    const authConfig = {
+      username: 'admin',
+      password: 'control2026'
+    };
+
+    let isAuthenticated = false;
+
+    function checkAuth() {
+      const savedAuth = localStorage.getItem('controlCenterAuth');
+      if (savedAuth) {
+        const authData = JSON.parse(savedAuth);
+        const now = new Date().getTime();
+        // Sesión válida por 24 horas
+        if (authData.timestamp && (now - authData.timestamp) < 24 * 60 * 60 * 1000) {
+          isAuthenticated = true;
+          showMainApp();
+        } else {
+          localStorage.removeItem('controlCenterAuth');
+          showLoginScreen();
+        }
+      } else {
+        showLoginScreen();
+      }
+    }
+
+    function showLoginScreen() {
+      document.body.innerHTML = `
+        <div style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          background: linear-gradient(135deg, #0F0F0F 0%, #1A1A1A 100%);
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        ">
+          <div style="
+            background: #1A1A1A;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 1px solid #333;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+          ">
+            <div style="
+              width: 80px;
+              height: 80px;
+              background: linear-gradient(135deg, #4ADE80 0%, #22C55E 100%);
+              border-radius: 20px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0 auto 24px;
+              font-size: 32px;
+              font-weight: 700;
+              color: white;
+            ">CC</div>
+            
+            <h1 style="
+              color: white;
+              font-size: 28px;
+              font-weight: 700;
+              margin: 0 0 8px 0;
+            ">Control Center</h1>
+            
+            <p style="
+              color: #888;
+              font-size: 14px;
+              margin: 0 0 32px 0;
+            ">Acceso seguro al sistema</p>
+            
+            <form id="login-form" style="text-align: left;">
+              <div style="margin-bottom: 20px;">
+                <label style="
+                  display: block;
+                  color: #C8C8C8;
+                  font-size: 13px;
+                  font-weight: 500;
+                  margin-bottom: 6px;
+                ">Usuario</label>
+                <input 
+                  type="text" 
+                  id="username" 
+                  required
+                  style="
+                    width: 100%;
+                    padding: 12px 16px;
+                    background: #0D0D0D;
+                    border: 1px solid #333;
+                    border-radius: 8px;
+                    color: white;
+                    font-size: 14px;
+                    box-sizing: border-box;
+                  "
+                  placeholder="Ingresa tu usuario"
+                />
+              </div>
+              
+              <div style="margin-bottom: 24px;">
+                <label style="
+                  display: block;
+                  color: #C8C8C8;
+                  font-size: 13px;
+                  font-weight: 500;
+                  margin-bottom: 6px;
+                ">Contraseña</label>
+                <input 
+                  type="password" 
+                  id="password" 
+                  required
+                  style="
+                    width: 100%;
+                    padding: 12px 16px;
+                    background: #0D0D0D;
+                    border: 1px solid #333;
+                    border-radius: 8px;
+                    color: white;
+                    font-size: 14px;
+                    box-sizing: border-box;
+                  "
+                  placeholder="Ingresa tu contraseña"
+                />
+              </div>
+              
+              <button 
+                type="submit"
+                style="
+                  width: 100%;
+                  padding: 14px;
+                  background: linear-gradient(135deg, #4ADE80 0%, #22C55E 100%);
+                  border: none;
+                  border-radius: 8px;
+                  color: white;
+                  font-size: 14px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  transition: all 0.2s;
+                "
+                onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(74, 222, 128, 0.3)'"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+              >
+                Iniciar Sesión
+              </button>
+            </form>
+            
+            <div id="login-error" style="
+              color: #F87171;
+              font-size: 13px;
+              margin-top: 16px;
+              display: none;
+            "></div>
+            
+            <div style="
+              margin-top: 32px;
+              padding-top: 20px;
+              border-top: 1px solid #333;
+              color: #666;
+              font-size: 12px;
+            ">
+              <strong>Credenciales por defecto:</strong><br>
+              Usuario: admin<br>
+              Contraseña: control2026
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('login-form').addEventListener('submit', handleLogin);
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('login-error');
+
+      if (username === authConfig.username && password === authConfig.password) {
+        // Guardar autenticación
+        const authData = {
+          authenticated: true,
+          timestamp: new Date().getTime()
+        };
+        localStorage.setItem('controlCenterAuth', JSON.stringify(authData));
+        
+        isAuthenticated = true;
+        showMainApp();
+      } else {
+        errorDiv.textContent = 'Usuario o contraseña incorrectos';
+        errorDiv.style.display = 'block';
+        
+        // Limpiar error después de 3 segundos
+        setTimeout(() => {
+          errorDiv.style.display = 'none';
+        }, 3000);
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('controlCenterAuth');
+      isAuthenticated = false;
+      location.reload();
+    }
+
+    function showMainApp() {
+      // Restaurar el HTML original de la aplicación
+      document.body.innerHTML = getMainAppHTML() + getModalsHTML();
+      initializeApp();
+    }
+
+    function getMainAppHTML() {
+      return `
+        <header class="header">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="flex: 1;">
+              <h1 class="header-title" id="center-name">FGD VII — Control Center</h1>
+              <p class="header-subtitle" id="center-subtitle">Empresas · Marcas · Suscripciones · Credenciales</p>
+            </div>
+            <div style="position: relative; margin-right: 16px;">
+              <input 
+                type="text" 
+                id="global-search" 
+                placeholder="🔍 Buscar..."
+                style="padding: 10px 16px; background: #1A1A1A; border: 1px solid #252525; border-radius: 8px; color: #fff; font-size: 14px; width: 300px;"
+                onkeyup="globalSearch(this.value)"
+              >
+              <div id="search-results" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: #0D0D0D; border: 1px solid #1A1A1A; border-radius: 8px; width: 400px; max-height: 400px; overflow-y: auto; z-index: 100;"></div>
+            </div>
+            <div style="display: flex; gap: 12px;">
+              <button onclick="openModal('config')" style="padding: 10px 16px; background: #1A1A1A; border: 1px solid #252525; border-radius: 8px; color: #fff; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                ⚙️ Mi perfil
+              </button>
+              <button onclick="logout()" style="padding: 10px 16px; background: #1A1A1A; border: 1px solid #252525; border-radius: 8px; color: #fff; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                🚪 Salir
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <nav class="nav">
+          <button class="nav-btn active" data-view="dashboard">Dashboard</button>
+          <button class="nav-btn" data-view="tareas">Tareas</button>
+          <button class="nav-btn" data-view="empresas">Empresas</button>
+          <button class="nav-btn" data-view="marcas">Marcas</button>
+          <button class="nav-btn" data-view="documentos">Documentos</button>
+          <button class="nav-btn" data-view="suscripciones">Suscripciones</button>
+          <button class="nav-btn" data-view="credenciales">Credenciales</button>
+        </nav>
+
+        <main class="content">
+
+          <!-- DASHBOARD -->
+          <div id="dashboard" class="view active">
+            
+            <!-- Alertas de renovación -->
+            <div class="alert-box">
+              <div class="alert-title">
+                ⚠️ Próximas renovaciones (este mes)
+              </div>
+              <div class="alert-item">
+                <strong>Google Workspace</strong> (5€) - Renueva día 18
+              </div>
+              <div class="alert-item">
+                <strong>fliia.app</strong> - Renueva en 45 días
+              </div>
+            </div>
+
+            <div class="grid grid-3">
+              <div class="card stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-label">Tareas de hoy</div>
+                <div class="stat-value" id="tasks-today">0</div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-label">Completadas</div>
+                <div class="stat-value" id="tasks-completed">0</div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-label">Pendientes</div>
+                <div class="stat-value" id="tasks-pending">0</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 24px;">
+              <div class="section-title" style="margin-bottom: 16px;">Accesos rápidos</div>
+              <div class="grid grid-3">
+                <div class="card card-clickable" onclick="document.querySelector('[data-view=\\'empresas\\']').click()">
+                  <div style="font-size: 32px; margin-bottom: 8px;">🏢</div>
+                  <div style="font-size: 14px; font-weight: 500;">Ver Empresas</div>
+                  <div style="font-size: 12px; color: #888;">Gestionar empresas</div>
+                </div>
+                <div class="card card-clickable" onclick="document.querySelector('[data-view=\\'marcas\\']').click()">
+                  <div style="font-size: 32px; margin-bottom: 8px;">🏷</div>
+                  <div style="font-size: 14px; font-weight: 500;">Ver Marcas</div>
+                  <div style="font-size: 12px; color: #888;">Todas las marcas</div>
+                </div>
+                <div class="card card-clickable" onclick="openModal('tarea')">
+                  <div style="font-size: 32px; margin-bottom: 8px;">➕</div>
+                  <div style="font-size: 14px; font-weight: 500;">Nueva Tarea</div>
+                  <div style="font-size: 12px; color: #888;">Agregar tarea rápida</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: 24px;">
+              <div class="section-title" style="margin-bottom: 16px;">Tareas de hoy</div>
+              <div id="dashboard-tasks-today"></div>
+            </div>
+
+            <div style="margin-top: 24px;">
+              <div class="section-title" style="margin-bottom: 16px;">Actividad reciente</div>
+              <div id="dashboard-activity"></div>
+            </div>
+
+          </div>
+
+          <!-- TAREAS -->
+          <div id="tareas" class="view">
+            <div class="section-header">
+              <h2 class="section-title">Mis tareas</h2>
+              <button class="btn-add" onclick="openModal('tarea')">+ Nueva tarea</button>
+            </div>
+            <div id="tareas-list"></div>
+          </div>
+
+          <!-- EMPRESAS -->
+          <div id="empresas" class="view">
+            <div class="section-header">
+              <h2 class="section-title">Mis empresas</h2>
+              <button class="btn-add" onclick="openModal('empresa')">+ Nueva empresa</button>
+            </div>
+            <div class="grid grid-2" id="empresas-list"></div>
+          </div>
+
+          <!-- DOCUMENTOS -->
+          <div id="documentos" class="view">
+            <div class="section-header">
+              <h2 class="section-title">Documentos</h2>
+              <button class="btn-add" onclick="openModal('documento')">+ Nuevo documento</button>
+            </div>
+            <div id="documentos-list"></div>
+          </div>
+
+          <!-- DETALLE EMPRESA -->
+          <div id="empresa-detalle" class="view">
+            <button class="btn-back" onclick="goBack()">← Volver a empresas</button>
+            <div id="empresa-detalle-content"></div>
+          </div>
+
+          <!-- MARCAS -->
+          <div id="marcas" class="view">
+            <div class="section-header">
+              <h2 class="section-title">Todas las marcas</h2>
+              <button class="btn-add" onclick="openModal('marca')">+ Nueva marca</button>
+            </div>
+            <div class="grid grid-2" id="marcas-list"></div>
+          </div>
+
+          <!-- DETALLE MARCA -->
+          <div id="marca-detalle" class="view">
+            <button class="btn-back" onclick="goBack()">← Volver a marcas</button>
+            <div id="marca-detalle-content"></div>
+          </div>
+
+          <!-- SUSCRIPCIONES -->
+          <div id="suscripciones" class="view">
+            <div class="section-header">
+              <h2 class="section-title">Todas las suscripciones</h2>
+              <button class="btn-add" onclick="openModal('suscripcion')">+ Nueva suscripción</button>
+            </div>
+            <div id="suscripciones-list"></div>
+          </div>
+
+          <!-- CREDENCIALES -->
+          <div id="credenciales" class="view">
+            <div class="section-header">
+              <h2 class="section-title">Todas las credenciales</h2>
+              <button class="btn-add" onclick="openModal('credencial')">+ Nueva credencial</button>
+            </div>
+            <div id="credenciales-list"></div>
+          </div>
+
+        </main>
+      `;
+    }
+
+    function getModalsHTML() {
+      return `
+        <!-- Modales -->
+        <div id="modal-empresa" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title">Nueva empresa</h3>
+              <button class="modal-close" onclick="closeModal('empresa')">×</button>
+            </div>
+            <form id="form-empresa" onsubmit="submitEmpresa(event)">
+              
+              <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #666; margin-bottom: 16px; letter-spacing: 1px;">Información básica</div>
+              
+              <div class="form-group">
+                <label class="form-label">Nombre comercial *</label>
+                <input type="text" name="name" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nombre legal / Razón social</label>
+                <input type="text" name="legalName" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">CIF/NIF</label>
+                <input type="text" name="cif" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Dirección fiscal</label>
+                <input type="text" name="fiscalAddress" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Teléfono principal</label>
+                <input type="tel" name="phone" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email principal</label>
+                <input type="email" name="email" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Etiquetas (separadas por comas)</label>
+                <input type="text" name="tags" class="form-input" placeholder="Activa, Principal, Fiscal 2024">
+                <div style="font-size: 11px; color: #666; margin-top: 4px;">Escribe etiquetas separadas por comas. Ej: Activa, Principal, Holding</div>
+              </div>
+
+              <div style="height: 1px; background: #1A1A1A; margin: 24px 0;"></div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #666; letter-spacing: 1px;">Cuentas bancarias</div>
+                <button type="button" onclick="addBankAccount()" style="padding: 4px 10px; background: #1A1A1A; border: none; border-radius: 6px; color: #fff; font-size: 12px; cursor: pointer;">+ Agregar</button>
+              </div>
+              <div id="bank-accounts-container"></div>
+
+              <div style="height: 1px; background: #1A1A1A; margin: 24px 0;"></div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #666; letter-spacing: 1px;">Correos corporativos</div>
+                <button type="button" onclick="addEmail()" style="padding: 4px 10px; background: #1A1A1A; border: none; border-radius: 6px; color: #fff; font-size: 12px; cursor: pointer;">+ Agregar</button>
+              </div>
+              <div id="emails-container"></div>
+
+              <div style="height: 1px; background: #1A1A1A; margin: 24px 0;"></div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #666; letter-spacing: 1px;">Redes sociales</div>
+                <button type="button" onclick="addSocialMedia()" style="padding: 4px 10px; background: #1A1A1A; border: none; border-radius: 6px; color: #fff; font-size: 12px; cursor: pointer;">+ Agregar</button>
+              </div>
+              <div id="social-media-container"></div>
+
+              <div style="height: 1px; background: #1A1A1A; margin: 24px 0;"></div>
+
+              <div class="form-group">
+                <label class="form-label">Notas</label>
+                <textarea name="notes" class="form-textarea" placeholder="Cualquier información adicional relevante..."></textarea>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('empresa')">Cancelar</button>
+                <button type="submit" class="btn-submit">Guardar empresa</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="modal-marca" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title">Nueva marca</h3>
+              <button class="modal-close" onclick="closeModal('marca')">×</button>
+            </div>
+            <form id="form-marca" onsubmit="submitMarca(event)">
+              
+              <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #666; margin-bottom: 16px; letter-spacing: 1px;">Información básica</div>
+              
+              <div class="form-group">
+                <label class="form-label">Nombre *</label>
+                <input type="text" name="name" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tipo</label>
+                <input type="text" name="type" class="form-input" placeholder="App, Servicio, Producto, etc">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Facturada por *</label>
+                <select name="companyId" class="form-select" required>
+                  <option value="">Seleccionar empresa...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Etiquetas (separadas por comas)</label>
+                <input type="text" name="tags" class="form-input" placeholder="Activa, SaaS, Prioritario, Q1 2026">
+                <div style="font-size: 11px; color: #666; margin-top: 4px;">Escribe etiquetas separadas por comas. Ej: Activa, Beta, Revenue</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Servicios</label>
+                <input type="text" name="services" class="form-input" placeholder="Diseño · Moda · Branding">
+              </div>
+
+              <div style="height: 1px; background: #1A1A1A; margin: 24px 0;"></div>
+
+              <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #666; margin-bottom: 16px; letter-spacing: 1px;">Infraestructura digital</div>
+
+              <div class="form-group">
+                <label class="form-label">Dominio</label>
+                <input type="text" name="domain" class="form-input" placeholder="ejemplo.com">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Proveedor dominio</label>
+                <select name="domainProvider" class="form-select">
+                  <option value="">Seleccionar...</option>
+                  <option value="GoDaddy">GoDaddy</option>
+                  <option value="Google Domains">Google Domains</option>
+                  <option value="Porkbun">Porkbun</option>
+                  <option value="Namecheap">Namecheap</option>
+                  <option value="Cloudflare">Cloudflare</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Renovación dominio</label>
+                <input type="date" name="domainRenewal" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Hosting</label>
+                <input type="text" name="hosting" class="form-input" placeholder="Vercel, Netlify, etc">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Backend/Database</label>
+                <input type="text" name="backend" class="form-input" placeholder="Supabase, Firebase, etc">
+              </div>
+
+              <div style="height: 1px; background: #1A1A1A; margin: 24px 0;"></div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #666; letter-spacing: 1px;">Correos de la marca</div>
+                <button type="button" onclick="addBrandEmail()" style="padding: 4px 10px; background: #1A1A1A; border: none; border-radius: 6px; color: #fff; font-size: 12px; cursor: pointer;">+ Agregar</button>
+              </div>
+              <div id="brand-emails-container"></div>
+
+              <div style="height: 1px; background: #1A1A1A; margin: 24px 0;"></div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #666; letter-spacing: 1px;">Redes sociales</div>
+                <button type="button" onclick="addBrandSocialMedia()" style="padding: 4px 10px; background: #1A1A1A; border: none; border-radius: 6px; color: #fff; font-size: 12px; cursor: pointer;">+ Agregar</button>
+              </div>
+              <div id="brand-social-media-container"></div>
+
+              <div style="height: 1px; background: #1A1A1A; margin: 24px 0;"></div>
+
+              <div class="form-group">
+                <label class="form-label">Notas</label>
+                <textarea name="notes" class="form-textarea" placeholder="Información adicional sobre esta marca..."></textarea>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('marca')">Cancelar</button>
+                <button type="submit" class="btn-submit">Guardar marca</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="modal-suscripcion" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title">Nueva suscripción</h3>
+              <button class="modal-close" onclick="closeModal('suscripcion')">×</button>
+            </div>
+            <form id="form-suscripcion" onsubmit="submitSuscripcion(event)">
+              <div class="form-group">
+                <label class="form-label">Nombre *</label>
+                <input type="text" name="name" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Coste mensual</label>
+                <input type="text" name="cost" class="form-input" placeholder="29€/mes">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Plan (si es free)</label>
+                <input type="text" name="plan" class="form-input" placeholder="Free, Pro, etc">
+              </div>
+              <div class="form-group">
+                <label class="form-label">URL *</label>
+                <input type="url" name="url" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Asociada a</label>
+                <select name="association" class="form-select" id="suscripcion-association">
+                  <option value="">Ninguna</option>
+                  <optgroup label="Empresas"></optgroup>
+                  <optgroup label="Marcas"></optgroup>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Día de renovación</label>
+                <input type="number" name="renewalDay" class="form-input" min="1" max="31" placeholder="18">
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('suscripcion')">Cancelar</button>
+                <button type="submit" class="btn-submit">Guardar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="modal-credencial" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title">Nueva credencial</h3>
+              <button class="modal-close" onclick="closeModal('credencial')">×</button>
+            </div>
+            <form id="form-credencial" onsubmit="submitCredencial(event)">
+              <div class="form-group">
+                <label class="form-label">Servicio *</label>
+                <input type="text" name="service" class="form-input" required placeholder="Instagram, Stripe, etc">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Usuario</label>
+                <input type="text" name="username" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Password *</label>
+                <input type="text" name="password" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Categoría</label>
+                <select name="category" class="form-select">
+                  <option value="Social Media">Social Media</option>
+                  <option value="Email">Email</option>
+                  <option value="Pagos">Pagos</option>
+                  <option value="Tech">Tech</option>
+                  <option value="Dominios">Dominios</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Asociada a</label>
+                <select name="association" class="form-select" id="credencial-association">
+                  <option value="">Ninguna</option>
+                  <optgroup label="Empresas"></optgroup>
+                  <optgroup label="Marcas"></optgroup>
+                </select>
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('credencial')">Cancelar</button>
+                <button type="submit" class="btn-submit">Guardar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="modal-tarea" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title">Nueva tarea</h3>
+              <button class="modal-close" onclick="closeModal('tarea')">×</button>
+            </div>
+            <form id="form-tarea" onsubmit="submitTarea(event)">
+              <div class="form-group">
+                <label class="form-label">Descripción *</label>
+                <input type="text" name="description" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fecha</label>
+                <input type="date" name="date" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Asociada a</label>
+                <select name="association" class="form-select" id="tarea-association">
+                  <option value="">Ninguna</option>
+                  <optgroup label="Empresas"></optgroup>
+                  <optgroup label="Marcas"></optgroup>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Notas</label>
+                <textarea name="notes" class="form-textarea"></textarea>
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('tarea')">Cancelar</button>
+                <button type="submit" class="btn-submit">Guardar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="modal-memoria" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title">Nueva nota - Memoria Contable</h3>
+              <button class="modal-close" onclick="closeModal('memoria')">×</button>
+            </div>
+            <form id="form-memoria" onsubmit="submitMemoria(event)">
+              <input type="hidden" name="companyId" id="memoria-company-id">
+              <div class="form-group">
+                <label class="form-label">Tipo *</label>
+                <select name="type" class="form-select" required>
+                  <option value="Nota">Nota</option>
+                  <option value="Cambio Contable">Cambio Contable</option>
+                  <option value="Decisión">Decisión</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Título *</label>
+                <input type="text" name="title" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Contenido *</label>
+                <textarea name="content" class="form-textarea" required></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fecha</label>
+                <input type="date" name="date" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Referencia</label>
+                <input type="text" name="ref" class="form-input" placeholder="Ej: Aportación capital, Epígrafes...">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tags (separados por comas)</label>
+                <input type="text" name="tags" class="form-input" placeholder="importante, revisar contabilidad">
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('memoria')">Cancelar</button>
+                <button type="submit" class="btn-submit">Guardar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="modal-documento" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title">Nuevo documento</h3>
+              <button class="modal-close" onclick="closeModal('documento')">×</button>
+            </div>
+            <form id="form-documento" onsubmit="submitDocumento(event)">
+              <div class="form-group">
+                <label class="form-label">Nombre *</label>
+                <input type="text" name="name" class="form-input" required placeholder="Estatutos, Contrato...">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tipo</label>
+                <select name="type" class="form-select">
+                  <option value="PDF">PDF</option>
+                  <option value="Word">Word</option>
+                  <option value="Excel">Excel</option>
+                  <option value="Imagen">Imagen</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">URL / Link *</label>
+                <input type="url" name="url" class="form-input" required placeholder="https://drive.google.com/...">
+                <div style="font-size: 11px; color: #666; margin-top: 4px;">Link de Drive, Dropbox, Notion, etc</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Plataforma</label>
+                <select name="platform" class="form-select">
+                  <option value="Google Drive">Google Drive</option>
+                  <option value="Dropbox">Dropbox</option>
+                  <option value="Notion">Notion</option>
+                  <option value="OneDrive">OneDrive</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Asociado a</label>
+                <select name="association" class="form-select" id="documento-association">
+                  <option value="">Ninguno</option>
+                  <optgroup label="Empresas"></optgroup>
+                  <optgroup label="Marcas"></optgroup>
+                </select>
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('documento')">Cancelar</button>
+                <button type="submit" class="btn-submit">Guardar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="modal-config" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title">⚙️ Mi perfil y configuración</h3>
+              <button class="modal-close" onclick="closeModal('config')">×</button>
+            </div>
+            <form id="form-config" onsubmit="submitConfig(event)">
+              
+              <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #666; margin-bottom: 16px; letter-spacing: 1px;">Personalización del centro</div>
+              
+              <div class="form-group">
+                <label class="form-label">Nombre del centro *</label>
+                <input type="text" name="centerName" id="config-center-name" class="form-input" required placeholder="FGD VII — Control Center">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Subtítulo</label>
+                <input type="text" name="centerSubtitle" id="config-center-subtitle" class="form-input" placeholder="Tu HQ completo">
+              </div>
+
+              <div style="height: 1px; background: #1A1A1A; margin: 24px 0;"></div>
+
+              <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #666; margin-bottom: 16px; letter-spacing: 1px;">Datos personales</div>
+              
+              <div class="form-group">
+                <label class="form-label">Tu nombre *</label>
+                <input type="text" name="userName" id="config-user-name" class="form-input" required placeholder="Fiorella Giselle Difortuna">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="userEmail" id="config-user-email" class="form-input" placeholder="fiorella@ricovidarte.com">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Teléfono</label>
+                <input type="tel" name="userPhone" id="config-user-phone" class="form-input" placeholder="+34 600 123 456">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Ubicación</label>
+                <input type="text" name="userLocation" id="config-user-location" class="form-input" placeholder="Barcelona, España">
+              </div>
+
+              <div style="height: 1px; background: #1A1A1A; margin: 24px 0;"></div>
+
+              <div style="background: #1A1A1A; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                <div style="font-size: 13px; color: #888; line-height: 1.6;">
+                  💡 <strong>Tip:</strong> Esta configuración se guarda en tu navegador. Para acceder desde otros dispositivos, necesitarás integrar con base de datos (ver documentación).
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('config')">Cancelar</button>
+                <button type="submit" class="btn-submit">Guardar configuración</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // FUNCIÓN DE INICIALIZACIÓN
+    // ============================================
+    function initializeApp() {
+      // Configurar navegación
+      const navButtons = document.querySelectorAll('.nav-btn');
+      navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const view = btn.dataset.view;
+          if (view) {
+            showView(view);
+          }
+        });
+      });
+
+      // Configurar búsqueda global
+      const searchInput = document.getElementById('global-search');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          globalSearch(this.value);
+        });
+        
+        // Ocultar resultados al hacer clic fuera
+        document.addEventListener('click', function(e) {
+          if (!searchInput.contains(e.target)) {
+            const searchResults = document.getElementById('search-results');
+            if (searchResults) {
+              searchResults.style.display = 'none';
+            }
+          }
+        });
+      }
+
+      // Cargar datos guardados
+      loadData();
+      loadConfig();
+      
+      // Renderizar contenido inicial
+      renderDashboard();
+      renderTareas();
+      renderEmpresas();
+      renderMarcas();
+      renderSuscripciones();
+      renderCredenciales();
+      renderDocumentos();
+      
+      // Configurar fecha por defecto en formularios
+      const today = new Date().toISOString().split('T')[0];
+      const dateInputs = document.querySelectorAll('input[type="date"]');
+      dateInputs.forEach(input => {
+        if (!input.value) {
+          input.value = today;
+        }
+      });
+
+      // Configurar formularios dinámicos
+      setupDynamicForms();
+      
+      console.log('Control Center inicializado correctamente');
+    }
+
+    function setupDynamicForms() {
+      // Esta función configurará los formularios dinámicos cuando sea necesario
+      // Por ahora es un placeholder para futuras funcionalidades
+    }
+
+    // ============================================
+    // INICIALIZACIÓN CUANDO ESTÁ AUTENTICADO
+    // ============================================
+    
+    // Verificar autenticación al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+      checkAuthentication();
+    });
+
+    // Funciones renderizado (placeholders - las implementarías según tus necesidades)
+    function renderDashboard() {
+      const tasksToday = tasks.filter(task => {
+        if (!task.date) return false;
+        const taskDate = new Date(task.date);
+        const today = new Date();
+        return taskDate.toDateString() === today.toDateString();
+      });
+
+      const tasksCompleted = tasksToday.filter(task => task.completed);
+      const tasksPending = tasksToday.filter(task => !task.completed);
+
+      document.getElementById('tasks-today').textContent = tasksToday.length;
+      document.getElementById('tasks-completed').textContent = tasksCompleted.length;
+      document.getElementById('tasks-pending').textContent = tasksPending.length;
+
+      // Renderizar tareas de hoy
+      const dashboardTasksContainer = document.getElementById('dashboard-tasks-today');
+      if (dashboardTasksContainer) {
+        if (tasksToday.length === 0) {
+          dashboardTasksContainer.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay tareas para hoy</p></div>';
+        } else {
+          dashboardTasksContainer.innerHTML = tasksToday.map(task => `
+            <div class="card" style="margin-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="${task.completed ? 'text-decoration: line-through; color: #888;' : ''}">${task.description}</span>
+                <button onclick="toggleTask('${task.id}')" style="padding: 4px 8px; background: ${task.completed ? '#4ADE80' : '#1A1A1A'}; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 12px;">
+                  ${task.completed ? '✓' : '□'}
+                </button>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    function renderTareas() {
+      const container = document.getElementById('tareas-list');
+      if (!container) return;
+
+      if (tasks.length === 0) {
+        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay tareas registradas</p></div>';
+        return;
+      }
+
+      container.innerHTML = tasks.map(task => `
+        <div class="card" style="margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+            <h3 style="font-size: 16px; margin: 0; ${task.completed ? 'text-decoration: line-through; color: #888;' : ''}">${task.description}</h3>
+            <div style="display: flex; gap: 8px;">
+              <button onclick="toggleTask('${task.id}')" style="padding: 6px 12px; background: ${task.completed ? '#4ADE80' : '#1A1A1A'}; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
+                ${task.completed ? 'Completada' : 'Pendiente'}
+              </button>
+              <button onclick="deleteTask('${task.id}')" style="padding: 6px 12px; background: #F87171; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
+                Eliminar
+              </button>
+            </div>
+          </div>
+          <div style="font-size: 13px; color: #888;">
+            Fecha: ${new Date(task.date).toLocaleDateString('es-ES')}
+            ${task.association ? ` • Asociada a: ${task.association}` : ''}
+          </div>
+          ${task.notes ? `<div style="margin-top: 8px; font-size: 13px; color: #C8C8C8;">${task.notes}</div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function renderEmpresas() {
+      const container = document.getElementById('empresas-list');
+      if (!container) return;
+
+      if (companies.length === 0) {
+        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay empresas registradas</p></div>';
+        return;
+      }
+
+      container.innerHTML = companies.map(company => `
+        <div class="card card-clickable" onclick="showCompanyDetail('${company.id}')">
+          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+            <div class="company-logo" style="background: linear-gradient(135deg, #4ADE80 0%, #22C55E 100%);">
+              ${company.name.charAt(0).toUpperCase()}
+            </div>
+            <div style="flex: 1;">
+              <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;">${company.name}</h3>
+              <p style="margin: 0; font-size: 12px; color: #888;">${company.legalName || 'Sin razón social'}</p>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; color: #666;">${company.cif || 'Sin CIF'}</span>
+            <div style="display: flex; gap: 8px;">
+              <button onclick="event.stopPropagation(); editEmpresa('${company.id}')" style="padding: 4px 8px; background: #1A1A1A; border: none; border-radius: 4px; color: #fff; cursor: pointer; font-size: 11px;">Editar</button>
+              <button onclick="event.stopPropagation(); deleteEmpresa('${company.id}')" style="padding: 4px 8px; background: #F87171; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 11px;">Eliminar</button>
+            </div>
+          </div>
+          ${company.tags && company.tags.length > 0 ? `
+            <div style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 4px;">
+              ${company.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    function renderMarcas() {
+      const container = document.getElementById('marcas-list');
+      if (!container) return;
+
+      if (brands.length === 0) {
+        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay marcas registradas</p></div>';
+        return;
+      }
+
+      container.innerHTML = brands.map(brand => {
+        const company = companies.find(c => c.id === brand.companyId);
+        return `
+          <div class="card card-clickable" onclick="showBrandDetail('${brand.id}')">
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+              <div class="brand-logo" style="background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%);">
+                ${brand.name.charAt(0).toUpperCase()}
+              </div>
+              <div style="flex: 1;">
+                <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;">${brand.name}</h3>
+                <p style="margin: 0; font-size: 12px; color: #888;">${brand.type || 'Sin tipo definido'}</p>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-size: 12px; color: #666;">Facturada por: ${company ? company.name : 'No asignada'}</span>
+              <div style="display: flex; gap: 8px;">
+                <button onclick="event.stopPropagation(); editMarca('${brand.id}')" style="padding: 4px 8px; background: #1A1A1A; border: none; border-radius: 4px; color: #fff; cursor: pointer; font-size: 11px;">Editar</button>
+                <button onclick="event.stopPropagation(); deleteMarca('${brand.id}')" style="padding: 4px 8px; background: #F87171; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 11px;">Eliminar</button>
+              </div>
+            </div>
+            ${brand.domain ? `<div style="font-size: 12px; color: #4ADE80; margin-bottom: 8px;">🌐 ${brand.domain}</div>` : ''}
+            ${brand.tags && brand.tags.length > 0 ? `
+              <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                ${brand.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderSuscripciones() {
+      const container = document.getElementById('suscripciones-list');
+      if (!container) return;
+
+      if (subscriptions.length === 0) {
+        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay suscripciones registradas</p></div>';
+        return;
+      }
+
+      container.innerHTML = subscriptions.map(sub => `
+        <div class="card" style="margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+            <div style="flex: 1;">
+              <h3 style="margin: 0 0 4px 0; font-size: 16px;">${sub.name}</h3>
+              <div style="font-size: 13px; color: #888;">
+                ${sub.cost || sub.plan || 'Coste no especificado'}
+                ${sub.renewalDay ? ` • Renueva día ${sub.renewalDay}` : ''}
+              </div>
+              ${sub.association ? `<div style="font-size: 12px; color: #666; margin-top: 4px;">Asociada a: ${sub.association}</div>` : ''}
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <a href="${sub.url}" target="_blank" style="padding: 6px 12px; background: #4ADE80; border: none; border-radius: 6px; color: white; text-decoration: none; font-size: 12px;">
+                Abrir
+              </a>
+              <button onclick="deleteSubscription('${sub.id}')" style="padding: 6px 12px; background: #F87171; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderCredenciales() {
+      const container = document.getElementById('credenciales-list');
+      if (!container) return;
+
+      if (credentials.length === 0) {
+        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay credenciales registradas</p></div>';
+        return;
+      }
+
+      container.innerHTML = credentials.map(cred => `
+        <div class="card" style="margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+            <div style="flex: 1;">
+              <h3 style="margin: 0 0 4px 0; font-size: 16px;">${cred.service}</h3>
+              <div style="font-size: 13px; color: #888;">
+                ${cred.username || cred.email || 'Usuario no especificado'}
+                ${cred.category ? ` • ${cred.category}` : ''}
+              </div>
+              ${cred.association ? `<div style="font-size: 12px; color: #666; margin-top: 4px;">Asociada a: ${cred.association}</div>` : ''}
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button onclick="copyToClipboard('${cred.password}')" style="padding: 6px 12px; background: #4ADE80; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
+                Copiar
+              </button>
+              <button onclick="deleteCredential('${cred.id}')" style="padding: 6px 12px; background: #F87171; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
+                Eliminar
+              </button>
+            </div>
+          </div>
+          <div style="font-size: 12px; color: #666; font-family: monospace; background: #1A1A1A; padding: 8px; border-radius: 4px; word-break: break-all;">
+            ${cred.password}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderDocumentos() {
+      const container = document.getElementById('documentos-list');
+      if (!container) return;
+
+      if (documents.length === 0) {
+        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay documentos registrados</p></div>';
+        return;
+      }
+
+      container.innerHTML = documents.map(doc => `
+        <div class="card" style="margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+            <div style="flex: 1;">
+              <h3 style="margin: 0 0 4px 0; font-size: 16px;">${doc.name}</h3>
+              <div style="font-size: 13px; color: #888;">
+                ${doc.type || 'Archivo'} • ${doc.platform || 'Plataforma no especificada'}
+              </div>
+              ${doc.association ? `<div style="font-size: 12px; color: #666; margin-top: 4px;">Asociado a: ${doc.association}</div>` : ''}
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <a href="${doc.url}" target="_blank" style="padding: 6px 12px; background: #4ADE80; border: none; border-radius: 6px; color: white; text-decoration: none; font-size: 12px;">
+                Abrir
+              </a>
+              <button onclick="deleteDocument('${doc.id}')" style="padding: 6px 12px; background: #F87171; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ============================================
+    // SUPABASE INTEGRATION
+    // ============================================
+    
+    // Configuración de Supabase
+    const SUPABASE_CONFIG = {
+      enabled: false, // Cambiar a true cuando configures Supabase
+      url: '', // Tu URL de Supabase
+      anonKey: '', // Tu clave anónima de Supabase
+      realTimeSync: true // Sincronización en tiempo real
+    };
+
+    let supabase = null;
+    let supabaseSubscriptions = [];
+
+    // Inicializar Supabase
+    function initializeSupabase() {
+      if (!SUPABASE_CONFIG.enabled || !SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey) {
+        console.log('Supabase no configurado - usando localStorage');
+        return false;
+      }
+
+      try {
+        // Cargar Supabase desde CDN
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/@supabase/supabase-js@2';
+        script.onload = () => {
+          supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+          console.log('✅ Supabase inicializado correctamente');
+          
+          if (SUPABASE_CONFIG.realTimeSync) {
+            setupRealtimeSync();
+          }
+        };
+        document.head.appendChild(script);
+        return true;
+      } catch (error) {
+        console.error('❌ Error inicializando Supabase:', error);
+        return false;
+      }
+    }
+
+    // Configurar sincronización en tiempo real
+    function setupRealtimeSync() {
+      if (!supabase) return;
+
+      console.log('🔄 Configurando sincronización en tiempo real...');
+
+      // Escuchar cambios en todas las tablas
+      const tables = ['companies', 'brands', 'tasks', 'subscriptions', 'credentials', 'documents', 'memoria_contable'];
+      
+      tables.forEach(table => {
+        const subscription = supabase
+          .channel(`public:${table}`)
+          .on('postgres_changes', 
+            { 
+              event: '*', 
+              schema: 'public', 
+              table: table 
+            }, 
+            (payload) => {
+              console.log(`🔄 Cambio en ${table}:`, payload);
+              handleRealtimeUpdate(table, payload);
+            }
+          )
+          .subscribe();
+
+        supabaseSubscriptions.push(subscription);
+      });
+    }
+
+    // Manejar actualizaciones en tiempo real
+    function handleRealtimeUpdate(table, payload) {
+      const { eventType, new: newRecord, old: oldRecord } = payload;
+      
+      switch (table) {
+        case 'companies':
+          if (eventType === 'INSERT') {
+            if (!companies.find(c => c.id === newRecord.id)) {
+              companies.push(transformFromSupabase(newRecord, 'company'));
+              renderEmpresas();
+            }
+          } else if (eventType === 'UPDATE') {
+            const index = companies.findIndex(c => c.id === newRecord.id);
+            if (index !== -1) {
+              companies[index] = transformFromSupabase(newRecord, 'company');
+              renderEmpresas();
+            }
+          } else if (eventType === 'DELETE') {
+            const index = companies.findIndex(c => c.id === oldRecord.id);
+            if (index !== -1) {
+              companies.splice(index, 1);
+              renderEmpresas();
+            }
+          }
+          break;
+
+        case 'brands':
+          if (eventType === 'INSERT') {
+            if (!brands.find(b => b.id === newRecord.id)) {
+              brands.push(transformFromSupabase(newRecord, 'brand'));
+              renderMarcas();
+            }
+          } else if (eventType === 'UPDATE') {
+            const index = brands.findIndex(b => b.id === newRecord.id);
+            if (index !== -1) {
+              brands[index] = transformFromSupabase(newRecord, 'brand');
+              renderMarcas();
+            }
+          } else if (eventType === 'DELETE') {
+            const index = brands.findIndex(b => b.id === oldRecord.id);
+            if (index !== -1) {
+              brands.splice(index, 1);
+              renderMarcas();
+            }
+          }
+          break;
+
+        case 'tasks':
+          if (eventType === 'INSERT') {
+            if (!tasks.find(t => t.id === newRecord.id)) {
+              tasks.push(transformFromSupabase(newRecord, 'task'));
+              renderTareas();
+              renderDashboard();
+            }
+          } else if (eventType === 'UPDATE') {
+            const index = tasks.findIndex(t => t.id === newRecord.id);
+            if (index !== -1) {
+              tasks[index] = transformFromSupabase(newRecord, 'task');
+              renderTareas();
+              renderDashboard();
+            }
+          } else if (eventType === 'DELETE') {
+            const index = tasks.findIndex(t => t.id === oldRecord.id);
+            if (index !== -1) {
+              tasks.splice(index, 1);
+              renderTareas();
+              renderDashboard();
+            }
+          }
+          break;
+
+        case 'subscriptions':
+          if (eventType === 'INSERT') {
+            if (!subscriptions.find(s => s.id === newRecord.id)) {
+              subscriptions.push(transformFromSupabase(newRecord, 'subscription'));
+              renderSuscripciones();
+            }
+          } else if (eventType === 'UPDATE') {
+            const index = subscriptions.findIndex(s => s.id === newRecord.id);
+            if (index !== -1) {
+              subscriptions[index] = transformFromSupabase(newRecord, 'subscription');
+              renderSuscripciones();
+            }
+          } else if (eventType === 'DELETE') {
+            const index = subscriptions.findIndex(s => s.id === oldRecord.id);
+            if (index !== -1) {
+              subscriptions.splice(index, 1);
+              renderSuscripciones();
+            }
+          }
+          break;
+
+        case 'credentials':
+          if (eventType === 'INSERT') {
+            if (!credentials.find(c => c.id === newRecord.id)) {
+              credentials.push(transformFromSupabase(newRecord, 'credential'));
+              renderCredenciales();
+            }
+          } else if (eventType === 'UPDATE') {
+            const index = credentials.findIndex(c => c.id === newRecord.id);
+            if (index !== -1) {
+              credentials[index] = transformFromSupabase(newRecord, 'credential');
+              renderCredenciales();
+            }
+          } else if (eventType === 'DELETE') {
+            const index = credentials.findIndex(c => c.id === oldRecord.id);
+            if (index !== -1) {
+              credentials.splice(index, 1);
+              renderCredenciales();
+            }
+          }
+          break;
+
+        case 'documents':
+          if (eventType === 'INSERT') {
+            if (!documents.find(d => d.id === newRecord.id)) {
+              documents.push(transformFromSupabase(newRecord, 'document'));
+              renderDocumentos();
+            }
+          } else if (eventType === 'UPDATE') {
+            const index = documents.findIndex(d => d.id === newRecord.id);
+            if (index !== -1) {
+              documents[index] = transformFromSupabase(newRecord, 'document');
+              renderDocumentos();
+            }
+          } else if (eventType === 'DELETE') {
+            const index = documents.findIndex(d => d.id === oldRecord.id);
+            if (index !== -1) {
+              documents.splice(index, 1);
+              renderDocumentos();
+            }
+          }
+          break;
+
+        case 'memoria_contable':
+          if (eventType === 'INSERT' || eventType === 'UPDATE' || eventType === 'DELETE') {
+            // Actualizar memoria contable si estamos viendo el detalle de una empresa
+            const currentView = document.querySelector('.view.active');
+            if (currentView && currentView.id === 'empresa-detalle') {
+              // Recargar el detalle de la empresa para mostrar la nueva memoria
+              const companyId = currentView.dataset.companyId;
+              if (companyId) {
+                showCompanyDetail(companyId);
+              }
+            }
+          }
+          break;
+      }
+      
+      // Guardar también en localStorage como respaldo
+      saveData();
+    }
+
+    // Transformar datos de Supabase al formato local
+    function transformFromSupabase(data, type) {
+      switch (type) {
+        case 'company':
+          return {
+            id: data.id,
+            name: data.name,
+            legalName: data.legal_name,
+            cif: data.cif,
+            fiscalAddress: data.fiscal_address,
+            phone: data.phone,
+            email: data.email,
+            tags: data.tags || [],
+            bankAccounts: data.bank_accounts || [],
+            emails: data.emails || [],
+            socialMedia: data.social_media || [],
+            notes: data.notes,
+            createdAt: data.created_at
+          };
+
+        case 'brand':
+          return {
+            id: data.id,
+            name: data.name,
+            type: data.type,
+            companyId: data.company_id,
+            tags: data.tags || [],
+            services: data.services,
+            domain: data.domain,
+            domainProvider: data.domain_provider,
+            domainRenewal: data.domain_renewal,
+            hosting: data.hosting,
+            backend: data.backend,
+            emails: data.emails || [],
+            socialMedia: data.social_media || [],
+            notes: data.notes,
+            createdAt: data.created_at
+          };
+
+        case 'task':
+          return {
+            id: data.id,
+            description: data.description,
+            date: data.date,
+            completed: data.completed,
+            association: data.association,
+            notes: data.notes,
+            createdAt: data.created_at
+          };
+
+        case 'subscription':
+          return {
+            id: data.id,
+            name: data.name,
+            cost: data.cost,
+            plan: data.plan,
+            url: data.url,
+            association: data.association,
+            renewalDay: data.renewal_day,
+            createdAt: data.created_at
+          };
+
+        case 'credential':
+          return {
+            id: data.id,
+            service: data.service,
+            username: data.username,
+            email: data.email,
+            password: data.password,
+            category: data.category,
+            association: data.association,
+            createdAt: data.created_at
+          };
+
+        case 'document':
+          return {
+            id: data.id,
+            name: data.name,
+            type: data.type,
+            url: data.url,
+            platform: data.platform,
+            association: data.association,
+            createdAt: data.created_at
+          };
+
+        case 'memoria':
+          return {
+            id: data.id,
+            companyId: data.company_id,
+            type: data.type,
+            title: data.title,
+            content: data.content,
+            date: data.date,
+            ref: data.ref,
+            tags: data.tags || [],
+            createdAt: data.created_at
+          };
+
+        default:
+          return data;
+      }
+    }
+
+    // Transformar datos locales al formato de Supabase
+    function transformToSupabase(data, type) {
+      switch (type) {
+        case 'company':
+          return {
+            id: data.id,
+            name: data.name,
+            legal_name: data.legalName,
+            cif: data.cif,
+            fiscal_address: data.fiscalAddress,
+            phone: data.phone,
+            email: data.email,
+            tags: data.tags,
+            bank_accounts: data.bankAccounts,
+            emails: data.emails,
+            social_media: data.socialMedia,
+            notes: data.notes,
+            created_at: data.createdAt
+          };
+
+        case 'brand':
+          return {
+            id: data.id,
+            name: data.name,
+            type: data.type,
+            company_id: data.companyId,
+            tags: data.tags,
+            services: data.services,
+            domain: data.domain,
+            domain_provider: data.domainProvider,
+            domain_renewal: data.domainRenewal,
+            hosting: data.hosting,
+            backend: data.backend,
+            emails: data.emails,
+            social_media: data.socialMedia,
+            notes: data.notes,
+            created_at: data.createdAt
+          };
+
+        case 'task':
+          return {
+            id: data.id,
+            description: data.description,
+            date: data.date,
+            completed: data.completed,
+            association: data.association,
+            notes: data.notes,
+            created_at: data.createdAt
+          };
+
+        case 'subscription':
+          return {
+            id: data.id,
+            name: data.name,
+            cost: data.cost,
+            plan: data.plan,
+            url: data.url,
+            association: data.association,
+            renewal_day: data.renewalDay,
+            created_at: data.createdAt
+          };
+
+        case 'credential':
+          return {
+            id: data.id,
+            service: data.service,
+            username: data.username,
+            email: data.email,
+            password: data.password,
+            category: data.category,
+            association: data.association,
+            created_at: data.createdAt
+          };
+
+        case 'document':
+          return {
+            id: data.id,
+            name: data.name,
+            type: data.type,
+            url: data.url,
+            platform: data.platform,
+            association: data.association,
+            created_at: data.createdAt
+          };
+
+        case 'memoria':
+          return {
+            id: data.id,
+            company_id: data.companyId,
+            type: data.type,
+            title: data.title,
+            content: data.content,
+            date: data.date,
+            ref: data.ref,
+            tags: data.tags,
+            created_at: data.createdAt
+          };
+
+        default:
+          return data;
+      }
+    }
+
+    // ============================================
+    // FUNCIONES CRUD PRINCIPALES
+    // ============================================
+
+    // EMPRESAS
+    async function submitEmpresa(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      
+      const companyData = {
+        id: form.dataset.editId || 'comp_' + Date.now(),
+        name: formData.get('name'),
+        legalName: formData.get('legalName'),
+        cif: formData.get('cif'),
+        fiscalAddress: formData.get('fiscalAddress'),
+        phone: formData.get('phone'),
+        email: formData.get('email'),
+        tags: formData.get('tags') ? formData.get('tags').split(',').map(t => t.trim()) : [],
+        bankAccounts: [], // Se pueden agregar después
+        emails: [], // Se pueden agregar después
+        socialMedia: [], // Se pueden agregar después
+        notes: formData.get('notes'),
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        if (form.dataset.editId) {
+          // Editar empresa existente
+          const index = companies.findIndex(c => c.id === form.dataset.editId);
+          if (index !== -1) {
+            companies[index] = { ...companies[index], ...companyData };
+            
+            // Guardar en Supabase si está habilitado
+            if (supabase && SUPABASE_CONFIG.enabled) {
+              await saveToSupabase(companies[index], 'companies', 'company');
+            }
+          }
+        } else {
+          // Nueva empresa
+          companies.push(companyData);
+          
+          // Guardar en Supabase si está habilitado
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await saveToSupabase(companyData, 'companies', 'company');
+          }
+        }
+
+        // Guardar en localStorage
+        saveData();
+        
+        // Re-renderizar
+        renderEmpresas();
+        closeModal('empresa');
+        form.reset();
+        delete form.dataset.editId;
+        
+        console.log('✅ Empresa guardada correctamente');
+      } catch (error) {
+        console.error('❌ Error guardando empresa:', error);
+        alert('Error guardando empresa. Revisa la consola para más detalles.');
+      }
+    }
+
+    async function deleteEmpresa(id) {
+      if (!confirm('¿Estás seguro de que deseas eliminar esta empresa?')) return;
+      
+      try {
+        // Eliminar de array local
+        const index = companies.findIndex(c => c.id === id);
+        if (index !== -1) {
+          companies.splice(index, 1);
+        }
+
+        // Eliminar de Supabase si está habilitado
+        if (supabase && SUPABASE_CONFIG.enabled) {
+          await deleteFromSupabase(id, 'companies');
+        }
+
+        // Guardar en localStorage
+        saveData();
+        
+        // Re-renderizar
+        renderEmpresas();
+        
+        console.log('✅ Empresa eliminada correctamente');
+      } catch (error) {
+        console.error('❌ Error eliminando empresa:', error);
+        alert('Error eliminando empresa. Revisa la consola para más detalles.');
+      }
+    }
+
+    function editEmpresa(id) {
+      const company = companies.find(c => c.id === id);
+      if (!company) return;
+
+      const form = document.getElementById('form-empresa');
+      const modal = document.getElementById('modal-empresa');
+      const title = modal.querySelector('.modal-title');
+      
+      // Cambiar título del modal
+      title.textContent = 'Editar empresa';
+      
+      // Rellenar formulario
+      form.name.value = company.name || '';
+      form.legalName.value = company.legalName || '';
+      form.cif.value = company.cif || '';
+      form.fiscalAddress.value = company.fiscalAddress || '';
+      form.phone.value = company.phone || '';
+      form.email.value = company.email || '';
+      form.tags.value = company.tags ? company.tags.join(', ') : '';
+      form.notes.value = company.notes || '';
+      
+      // Marcar como edición
+      form.dataset.editId = id;
+      
+      // Mostrar modal
+      showModal('empresa');
+    }
+
+    // MARCAS
+    async function submitMarca(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      
+      const brandData = {
+        id: form.dataset.editId || 'brand_' + Date.now(),
+        name: formData.get('name'),
+        type: formData.get('type'),
+        companyId: formData.get('companyId'),
+        tags: formData.get('tags') ? formData.get('tags').split(',').map(t => t.trim()) : [],
+        services: formData.get('services'),
+        domain: formData.get('domain'),
+        domainProvider: formData.get('domainProvider'),
+        domainRenewal: formData.get('domainRenewal'),
+        hosting: formData.get('hosting'),
+        backend: formData.get('backend'),
+        emails: [], // Se pueden agregar después
+        socialMedia: [], // Se pueden agregar después
+        notes: formData.get('notes'),
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        if (form.dataset.editId) {
+          // Editar marca existente
+          const index = brands.findIndex(b => b.id === form.dataset.editId);
+          if (index !== -1) {
+            brands[index] = { ...brands[index], ...brandData };
+            
+            // Guardar en Supabase si está habilitado
+            if (supabase && SUPABASE_CONFIG.enabled) {
+              await saveToSupabase(brands[index], 'brands', 'brand');
+            }
+          }
+        } else {
+          // Nueva marca
+          brands.push(brandData);
+          
+          // Guardar en Supabase si está habilitado
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await saveToSupabase(brandData, 'brands', 'brand');
+          }
+        }
+
+        // Guardar en localStorage
+        saveData();
+        
+        // Re-renderizar
+        renderMarcas();
+        closeModal('marca');
+        form.reset();
+        delete form.dataset.editId;
+        
+        console.log('✅ Marca guardada correctamente');
+      } catch (error) {
+        console.error('❌ Error guardando marca:', error);
+        alert('Error guardando marca. Revisa la consola para más detalles.');
+      }
+    }
+
+    async function deleteMarca(id) {
+      if (!confirm('¿Estás seguro de que deseas eliminar esta marca?')) return;
+      
+      try {
+        // Eliminar de array local
+        const index = brands.findIndex(b => b.id === id);
+        if (index !== -1) {
+          brands.splice(index, 1);
+        }
+
+        // Eliminar de Supabase si está habilitado
+        if (supabase && SUPABASE_CONFIG.enabled) {
+          await deleteFromSupabase(id, 'brands');
+        }
+
+        // Guardar en localStorage
+        saveData();
+        
+        // Re-renderizar
+        renderMarcas();
+        
+        console.log('✅ Marca eliminada correctamente');
+      } catch (error) {
+        console.error('❌ Error eliminando marca:', error);
+        alert('Error eliminando marca. Revisa la consola para más detalles.');
+      }
+    }
+
+    function editMarca(id) {
+      const brand = brands.find(b => b.id === id);
+      if (!brand) return;
+
+      const form = document.getElementById('form-marca');
+      const modal = document.getElementById('modal-marca');
+      const title = modal.querySelector('.modal-title');
+      
+      // Cambiar título del modal
+      title.textContent = 'Editar marca';
+      
+      // Rellenar formulario
+      form.name.value = brand.name || '';
+      form.type.value = brand.type || '';
+      form.tags.value = brand.tags ? brand.tags.join(', ') : '';
+      form.services.value = brand.services || '';
+      form.domain.value = brand.domain || '';
+      form.domainProvider.value = brand.domainProvider || '';
+      form.domainRenewal.value = brand.domainRenewal || '';
+      form.hosting.value = brand.hosting || '';
+      form.backend.value = brand.backend || '';
+      form.notes.value = brand.notes || '';
+      
+      // Poblar select de empresa
+      const companySelect = form.companyId;
+      companySelect.innerHTML = '<option value="">Seleccionar empresa...</option>';
+      companies.forEach(company => {
+        const option = document.createElement('option');
+        option.value = company.id;
+        option.textContent = company.name;
+        if (brand.companyId === company.id) {
+          option.selected = true;
+        }
+        companySelect.appendChild(option);
+      });
+      
+      // Marcar como edición
+      form.dataset.editId = id;
+      
+      // Mostrar modal
+      showModal('marca');
+    }
+
+    // TAREAS
+    async function submitTarea(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      
+      const taskData = {
+        id: form.dataset.editId || 'task_' + Date.now(),
+        description: formData.get('description'),
+        date: formData.get('date'),
+        completed: false,
+        association: formData.get('association'),
+        notes: formData.get('notes'),
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        if (form.dataset.editId) {
+          // Editar tarea existente
+          const index = tasks.findIndex(t => t.id === form.dataset.editId);
+          if (index !== -1) {
+            tasks[index] = { ...tasks[index], ...taskData, completed: tasks[index].completed };
+            
+            // Guardar en Supabase si está habilitado
+            if (supabase && SUPABASE_CONFIG.enabled) {
+              await saveToSupabase(tasks[index], 'tasks', 'task');
+            }
+          }
+        } else {
+          // Nueva tarea
+          tasks.push(taskData);
+          
+          // Guardar en Supabase si está habilitado
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await saveToSupabase(taskData, 'tasks', 'task');
+          }
+        }
+
+        // Guardar en localStorage
+        saveData();
+        
+        // Re-renderizar
+        renderTareas();
+        renderDashboard();
+        closeModal('tarea');
+        form.reset();
+        delete form.dataset.editId;
+        
+        console.log('✅ Tarea guardada correctamente');
+      } catch (error) {
+        console.error('❌ Error guardando tarea:', error);
+        alert('Error guardando tarea. Revisa la consola para más detalles.');
+      }
+    }
+
+    async function toggleTask(id) {
+      try {
+        const task = tasks.find(t => t.id === id);
+        if (task) {
+          task.completed = !task.completed;
+          
+          // Guardar en Supabase si está habilitado
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await saveToSupabase(task, 'tasks', 'task');
+          }
+          
+          // Guardar en localStorage
+          saveData();
+          
+          // Re-renderizar
+          renderTareas();
+          renderDashboard();
+        }
+      } catch (error) {
+        console.error('❌ Error actualizando tarea:', error);
+      }
+    }
+
+    async function deleteTask(id) {
+      if (!confirm('¿Estás seguro de que deseas eliminar esta tarea?')) return;
+      
+      try {
+        // Eliminar de array local
+        const index = tasks.findIndex(t => t.id === id);
+        if (index !== -1) {
+          tasks.splice(index, 1);
+        }
+
+        // Eliminar de Supabase si está habilitado
+        if (supabase && SUPABASE_CONFIG.enabled) {
+          await deleteFromSupabase(id, 'tasks');
+        }
+
+        // Guardar en localStorage
+        saveData();
+        
+        // Re-renderizar
+        renderTareas();
+        renderDashboard();
+        
+        console.log('✅ Tarea eliminada correctamente');
+      } catch (error) {
+        console.error('❌ Error eliminando tarea:', error);
+        alert('Error eliminando tarea. Revisa la consola para más detalles.');
+      }
+    }
+
+    // ============================================
+    // FUNCIONES DE MODAL Y UI
+    // ============================================
+
+    function showModal(type) {
+      const modal = document.getElementById(`modal-${type}`);
+      if (modal) {
+        modal.style.display = 'flex';
+        
+        // Poblar selectores si es necesario
+        if (type === 'marca') {
+          populateCompanySelect();
+        }
+      }
+    }
+
+    function closeModal(type) {
+      const modal = document.getElementById(`modal-${type}`);
+      if (modal) {
+        modal.style.display = 'none';
+        
+        // Limpiar formulario
+        const form = modal.querySelector('form');
+        if (form) {
+          form.reset();
+          delete form.dataset.editId;
+          
+          // Restaurar título del modal
+          const title = modal.querySelector('.modal-title');
+          if (title && type === 'empresa') title.textContent = 'Nueva empresa';
+          if (title && type === 'marca') title.textContent = 'Nueva marca';
+        }
+      }
+    }
+
+    function populateCompanySelect() {
+      const select = document.querySelector('#form-marca select[name="companyId"]');
+      if (select) {
+        select.innerHTML = '<option value="">Seleccionar empresa...</option>';
+        companies.forEach(company => {
+          const option = document.createElement('option');
+          option.value = company.id;
+          option.textContent = company.name;
+          select.appendChild(option);
+        });
+      }
+    }
+
+    // ============================================
+    // FUNCIONES ADICIONALES PARA SUPABASE
+    // ============================================
+
+    // Función para sincronización manual
+    async function manualSync() {
+      if (!supabase || !SUPABASE_CONFIG.enabled) {
+        alert('Supabase no está configurado');
+        return;
+      }
+
+      const syncButton = document.querySelector('[onclick="manualSync()"]');
+      if (syncButton) {
+        syncButton.textContent = '🔄 Sincronizando...';
+        syncButton.disabled = true;
+      }
+
+      try {
+        const success = await syncWithSupabase();
+        if (success) {
+          alert('✅ Sincronización completada correctamente');
+        } else {
+          alert('❌ Error en la sincronización. Revisa la consola para más detalles.');
+        }
+      } catch (error) {
+        console.error('Error en sincronización manual:', error);
+        alert('❌ Error en la sincronización: ' + error.message);
+      }
+
+      if (syncButton) {
+        syncButton.textContent = '🔄 Sincronizar';
+        syncButton.disabled = false;
+      }
+    }
+
+    // Función para mostrar estado de Supabase
+    function getSupabaseStatus() {
+      if (!SUPABASE_CONFIG.enabled) {
+        return { status: 'disabled', message: 'Supabase deshabilitado' };
+      }
+      if (!supabase) {
+        return { status: 'error', message: 'Error de conexión' };
+      }
+      return { status: 'connected', message: 'Conectado correctamente' };
+    }
+
+    // Función para exportar datos como respaldo
+    function exportData() {
+      try {
+        const exportData = {
+          companies,
+          brands,
+          tasks,
+          subscriptions,
+          credentials,
+          documents,
+          memoriaContable,
+          exportDate: new Date().toISOString(),
+          version: '1.0'
+        };
+
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `control-center-backup-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        URL.revokeObjectURL(url);
+        console.log('✅ Datos exportados correctamente');
+      } catch (error) {
+        console.error('❌ Error exportando datos:', error);
+        alert('Error exportando datos. Revisa la consola para más detalles.');
+      }
+    }
+
+    // Función para importar datos desde respaldo
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          
+          // Validar estructura
+          if (!importedData.companies || !importedData.brands || !importedData.tasks) {
+            throw new Error('Archivo de respaldo inválido');
+          }
+
+          // Confirmar importación
+          if (!confirm('¿Estás seguro de que deseas importar estos datos? Esto sobrescribirá los datos actuales.')) {
+            return;
+          }
+
+          // Importar datos
+          companies = importedData.companies || [];
+          brands = importedData.brands || [];
+          tasks = importedData.tasks || [];
+          subscriptions = importedData.subscriptions || [];
+          credentials = importedData.credentials || [];
+          documents = importedData.documents || [];
+          memoriaContable = importedData.memoriaContable || {};
+
+          // Guardar y re-renderizar
+          saveData();
+          renderDashboard();
+          renderTareas();
+          renderEmpresas();
+          renderMarcas();
+          renderSuscripciones();
+          renderCredenciales();
+          renderDocumentos();
+
+          console.log('✅ Datos importados correctamente');
+          alert('✅ Datos importados correctamente');
+        } catch (error) {
+          console.error('❌ Error importando datos:', error);
+          alert('Error importando datos: ' + error.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Función para limpiar datos locales y forzar sincronización
+    async function resetAndSync() {
+      if (!confirm('¿Estás seguro de que deseas resetear los datos locales y sincronizar desde Supabase?')) {
+        return;
+      }
+
+      try {
+        // Limpiar localStorage
+        localStorage.removeItem('controlCenterData');
+        
+        // Si Supabase está disponible, sincronizar
+        if (supabase && SUPABASE_CONFIG.enabled) {
+          const success = await syncWithSupabase();
+          if (success) {
+            alert('✅ Datos reseteados y sincronizados desde Supabase');
+          } else {
+            // Si falla, cargar datos por defecto
+            const defaultData = getDefaultData();
+            companies = defaultData.companies;
+            brands = defaultData.brands;
+            tasks = defaultData.tasks;
+            subscriptions = defaultData.subscriptions;
+            credentials = defaultData.credentials;
+            documents = defaultData.documents;
+            memoriaContable = {};
+            
+            saveData();
+            alert('⚠️ Error sincronizando desde Supabase. Se cargaron datos por defecto.');
+          }
+        } else {
+          // Si no hay Supabase, cargar datos por defecto
+          const defaultData = getDefaultData();
+          companies = defaultData.companies;
+          brands = defaultData.brands;
+          tasks = defaultData.tasks;
+          subscriptions = defaultData.subscriptions;
+          credentials = defaultData.credentials;
+          documents = defaultData.documents;
+          memoriaContable = {};
+          
+          saveData();
+          alert('✅ Datos reseteados a valores por defecto');
+        }
+
+        // Re-renderizar todo
+        renderDashboard();
+        renderTareas();
+        renderEmpresas();
+        renderMarcas();
+        renderSuscripciones();
+        renderCredenciales();
+        renderDocumentos();
+
+      } catch (error) {
+        console.error('❌ Error en reset y sincronización:', error);
+        alert('Error en el proceso: ' + error.message);
+      }
+    }
+  </script>
+</body>
+</html>
