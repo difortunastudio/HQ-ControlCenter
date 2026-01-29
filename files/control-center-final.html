@@ -1649,7 +1649,28 @@
       // Configurar formularios dinámicos
       setupDynamicForms();
       
-      console.log('Control Center inicializado correctamente');
+      // Configurar eventos para cerrar modales con Escape
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          const openModal = document.querySelector('.modal[style*="flex"]');
+          if (openModal) {
+            openModal.style.display = 'none';
+          }
+        }
+      });
+      
+      console.log('✅ Control Center inicializado correctamente');
+      
+      // Renderizar contenido inicial
+      renderDashboard();
+      renderTareas();
+      renderEmpresas();
+      renderMarcas();
+      renderSuscripciones();
+      renderCredenciales();
+      renderDocumentos();
+      
+      console.log('✅ Control Center inicializado correctamente');
     }
 
     function setupDynamicForms() {
@@ -1663,13 +1684,61 @@
     
     // Verificar autenticación al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
-      checkAuth();
-      
-      // Inicializar Supabase si está configurado
-      if (SUPABASE_CONFIG.enabled) {
-        initializeSupabase();
+      // Verificar si Supabase está habilitado
+      if (SUPABASE_CONFIG.enabled && SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey) {
+        // Cargar Supabase primero, luego inicializar la app
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/@supabase/supabase-js@2';
+        script.onload = () => {
+          console.log('📦 Script de Supabase cargado');
+          initializeSupabase();
+          initializeApp();
+        };
+        script.onerror = () => {
+          console.error('❌ Error cargando Supabase, usando localStorage');
+          initializeApp();
+        };
+        document.head.appendChild(script);
+      } else {
+        // Sin Supabase, inicializar directamente
+        console.log('📱 Inicializando sin Supabase');
+        initializeApp();
       }
     });
+
+    function initializeApp() {
+      try {
+        // Cargar datos guardados
+        loadData();
+        loadConfig();
+        
+        // Renderizar contenido inicial
+        renderDashboard();
+        renderTareas();
+        renderEmpresas();
+        renderMarcas();
+        renderSuscripciones();
+        renderCredenciales();
+        renderDocumentos();
+        
+        // Configurar fecha por defecto en formularios
+        const today = new Date().toISOString().split('T')[0];
+        const dateInputs = document.querySelectorAll('input[type="date"]');
+        dateInputs.forEach(input => {
+          if (!input.value) {
+            input.value = today;
+          }
+        });
+
+        // Configurar formularios dinámicos
+        setupDynamicForms();
+        
+        console.log('✅ Control Center inicializado correctamente');
+      } catch (error) {
+        console.error('❌ Error inicializando la aplicación:', error);
+        alert('Error iniciando la aplicación. Verifica la consola para más detalles.');
+      }
+    }
 
     // Funciones renderizado (placeholders - las implementarías según tus necesidades)
     function renderDashboard() {
@@ -1937,19 +2006,18 @@
         return false;
       }
 
+      if (!window.supabase) {
+        console.error('❌ Supabase script no está cargado');
+        return false;
+      }
+
       try {
-        // Cargar Supabase desde CDN
-        const script = document.createElement('script');
-        script.src = 'https://unpkg.com/@supabase/supabase-js@2';
-        script.onload = () => {
-          supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
-          console.log('✅ Supabase inicializado correctamente');
-          
-          if (SUPABASE_CONFIG.realTimeSync) {
-            setupRealtimeSync();
-          }
-        };
-        document.head.appendChild(script);
+        supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+        console.log('✅ Supabase inicializado correctamente');
+        
+        if (SUPABASE_CONFIG.realTimeSync) {
+          setupRealtimeSync();
+        }
         return true;
       } catch (error) {
         console.error('❌ Error inicializando Supabase:', error);
@@ -2653,291 +2721,311 @@
       }
     }
 
-    async function toggleTask(id) {
-      try {
-        const task = tasks.find(t => t.id === id);
-        if (task) {
-          task.completed = !task.completed;
-          
-          // Guardar en Supabase si está habilitado
-          if (supabase && SUPABASE_CONFIG.enabled) {
-            await saveToSupabase(task, 'tasks', 'task');
-          }
-          
-          // Guardar en localStorage
-          saveData();
-          
-          // Re-renderizar
-          renderTareas();
-          renderDashboard();
-        }
-      } catch (error) {
-        console.error('❌ Error actualizando tarea:', error);
+    // ============================================
+    // FUNCIONES DE INTERFAZ DE USUARIO
+    // ============================================
+    
+    // Variables globales para los datos
+    let companies = [];
+    let brands = [];
+    let tasks = [];
+    let subscriptions = [];
+    let credentials = [];
+    let documents = [];
+    let memoria = [];
+    let config = {};
+
+    // Función para cambiar entre vistas
+    function showView(viewName) {
+      // Ocultar todas las vistas
+      const views = document.querySelectorAll('.view');
+      views.forEach(view => {
+        view.classList.remove('active');
+        view.style.display = 'none';
+      });
+
+      // Mostrar la vista seleccionada
+      const targetView = document.getElementById(viewName);
+      if (targetView) {
+        targetView.classList.add('active');
+        targetView.style.display = 'block';
       }
+
+      // Actualizar botones de navegación
+      const navBtns = document.querySelectorAll('.nav-btn');
+      navBtns.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.view === viewName) {
+          btn.classList.add('active');
+        }
+      });
     }
 
-    async function deleteTask(id) {
-      if (!confirm('¿Estás seguro de que deseas eliminar esta tarea?')) return;
-      
-      try {
-        // Eliminar de array local
-        const index = tasks.findIndex(t => t.id === id);
-        if (index !== -1) {
-          tasks.splice(index, 1);
-        }
-
-        // Eliminar de Supabase si está habilitado
-        if (supabase && SUPABASE_CONFIG.enabled) {
-          await deleteFromSupabase(id, 'tasks');
-        }
-
-        // Guardar en localStorage
-        saveData();
-        
-        // Re-renderizar
-        renderTareas();
-        renderDashboard();
-        
-        console.log('✅ Tarea eliminada correctamente');
-      } catch (error) {
-        console.error('❌ Error eliminando tarea:', error);
-        alert('Error eliminando tarea. Revisa la consola para más detalles.');
-      }
-    }
-
-    // ============================================
-    // FUNCIONES DE MODAL Y UI
-    // ============================================
-
-    function showModal(type) {
-      const modal = document.getElementById(`modal-${type}`);
+    // Funciones para manejar modales
+    function openModal(modalType) {
+      const modal = document.getElementById('modal-' + modalType);
       if (modal) {
         modal.style.display = 'flex';
         
-        // Poblar selectores si es necesario
-        if (type === 'marca') {
-          populateCompanySelect();
-        }
-      }
-    }
-
-    function closeModal(type) {
-      const modal = document.getElementById(`modal-${type}`);
-      if (modal) {
-        modal.style.display = 'none';
-        
-        // Limpiar formulario
+        // Limpiar formulario si existe
         const form = modal.querySelector('form');
         if (form) {
           form.reset();
           delete form.dataset.editId;
-          
-          // Restaurar título del modal
-          const title = modal.querySelector('.modal-title');
-          if (title && type === 'empresa') title.textContent = 'Nueva empresa';
-          if (title && type === 'marca') title.textContent = 'Nueva marca';
+        }
+        
+        // Actualizar título del modal
+        const title = modal.querySelector('.modal-title');
+        if (title) {
+          const titles = {
+            empresa: 'Nueva empresa',
+            marca: 'Nueva marca',
+            tarea: 'Nueva tarea',
+            suscripcion: 'Nueva suscripción',
+            credencial: 'Nueva credencial',
+            documento: 'Nuevo documento',
+            config: 'Configuración',
+            memoria: 'Nueva memoria contable'
+          };
+          title.textContent = titles[modalType] || 'Modal';
         }
       }
     }
 
-    function populateCompanySelect() {
-      const select = document.querySelector('#form-marca select[name="companyId"]');
-      if (select) {
-        select.innerHTML = '<option value="">Seleccionar empresa...</option>';
-        companies.forEach(company => {
-          const option = document.createElement('option');
-          option.value = company.id;
-          option.textContent = company.name;
-          select.appendChild(option);
-        });
+    function closeModal(modalType) {
+      const modal = document.getElementById('modal-' + modalType);
+      if (modal) {
+        modal.style.display = 'none';
       }
     }
 
-    // ============================================
-    // FUNCIONES ADICIONALES PARA SUPABASE
-    // ============================================
-
-    // Función para sincronización manual
-    async function manualSync() {
-      if (!supabase || !SUPABASE_CONFIG.enabled) {
-        alert('Supabase no está configurado');
-        return;
+    // Cerrar modales al hacer clic fuera
+    window.onclick = function(event) {
+      if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
       }
+    }
 
-      const syncButton = document.querySelector('[onclick="manualSync()"]');
-      if (syncButton) {
-        syncButton.textContent = '🔄 Sincronizando...';
-        syncButton.disabled = true;
-      }
-
+    // Función para cargar datos desde localStorage
+    function loadData() {
       try {
-        const success = await syncWithSupabase();
-        if (success) {
-          alert('✅ Sincronización completada correctamente');
-        } else {
-          alert('❌ Error en la sincronización. Revisa la consola para más detalles.');
+        companies = JSON.parse(localStorage.getItem('companies') || '[]');
+        brands = JSON.parse(localStorage.getItem('brands') || '[]');
+        tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+        subscriptions = JSON.parse(localStorage.getItem('subscriptions') || '[]');
+        credentials = JSON.parse(localStorage.getItem('credentials') || '[]');
+        documents = JSON.parse(localStorage.getItem('documents') || '[]');
+        memoria = JSON.parse(localStorage.getItem('memoria') || '[]');
+        console.log('Datos cargados desde localStorage');
+      } catch (error) {
+        console.error('Error cargando datos:', error);
+      }
+    }
+
+    // Función para guardar datos en localStorage
+    function saveData() {
+      try {
+        localStorage.setItem('companies', JSON.stringify(companies));
+        localStorage.setItem('brands', JSON.stringify(brands));
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        localStorage.setItem('subscriptions', JSON.stringify(subscriptions));
+        localStorage.setItem('credentials', JSON.stringify(credentials));
+        localStorage.setItem('documents', JSON.stringify(documents));
+        localStorage.setItem('memoria', JSON.stringify(memoria));
+        console.log('Datos guardados en localStorage');
+      } catch (error) {
+        console.error('Error guardando datos:', error);
+      }
+    }
+
+    // Función para cargar configuración
+    function loadConfig() {
+      try {
+        config = JSON.parse(localStorage.getItem('config') || '{}');
+        
+        // Aplicar configuración si existe
+        if (config.centerName) {
+          const nameEl = document.getElementById('center-name');
+          if (nameEl) nameEl.textContent = config.centerName;
+        }
+        if (config.centerSubtitle) {
+          const subtitleEl = document.getElementById('center-subtitle');
+          if (subtitleEl) subtitleEl.textContent = config.centerSubtitle;
         }
       } catch (error) {
-        console.error('Error en sincronización manual:', error);
-        alert('❌ Error en la sincronización: ' + error.message);
-      }
-
-      if (syncButton) {
-        syncButton.textContent = '🔄 Sincronizar';
-        syncButton.disabled = false;
+        console.error('Error cargando configuración:', error);
       }
     }
 
-    // Función para mostrar estado de Supabase
-    function getSupabaseStatus() {
-      if (!SUPABASE_CONFIG.enabled) {
-        return { status: 'disabled', message: 'Supabase deshabilitado' };
-      }
-      if (!supabase) {
-        return { status: 'error', message: 'Error de conexión' };
-      }
-      return { status: 'connected', message: 'Conectado correctamente' };
-    }
-
-    // Función para exportar datos como respaldo
-    function exportData() {
-      try {
-        const exportData = {
-          companies,
-          brands,
-          tasks,
-          subscriptions,
-          credentials,
-          documents,
-          memoriaContable,
-          exportDate: new Date().toISOString(),
-          version: '1.0'
-        };
-
-        const dataStr = JSON.stringify(exportData, null, 2);
-        const dataBlob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(dataBlob);
-        
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `control-center-backup-${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        URL.revokeObjectURL(url);
-        console.log('✅ Datos exportados correctamente');
-      } catch (error) {
-        console.error('❌ Error exportando datos:', error);
-        alert('Error exportando datos. Revisa la consola para más detalles.');
-      }
-    }
-
-    // Función para importar datos desde respaldo
-    function importData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const importedData = JSON.parse(e.target.result);
-          
-          // Validar estructura
-          if (!importedData.companies || !importedData.brands || !importedData.tasks) {
-            throw new Error('Archivo de respaldo inválido');
-          }
-
-          // Confirmar importación
-          if (!confirm('¿Estás seguro de que deseas importar estos datos? Esto sobrescribirá los datos actuales.')) {
-            return;
-          }
-
-          // Importar datos
-          companies = importedData.companies || [];
-          brands = importedData.brands || [];
-          tasks = importedData.tasks || [];
-          subscriptions = importedData.subscriptions || [];
-          credentials = importedData.credentials || [];
-          documents = importedData.documents || [];
-          memoriaContable = importedData.memoriaContable || {};
-
-          // Guardar y re-renderizar
-          saveData();
-          renderDashboard();
-          renderTareas();
-          renderEmpresas();
-          renderMarcas();
-          renderSuscripciones();
-          renderCredenciales();
-          renderDocumentos();
-
-          console.log('✅ Datos importados correctamente');
-          alert('✅ Datos importados correctamente');
-        } catch (error) {
-          console.error('❌ Error importando datos:', error);
-          alert('Error importando datos: ' + error.message);
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    // Función para limpiar datos locales y forzar sincronización
-    async function resetAndSync() {
-      if (!confirm('¿Estás seguro de que deseas resetear los datos locales y sincronizar desde Supabase?')) {
-        return;
-      }
-
-      try {
-        // Limpiar localStorage
-        localStorage.removeItem('controlCenterData');
-        
-        // Si Supabase está disponible, sincronizar
-        if (supabase && SUPABASE_CONFIG.enabled) {
-          const success = await syncWithSupabase();
-          if (success) {
-            alert('✅ Datos reseteados y sincronizados desde Supabase');
-          } else {
-            // Si falla, cargar datos por defecto
-            const defaultData = getDefaultData();
-            companies = defaultData.companies;
-            brands = defaultData.brands;
-            tasks = defaultData.tasks;
-            subscriptions = defaultData.subscriptions;
-            credentials = defaultData.credentials;
-            documents = defaultData.documents;
-            memoriaContable = {};
-            
-            saveData();
-            alert('⚠️ Error sincronizando desde Supabase. Se cargaron datos por defecto.');
-          }
-        } else {
-          // Si no hay Supabase, cargar datos por defecto
-          const defaultData = getDefaultData();
-          companies = defaultData.companies;
-          brands = defaultData.brands;
-          tasks = defaultData.tasks;
-          subscriptions = defaultData.subscriptions;
-          credentials = defaultData.credentials;
-          documents = defaultData.documents;
-          memoriaContable = {};
-          
-          saveData();
-          alert('✅ Datos reseteados a valores por defecto');
-        }
-
-        // Re-renderizar todo
-        renderDashboard();
+    // Funciones básicas de CRUD para tareas
+    function toggleTask(id) {
+      const task = tasks.find(t => t.id === id);
+      if (task) {
+        task.completed = !task.completed;
+        saveData();
         renderTareas();
-        renderEmpresas();
-        renderMarcas();
-        renderSuscripciones();
-        renderCredenciales();
-        renderDocumentos();
+        renderDashboard();
+      }
+    }
 
-      } catch (error) {
-        console.error('❌ Error en reset y sincronización:', error);
-        alert('Error en el proceso: ' + error.message);
+    function deleteTask(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta tarea?')) {
+        tasks = tasks.filter(t => t.id !== id);
+        saveData();
+        renderTareas();
+        renderDashboard();
+      }
+    }
+
+    // Funciones básicas para empresas
+    function deleteEmpresa(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta empresa?')) {
+        companies = companies.filter(c => c.id !== id);
+        saveData();
+        renderEmpresas();
+      }
+    }
+
+    // Funciones básicas para marcas
+    function deleteMarca(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta marca?')) {
+        brands = brands.filter(b => b.id !== id);
+        saveData();
+        renderMarcas();
+      }
+    }
+
+    // Funciones básicas para suscripciones
+    function deleteSubscription(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta suscripción?')) {
+        subscriptions = subscriptions.filter(s => s.id !== id);
+        saveData();
+        renderSuscripciones();
+      }
+    }
+
+    // Funciones básicas para credenciales
+    function deleteCredential(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta credencial?')) {
+        credentials = credentials.filter(c => c.id !== id);
+        saveData();
+        renderCredenciales();
+      }
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Credencial copiada al portapapeles');
+      }).catch(() => {
+        // Fallback para navegadores antiguos
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Credencial copiada al portapapeles');
+      });
+    }
+
+    // Funciones básicas para documentos
+    function deleteDocument(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar este documento?')) {
+        documents = documents.filter(d => d.id !== id);
+        saveData();
+        renderDocumentos();
+      }
+    }
+
+    // Función de búsqueda global
+    function globalSearch(query) {
+      const searchResults = document.getElementById('search-results');
+      if (!searchResults) return;
+
+      if (!query.trim()) {
+        searchResults.style.display = 'none';
+        return;
+      }
+
+      const results = [];
+      const searchTerm = query.toLowerCase();
+
+      // Buscar en empresas
+      companies.forEach(company => {
+        if (company.name?.toLowerCase().includes(searchTerm) || 
+            company.legalName?.toLowerCase().includes(searchTerm) ||
+            company.cif?.toLowerCase().includes(searchTerm)) {
+          results.push({
+            type: 'Empresa',
+            title: company.name,
+            subtitle: company.legalName || company.cif,
+            action: () => { showView('empresas'); searchResults.style.display = 'none'; }
+          });
+        }
+      });
+
+      // Buscar en marcas
+      brands.forEach(brand => {
+        if (brand.name?.toLowerCase().includes(searchTerm) || 
+            brand.domain?.toLowerCase().includes(searchTerm)) {
+          results.push({
+            type: 'Marca',
+            title: brand.name,
+            subtitle: brand.domain || brand.type,
+            action: () => { showView('marcas'); searchResults.style.display = 'none'; }
+          });
+        }
+      });
+
+      // Buscar en tareas
+      tasks.forEach(task => {
+        if (task.description?.toLowerCase().includes(searchTerm)) {
+          results.push({
+            type: 'Tarea',
+            title: task.description,
+            subtitle: task.date || 'Sin fecha',
+            action: () => { showView('tareas'); searchResults.style.display = 'none'; }
+          });
+        }
+      });
+
+      if (results.length > 0) {
+        searchResults.innerHTML = results.map(result => `
+          <div class="search-result" onclick="handleSearchResult('${result.type}', '${result.title}')" style="padding: 12px; border-bottom: 1px solid #1A1A1A; cursor: pointer; hover:background: #1A1A1A;">
+            <div style="font-size: 14px; font-weight: 500;">${result.title}</div>
+            <div style="font-size: 12px; color: #888;">${result.type} • ${result.subtitle}</div>
+          </div>
+        `).join('');
+        searchResults.style.display = 'block';
+      } else {
+        searchResults.innerHTML = '<div style="padding: 12px; color: #888; text-align: center;">No se encontraron resultados</div>';
+        searchResults.style.display = 'block';
+      }
+    }
+
+    function handleSearchResult(type, title) {
+      const searchResults = document.getElementById('search-results');
+      if (searchResults) {
+        searchResults.style.display = 'none';
+      }
+      
+      // Limpiar búsqueda
+      const searchInput = document.getElementById('global-search');
+      if (searchInput) {
+        searchInput.value = '';
+      }
+      
+      // Navegar a la vista correspondiente
+      switch (type) {
+        case 'Empresa':
+          showView('empresas');
+          break;
+        case 'Marca':
+          showView('marcas');
+          break;
+        case 'Tarea':
+          showView('tareas');
+          break;
       }
     }
   </script>
