@@ -178,37 +178,29 @@ CREATE POLICY "Permitir actualización pública" ON memoria_contable FOR UPDATE 
 CREATE POLICY "Permitir eliminación pública" ON memoria_contable FOR DELETE USING (true);
 ```
 
-## ⚙️ Paso 4: Obtener las Credenciales
+## ⚙️ Paso 4: Obtener las Credenciales ✅
 
 1. Ve a **Settings > API** en tu proyecto de Supabase
-2. Copia el **Project URL**
-3. Copia la **anon/public key**
+2. Copia el **Project URL**: `https://fbhdpwedkdbyectmieeh.supabase.co`
+3. Copia la **anon/public key**: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
 
-## 🔧 Paso 5: Configurar tu Aplicación
+**✅ COMPLETADO** - Ya están configuradas en tu aplicación.
 
-Abre tu archivo `control-center-final.html` y busca esta sección cerca del inicio del JavaScript:
+## 🔧 Paso 5: Configurar tu Aplicación ✅
+
+~~Abre tu archivo `control-center-final.html` y busca esta sección cerca del inicio del JavaScript:~~
 
 ```javascript
-// Configuración de Supabase
+// Configuración de Supabase - ✅ YA CONFIGURADO
 const SUPABASE_CONFIG = {
-  enabled: false, // Cambiar a true cuando configures Supabase
-  url: '', // Tu URL de Supabase
-  anonKey: '', // Tu clave anónima de Supabase
-  realTimeSync: true // Sincronización en tiempo real
+  enabled: true, // ✅ Supabase activado
+  url: 'https://fbhdpwedkdbyectmieeh.supabase.co', // ✅ Tu URL configurada
+  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...', // ✅ Tu clave configurada
+  realTimeSync: true // ✅ Sincronización activada
 };
 ```
 
-Modifícala con tus datos:
-
-```javascript
-// Configuración de Supabase
-const SUPABASE_CONFIG = {
-  enabled: true,
-  url: 'https://tu-proyecto.supabase.co',
-  anonKey: 'tu-clave-anonima-aqui',
-  realTimeSync: true
-};
-```
+**✅ COMPLETADO** - Tu aplicación ya está configurada con Supabase.
 
 ## 🌍 Paso 6: Desplegar tu Aplicación
 

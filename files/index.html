@@ -1663,12 +1663,7 @@
     
     // Verificar autenticación al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
-      checkAuth();
-      
-      // Inicializar Supabase si está configurado
-      if (SUPABASE_CONFIG.enabled) {
-        initializeSupabase();
-      }
+      checkAuthentication();
     });
 
     // Funciones renderizado (placeholders - las implementarías según tus necesidades)
