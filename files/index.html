@@ -2942,48 +2942,101 @@
       }
     }
 
-    function deleteTask(id) {
+    async function deleteTask(id) {
       if (confirm('¿Estás seguro de que deseas eliminar esta tarea?')) {
-        tasks = tasks.filter(t => t.id !== id);
-        saveData();
-        renderTareas();
-        renderDashboard();
+        try {
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await deleteFromSupabase(id, 'tasks');
+          }
+          tasks = tasks.filter(t => t.id !== id);
+          saveData();
+          renderTareas();
+          renderDashboard();
+          console.log('✅ Tarea eliminada correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando tarea:', error);
+          alert('Error eliminando tarea. Revisa la consola.');
+        }
       }
     }
 
     // Funciones básicas para empresas
-    function deleteEmpresa(id) {
+    async function deleteEmpresa(id) {
       if (confirm('¿Estás seguro de que deseas eliminar esta empresa?')) {
-        companies = companies.filter(c => c.id !== id);
-        saveData();
-        renderEmpresas();
+        try {
+          // Eliminar de Supabase primero
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await deleteFromSupabase(id, 'companies');
+          }
+          
+          // Eliminar del array local
+          companies = companies.filter(c => c.id !== id);
+          saveData();
+          renderEmpresas();
+          
+          console.log('✅ Empresa eliminada correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando empresa:', error);
+          alert('Error eliminando empresa. Revisa la consola.');
+        }
       }
     }
 
     // Funciones básicas para marcas
-    function deleteMarca(id) {
+    async function deleteMarca(id) {
       if (confirm('¿Estás seguro de que deseas eliminar esta marca?')) {
-        brands = brands.filter(b => b.id !== id);
-        saveData();
-        renderMarcas();
+        try {
+          // Eliminar de Supabase primero
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await deleteFromSupabase(id, 'brands');
+          }
+          
+          // Eliminar del array local
+          brands = brands.filter(b => b.id !== id);
+          saveData();
+          renderMarcas();
+          
+          console.log('✅ Marca eliminada correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando marca:', error);
+          alert('Error eliminando marca. Revisa la consola.');
+        }
       }
     }
 
     // Funciones básicas para suscripciones
-    function deleteSubscription(id) {
+    async function deleteSubscription(id) {
       if (confirm('¿Estás seguro de que deseas eliminar esta suscripción?')) {
-        subscriptions = subscriptions.filter(s => s.id !== id);
-        saveData();
-        renderSuscripciones();
+        try {
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await deleteFromSupabase(id, 'subscriptions');
+          }
+          subscriptions = subscriptions.filter(s => s.id !== id);
+          saveData();
+          renderSuscripciones();
+          console.log('✅ Suscripción eliminada correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando suscripción:', error);
+          alert('Error eliminando suscripción. Revisa la consola.');
+        }
       }
     }
 
     // Funciones básicas para credenciales
-    function deleteCredential(id) {
+    async function deleteCredential(id) {
       if (confirm('¿Estás seguro de que deseas eliminar esta credencial?')) {
-        credentials = credentials.filter(c => c.id !== id);
-        saveData();
-        renderCredenciales();
+        try {
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await deleteFromSupabase(id, 'credentials');
+          }
+          credentials = credentials.filter(c => c.id !== id);
+          saveData();
+          renderCredenciales();
+          console.log('✅ Credencial eliminada correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando credencial:', error);
+          alert('Error eliminando credencial. Revisa la consola.');
+        }
       }
     }
 
@@ -3003,11 +3056,20 @@
     }
 
     // Funciones básicas para documentos
-    function deleteDocument(id) {
+    async function deleteDocument(id) {
       if (confirm('¿Estás seguro de que deseas eliminar este documento?')) {
-        documents = documents.filter(d => d.id !== id);
-        saveData();
-        renderDocumentos();
+        try {
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await deleteFromSupabase(id, 'documents');
+          }
+          documents = documents.filter(d => d.id !== id);
+          saveData();
+          renderDocumentos();
+          console.log('✅ Documento eliminado correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando documento:', error);
+          alert('Error eliminando documento. Revisa la consola.');
+        }
       }
     }
 
