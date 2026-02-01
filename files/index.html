@@ -2432,6 +2432,87 @@
     }
 
     // ============================================
+    // FUNCIONES PARA AGREGAR CAMPOS DINÁMICOS
+    // ============================================
+    
+    // Funciones para agregar emails a marcas
+    function addBrandEmail() {
+      const container = document.getElementById('brand-emails-container');
+      const emailDiv = document.createElement('div');
+      emailDiv.className = 'dynamic-field';
+      emailDiv.innerHTML = `
+        <input type="email" name="brandEmail[]" class="form-input" placeholder="hola@marca.com" style="flex: 1;">
+        <button type="button" onclick="this.parentElement.remove()" class="btn-remove">×</button>
+      `;
+      container.appendChild(emailDiv);
+    }
+
+    // Funciones para agregar redes sociales a marcas
+    function addBrandSocialMedia() {
+      const container = document.getElementById('brand-social-media-container');
+      const socialDiv = document.createElement('div');
+      socialDiv.className = 'dynamic-field';
+      socialDiv.innerHTML = `
+        <select name="brandSocialPlatform[]" class="form-select" style="flex: 0 0 120px;">
+          <option value="Instagram">Instagram</option>
+          <option value="Facebook">Facebook</option>
+          <option value="Twitter">Twitter</option>
+          <option value="LinkedIn">LinkedIn</option>
+          <option value="TikTok">TikTok</option>
+          <option value="YouTube">YouTube</option>
+        </select>
+        <input type="text" name="brandSocialUrl[]" class="form-input" placeholder="@usuario o URL" style="flex: 1;">
+        <button type="button" onclick="this.parentElement.remove()" class="btn-remove">×</button>
+      `;
+      container.appendChild(socialDiv);
+    }
+
+    // Funciones para agregar cuentas bancarias a empresas
+    function addBankAccount() {
+      const container = document.getElementById('bank-accounts-container');
+      const bankDiv = document.createElement('div');
+      bankDiv.className = 'dynamic-field';
+      bankDiv.innerHTML = `
+        <input type="text" name="bankName[]" class="form-input" placeholder="Banco" style="flex: 0 0 120px;">
+        <input type="text" name="iban[]" class="form-input" placeholder="IBAN" style="flex: 1;">
+        <button type="button" onclick="this.parentElement.remove()" class="btn-remove">×</button>
+      `;
+      container.appendChild(bankDiv);
+    }
+
+    // Funciones para agregar emails a empresas
+    function addCompanyEmail() {
+      const container = document.getElementById('company-emails-container');
+      const emailDiv = document.createElement('div');
+      emailDiv.className = 'dynamic-field';
+      emailDiv.innerHTML = `
+        <input type="email" name="companyEmail[]" class="form-input" placeholder="contacto@empresa.com" style="flex: 1;">
+        <button type="button" onclick="this.parentElement.remove()" class="btn-remove">×</button>
+      `;
+      container.appendChild(emailDiv);
+    }
+
+    // Funciones para agregar redes sociales a empresas
+    function addCompanySocialMedia() {
+      const container = document.getElementById('company-social-media-container');
+      const socialDiv = document.createElement('div');
+      socialDiv.className = 'dynamic-field';
+      socialDiv.innerHTML = `
+        <select name="companySocialPlatform[]" class="form-select" style="flex: 0 0 120px;">
+          <option value="Instagram">Instagram</option>
+          <option value="Facebook">Facebook</option>
+          <option value="Twitter">Twitter</option>
+          <option value="LinkedIn">LinkedIn</option>
+          <option value="TikTok">TikTok</option>
+          <option value="YouTube">YouTube</option>
+        </select>
+        <input type="text" name="companySocialUrl[]" class="form-input" placeholder="@usuario o URL" style="flex: 1;">
+        <button type="button" onclick="this.parentElement.remove()" class="btn-remove">×</button>
+      `;
+      container.appendChild(socialDiv);
+    }
+
+    // ============================================
     // FUNCIONES CRUD PRINCIPALES
     // ============================================
 
