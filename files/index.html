@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +9,12 @@
   <!-- Supabase CDN - cargado desde el head para garantizar disponibilidad -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Inter', -apple-system, sans-serif;
       background: #000;
@@ -46,7 +51,9 @@
       border-bottom: 1px solid #1F1F1F;
     }
 
-    .nav::-webkit-scrollbar { display: none; }
+    .nav::-webkit-scrollbar {
+      display: none;
+    }
 
     .nav-btn {
       background: transparent;
@@ -83,8 +90,15 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .section-header {
@@ -155,8 +169,13 @@
     }
 
     @media (min-width: 600px) {
-      .grid-2 { grid-template-columns: repeat(2, 1fr); }
-      .grid-3 { grid-template-columns: repeat(3, 1fr); }
+      .grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
     }
 
     .card {
@@ -196,7 +215,8 @@
       font-weight: 700;
     }
 
-    .company-logo, .brand-logo {
+    .company-logo,
+    .brand-logo {
       width: 60px;
       height: 60px;
       border-radius: 12px;
@@ -257,10 +277,25 @@
       font-weight: 500;
     }
 
-    .status-activa { background: rgba(74, 222, 128, 0.15); color: #4ADE80; }
-    .status-desarrollo { background: rgba(251, 191, 36, 0.15); color: #FBBF24; }
-    .status-concepto { background: rgba(167, 139, 250, 0.15); color: #A78BFA; }
-    .status-pausa { background: rgba(248, 113, 113, 0.15); color: #F87171; }
+    .status-activa {
+      background: rgba(74, 222, 128, 0.15);
+      color: #4ADE80;
+    }
+
+    .status-desarrollo {
+      background: rgba(251, 191, 36, 0.15);
+      color: #FBBF24;
+    }
+
+    .status-concepto {
+      background: rgba(167, 139, 250, 0.15);
+      color: #A78BFA;
+    }
+
+    .status-pausa {
+      background: rgba(248, 113, 113, 0.15);
+      color: #F87171;
+    }
 
     .cost-badge {
       padding: 6px 12px;
@@ -569,6 +604,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <header class="header">
@@ -578,16 +614,15 @@
         <p class="header-subtitle" id="center-subtitle">Empresas · Marcas · Suscripciones · Credenciales</p>
       </div>
       <div style="position: relative; margin-right: 16px;">
-        <input 
-          type="text" 
-          id="global-search" 
-          placeholder="🔍 Buscar..."
+        <input type="text" id="global-search" placeholder="🔍 Buscar..."
           style="padding: 10px 16px; background: #1A1A1A; border: 1px solid #252525; border-radius: 8px; color: #fff; font-size: 14px; width: 300px;"
-          onkeyup="globalSearch(this.value)"
-        >
-        <div id="search-results" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: #0D0D0D; border: 1px solid #1A1A1A; border-radius: 8px; width: 400px; max-height: 400px; overflow-y: auto; z-index: 100;"></div>
+          onkeyup="globalSearch(this.value)">
+        <div id="search-results"
+          style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: #0D0D0D; border: 1px solid #1A1A1A; border-radius: 8px; width: 400px; max-height: 400px; overflow-y: auto; z-index: 100;">
+        </div>
       </div>
-      <button onclick="openModal('config')" style="padding: 10px 16px; background: #1A1A1A; border: 1px solid #252525; border-radius: 8px; color: #fff; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+      <button onclick="openModal('config')"
+        style="padding: 10px 16px; background: #1A1A1A; border: 1px solid #252525; border-radius: 8px; color: #fff; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
         ⚙️ Mi perfil
       </button>
     </div>
@@ -607,7 +642,7 @@
 
     <!-- DASHBOARD -->
     <div id="dashboard" class="view active">
-      
+
       <!-- Alertas de renovación -->
       <div class="alert-box">
         <div class="alert-title">
@@ -744,7 +779,7 @@
     // ============================================
     // CONFIGURACIÓN DE SUPABASE
     // ============================================
-    
+
     // Configuración de Supabase
     const SUPABASE_CONFIG = {
       enabled: true, // ✅ Supabase configurado y habilitado
@@ -954,13 +989,13 @@
           timestamp: new Date().getTime()
         };
         localStorage.setItem('controlCenterAuth', JSON.stringify(authData));
-        
+
         isAuthenticated = true;
         showMainApp();
       } else {
         errorDiv.textContent = 'Usuario o contraseña incorrectos';
         errorDiv.style.display = 'block';
-        
+
         // Limpiar error después de 3 segundos
         setTimeout(() => {
           errorDiv.style.display = 'none';
@@ -981,18 +1016,18 @@
       try {
         // Crear cliente de Supabase
         supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
-        
+
         console.log('✅ Supabase inicializado correctamente');
         console.log('📍 URL:', SUPABASE_CONFIG.url);
-        
+
         // Cargar datos desde Supabase
         await loadFromSupabase();
-        
+
         // Si hay realTimeSync habilitado, suscribirse a cambios
         if (SUPABASE_CONFIG.realTimeSync) {
           subscribeToRealtimeChanges();
         }
-        
+
         return true;
       } catch (error) {
         console.error('❌ Error inicializando Supabase:', error);
@@ -1003,16 +1038,16 @@
     // Cargar todos los datos desde Supabase
     async function loadFromSupabase() {
       if (!supabase) return;
-      
+
       try {
         console.log('📥 Cargando datos desde Supabase...');
-        
+
         // Cargar empresas
         const { data: companiesData, error: companiesError } = await supabase
           .from('companies')
           .select('*')
           .order('created_at', { ascending: false });
-        
+
         if (companiesError) throw companiesError;
         if (companiesData) {
           companies = companiesData.map(c => ({
@@ -1023,13 +1058,13 @@
             socialMedia: c.social_media || []
           }));
         }
-        
+
         // Cargar marcas
         const { data: brandsData, error: brandsError } = await supabase
           .from('brands')
           .select('*')
           .order('created_at', { ascending: false });
-        
+
         if (brandsError) throw brandsError;
         if (brandsData) {
           brands = brandsData.map(b => ({
@@ -1040,36 +1075,36 @@
             socialMedia: b.social_media || []
           }));
         }
-        
+
         // Cargar tareas
         const { data: tasksData, error: tasksError } = await supabase
           .from('tasks')
           .select('*')
           .order('created_at', { ascending: false });
-        
+
         if (tasksError) throw tasksError;
         if (tasksData) tasks = tasksData;
-        
+
         // Cargar suscripciones
         const { data: subsData, error: subsError } = await supabase
           .from('subscriptions')
           .select('*')
           .order('created_at', { ascending: false });
-        
+
         if (subsError) throw subsError;
         if (subsData) subscriptions = subsData;
-        
+
         // Cargar credenciales
         const { data: credsData, error: credsError } = await supabase
           .from('credentials')
           .select('*')
           .order('created_at', { ascending: false });
-        
+
         if (credsError) throw credsError;
         if (credsData) credentials = credsData;
-        
+
         console.log(`✅ Datos cargados: ${companies.length} empresas, ${brands.length} marcas, ${tasks.length} tareas`);
-        
+
       } catch (error) {
         console.error('❌ Error cargando datos desde Supabase:', error);
       }
@@ -1078,9 +1113,9 @@
     // Suscribirse a cambios en tiempo real
     function subscribeToRealtimeChanges() {
       if (!supabase) return;
-      
+
       console.log('🔔 Suscrito a cambios en tiempo real');
-      
+
       // Suscribirse a cambios en companies
       const companiesChannel = supabase
         .channel('companies-changes')
@@ -1090,9 +1125,9 @@
           if (currentView === 'companies') renderCompanies();
         })
         .subscribe();
-      
+
       supabaseSubscriptions.push(companiesChannel);
-      
+
       // Suscribirse a cambios en brands
       const brandsChannel = supabase
         .channel('brands-changes')
@@ -1102,9 +1137,9 @@
           if (currentView === 'brands') renderBrands();
         })
         .subscribe();
-      
+
       supabaseSubscriptions.push(brandsChannel);
-      
+
       // Similar para tasks, subscriptions, credentials
       const tasksChannel = supabase
         .channel('tasks-changes')
@@ -1114,7 +1149,7 @@
           if (currentView === 'tasks') renderTasks();
         })
         .subscribe();
-      
+
       supabaseSubscriptions.push(tasksChannel);
     }
 
@@ -1122,7 +1157,7 @@
       // Restaurar el HTML original de la aplicación
       document.body.innerHTML = getMainAppHTML() + getModalsHTML();
       initializeApp();
-      
+
       // Inicializar Supabase si está habilitado (script ya cargado desde el head)
       if (SUPABASE_CONFIG.enabled && SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey) {
         // Verificar que Supabase esté disponible
@@ -1793,12 +1828,12 @@
       // Configurar búsqueda global
       const searchInput = document.getElementById('global-search');
       if (searchInput) {
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', function () {
           globalSearch(this.value);
         });
-        
+
         // Ocultar resultados al hacer clic fuera
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
           if (!searchInput.contains(e.target)) {
             const searchResults = document.getElementById('search-results');
             if (searchResults) {
@@ -1811,7 +1846,7 @@
       // Cargar datos guardados
       loadData();
       loadConfig();
-      
+
       // Renderizar contenido inicial
       renderDashboard();
       renderTareas();
@@ -1820,7 +1855,7 @@
       renderSuscripciones();
       renderCredenciales();
       renderDocumentos();
-      
+
       // Configurar fecha por defecto en formularios
       const today = new Date().toISOString().split('T')[0];
       const dateInputs = document.querySelectorAll('input[type="date"]');
@@ -1832,9 +1867,9 @@
 
       // Configurar formularios dinámicos
       setupDynamicForms();
-      
+
       // Configurar eventos para cerrar modales con Escape
-      document.addEventListener('keydown', function(e) {
+      document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
           const openModal = document.querySelector('.modal[style*="flex"]');
           if (openModal) {
@@ -1842,9 +1877,9 @@
           }
         }
       });
-      
+
       console.log('✅ Control Center inicializado correctamente');
-      
+
       // Renderizar contenido inicial
       renderDashboard();
       renderTareas();
@@ -1853,7 +1888,7 @@
       renderSuscripciones();
       renderCredenciales();
       renderDocumentos();
-      
+
       console.log('✅ Control Center inicializado correctamente');
     }
 
@@ -1865,9 +1900,9 @@
     // ============================================
     // INICIALIZACIÓN CUANDO ESTÁ AUTENTICADO
     // ============================================
-    
+
     // Verificar autenticación al cargar la página
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       checkAuth();
     });
 
@@ -2122,7 +2157,7 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
-      
+
       const subscriptionData = {
         id: form.dataset.editId || 'sub_' + Date.now(),
         name: formData.get('name'),
@@ -2139,14 +2174,14 @@
           const index = subscriptions.findIndex(s => s.id === form.dataset.editId);
           if (index !== -1) {
             subscriptions[index] = { ...subscriptions[index], ...subscriptionData };
-            
+
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(subscriptions[index], 'subscriptions', 'subscription');
             }
           }
         } else {
           subscriptions.push(subscriptionData);
-          
+
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(subscriptionData, 'subscriptions', 'subscription');
           }
@@ -2157,7 +2192,7 @@
         closeModal('suscripcion');
         form.reset();
         delete form.dataset.editId;
-        
+
         console.log('✅ Suscripción guardada correctamente');
       } catch (error) {
         console.error('❌ Error guardando suscripción:', error);
@@ -2170,7 +2205,7 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
-      
+
       const credentialData = {
         id: form.dataset.editId || 'cred_' + Date.now(),
         service: formData.get('service'),
@@ -2187,14 +2222,14 @@
           const index = credentials.findIndex(c => c.id === form.dataset.editId);
           if (index !== -1) {
             credentials[index] = { ...credentials[index], ...credentialData };
-            
+
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(credentials[index], 'credentials', 'credential');
             }
           }
         } else {
           credentials.push(credentialData);
-          
+
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(credentialData, 'credentials', 'credential');
           }
@@ -2205,7 +2240,7 @@
         closeModal('credencial');
         form.reset();
         delete form.dataset.editId;
-        
+
         console.log('✅ Credencial guardada correctamente');
       } catch (error) {
         console.error('❌ Error guardando credencial:', error);
@@ -2218,7 +2253,7 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
-      
+
       const documentData = {
         id: form.dataset.editId || 'doc_' + Date.now(),
         name: formData.get('name'),
@@ -2234,14 +2269,14 @@
           const index = documents.findIndex(d => d.id === form.dataset.editId);
           if (index !== -1) {
             documents[index] = { ...documents[index], ...documentData };
-            
+
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(documents[index], 'documents', 'document');
             }
           }
         } else {
           documents.push(documentData);
-          
+
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(documentData, 'documents', 'document');
           }
@@ -2252,7 +2287,7 @@
         closeModal('documento');
         form.reset();
         delete form.dataset.editId;
-        
+
         console.log('✅ Documento guardado correctamente');
       } catch (error) {
         console.error('❌ Error guardando documento:', error);
@@ -2265,7 +2300,7 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
-      
+
       const configData = {
         centerName: formData.get('centerName'),
         centerSubtitle: formData.get('centerSubtitle'),
@@ -2278,7 +2313,7 @@
       try {
         // Guardar configuración
         localStorage.setItem('config', JSON.stringify(configData));
-        
+
         // Aplicar cambios inmediatamente
         if (configData.centerName) {
           const nameEl = document.getElementById('center-name');
@@ -2288,10 +2323,10 @@
           const subtitleEl = document.getElementById('center-subtitle');
           if (subtitleEl) subtitleEl.textContent = configData.centerSubtitle;
         }
-        
+
         closeModal('config');
         form.reset();
-        
+
         alert('✅ Configuración guardada correctamente');
         console.log('✅ Configuración guardada correctamente');
       } catch (error) {
@@ -2301,7 +2336,7 @@
     }
 
     // FUNCIONES DE SUPABASE
-    
+
     // Transformar datos del formato local al formato de Supabase
     function transformToSupabase(data, type) {
       const base = {
@@ -2434,7 +2469,7 @@
     // ============================================
     // FUNCIONES PARA AGREGAR CAMPOS DINÁMICOS
     // ============================================
-    
+
     // Generar color aleatorio basado en un ID
     function getColorFromId(id) {
       const colors = [
@@ -2451,7 +2486,7 @@
         ['#FCD34D', '#FBBF24'], // Ámbar
         ['#6EE7B7', '#34D399'], // Verde menta
       ];
-      
+
       // Usar el ID para seleccionar un color de forma consistente
       let hash = 0;
       for (let i = 0; i < id.length; i++) {
@@ -2459,10 +2494,10 @@
       }
       const index = Math.abs(hash) % colors.length;
       const [color1, color2] = colors[index];
-      
+
       return `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`;
     }
-    
+
     // Funciones para agregar emails a marcas
     function addBrandEmail() {
       const container = document.getElementById('brand-emails-container');
@@ -2549,7 +2584,7 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
-      
+
       const companyData = {
         id: form.dataset.editId || 'comp_' + Date.now(),
         name: formData.get('name'),
@@ -2571,14 +2606,14 @@
           const index = companies.findIndex(c => c.id === form.dataset.editId);
           if (index !== -1) {
             companies[index] = { ...companies[index], ...companyData };
-            
+
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(companies[index], 'companies', 'company');
             }
           }
         } else {
           companies.push(companyData);
-          
+
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(companyData, 'companies', 'company');
           }
@@ -2589,7 +2624,7 @@
         closeModal('empresa');
         form.reset();
         delete form.dataset.editId;
-        
+
         console.log('✅ Empresa guardada correctamente');
       } catch (error) {
         console.error('❌ Error guardando empresa:', error);
@@ -2607,18 +2642,18 @@
       const form = document.getElementById('form-empresa');
       const modal = document.getElementById('modal-empresa');
       const title = modal.querySelector('.modal-title');
-      
+
       if (!form || !modal) {
         console.error('Formulario o modal no encontrado');
         return;
       }
-      
+
       // Mostrar el modal primero
       modal.style.display = 'flex';
-      
+
       // Cambiar el título
       title.textContent = 'Editar empresa';
-      
+
       // Llenar los campos del formulario
       form.querySelector('[name="name"]').value = company.name || '';
       form.querySelector('[name="legalName"]').value = company.legalName || '';
@@ -2627,12 +2662,12 @@
       form.querySelector('[name="phone"]').value = company.phone || '';
       form.querySelector('[name="email"]').value = company.email || '';
       form.querySelector('[name="tags"]').value = company.tags ? company.tags.join(', ') : '';
-      
+
       const notesField = form.querySelector('[name="notes"]');
       if (notesField) {
         notesField.value = company.notes || '';
       }
-      
+
       // Marcar que estamos editando
       form.dataset.editId = id;
       console.log('Editando empresa:', company.name, 'ID:', id);
@@ -2643,7 +2678,7 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
-      
+
       const brandData = {
         id: form.dataset.editId || 'brand_' + Date.now(),
         name: formData.get('name'),
@@ -2667,14 +2702,14 @@
           const index = brands.findIndex(b => b.id === form.dataset.editId);
           if (index !== -1) {
             brands[index] = { ...brands[index], ...brandData };
-            
+
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(brands[index], 'brands', 'brand');
             }
           }
         } else {
           brands.push(brandData);
-          
+
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(brandData, 'brands', 'brand');
           }
@@ -2685,7 +2720,7 @@
         closeModal('marca');
         form.reset();
         delete form.dataset.editId;
-        
+
         console.log('✅ Marca guardada correctamente');
       } catch (error) {
         console.error('❌ Error guardando marca:', error);
@@ -2701,8 +2736,15 @@
       const modal = document.getElementById('modal-marca');
       const title = modal.querySelector('.modal-title');
       
-      title.textContent = 'Editar marca';
+      // Marcar como edición ANTES de abrir el modal
+      form.dataset.editId = id;
       
+      // Abrir modal (esto poblará los selects)
+      openModal('marca');
+      
+      // Ahora llenar los valores
+      title.textContent = 'Editar marca';
+
       form.name.value = brand.name || '';
       form.type.value = brand.type || '';
       form.tags.value = brand.tags ? brand.tags.join(', ') : '';
@@ -2713,22 +2755,12 @@
       form.hosting.value = brand.hosting || '';
       form.backend.value = brand.backend || '';
       form.notes.value = brand.notes || '';
-      
-      // Poblar select de empresa
+
+      // Seleccionar la empresa correcta
       const companySelect = form.companyId;
-      companySelect.innerHTML = '<option value="">Seleccionar empresa...</option>';
-      companies.forEach(company => {
-        const option = document.createElement('option');
-        option.value = company.id;
-        option.textContent = company.name;
-        if (brand.companyId === company.id) {
-          option.selected = true;
-        }
-        companySelect.appendChild(option);
-      });
-      
-      form.dataset.editId = id;
-      openModal('marca');
+      if (companySelect && brand.companyId) {
+        companySelect.value = brand.companyId;
+      }
     }
 
     // TAREAS
@@ -2736,7 +2768,7 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
-      
+
       const taskData = {
         id: form.dataset.editId || 'task_' + Date.now(),
         description: formData.get('description'),
@@ -2752,14 +2784,14 @@
           const index = tasks.findIndex(t => t.id === form.dataset.editId);
           if (index !== -1) {
             tasks[index] = { ...tasks[index], ...taskData, completed: tasks[index].completed };
-            
+
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(tasks[index], 'tasks', 'task');
             }
           }
         } else {
           tasks.push(taskData);
-          
+
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(taskData, 'tasks', 'task');
           }
@@ -2771,7 +2803,7 @@
         closeModal('tarea');
         form.reset();
         delete form.dataset.editId;
-        
+
         console.log('✅ Tarea guardada correctamente');
       } catch (error) {
         console.error('❌ Error guardando tarea:', error);
@@ -2782,7 +2814,7 @@
     // ============================================
     // FUNCIONES DE INTERFAZ DE USUARIO
     // ============================================
-    
+
     // Función para cambiar entre vistas
     function showView(viewName) {
       // Ocultar todas las vistas
@@ -2814,13 +2846,13 @@
       const modal = document.getElementById('modal-' + modalType);
       if (modal) {
         modal.style.display = 'flex';
-        
+
         // Limpiar formulario si existe Y NO es una edición
         const form = modal.querySelector('form');
         if (form && !form.dataset.editId) {
           form.reset();
         }
-        
+
         // Actualizar título del modal solo si NO es una edición
         const title = modal.querySelector('.modal-title');
         if (title && !form?.dataset.editId) {
@@ -2836,7 +2868,7 @@
           };
           title.textContent = titles[modalType] || 'Modal';
         }
-        
+
         // Llenar selects con datos dinámicos
         if (modalType === 'marca') {
           // Llenar select de empresas
@@ -2851,13 +2883,13 @@
             });
           }
         }
-        
+
         if (modalType === 'suscripcion' || modalType === 'credencial' || modalType === 'documento' || modalType === 'tarea') {
           // Llenar select de asociación con empresas y marcas
           const associationSelect = modal.querySelector('select[name="association"]');
           if (associationSelect) {
             associationSelect.innerHTML = '<option value="">Ninguna</option>';
-            
+
             // Agregar empresas
             if (companies.length > 0) {
               const companiesGroup = document.createElement('optgroup');
@@ -2870,7 +2902,7 @@
               });
               associationSelect.appendChild(companiesGroup);
             }
-            
+
             // Agregar marcas
             if (brands.length > 0) {
               const brandsGroup = document.createElement('optgroup');
@@ -2892,7 +2924,7 @@
       const modal = document.getElementById('modal-' + modalType);
       if (modal) {
         modal.style.display = 'none';
-        
+
         // Limpiar el formulario al cerrar
         const form = modal.querySelector('form');
         if (form) {
@@ -2908,7 +2940,7 @@
     }
 
     // Cerrar modales al hacer clic fuera
-    window.onclick = function(event) {
+    window.onclick = function (event) {
       if (event.target.classList.contains('modal')) {
         event.target.style.display = 'none';
       }
@@ -2950,7 +2982,7 @@
     function loadConfig() {
       try {
         config = JSON.parse(localStorage.getItem('config') || '{}');
-        
+
         // Aplicar configuración si existe
         if (config.centerName) {
           const nameEl = document.getElementById('center-name');
@@ -3002,12 +3034,12 @@
           if (supabase && SUPABASE_CONFIG.enabled) {
             await deleteFromSupabase(id, 'companies');
           }
-          
+
           // Eliminar del array local
           companies = companies.filter(c => c.id !== id);
           saveData();
           renderEmpresas();
-          
+
           console.log('✅ Empresa eliminada correctamente');
         } catch (error) {
           console.error('❌ Error eliminando empresa:', error);
@@ -3024,12 +3056,12 @@
           if (supabase && SUPABASE_CONFIG.enabled) {
             await deleteFromSupabase(id, 'brands');
           }
-          
+
           // Eliminar del array local
           brands = brands.filter(b => b.id !== id);
           saveData();
           renderMarcas();
-          
+
           console.log('✅ Marca eliminada correctamente');
         } catch (error) {
           console.error('❌ Error eliminando marca:', error);
@@ -3122,9 +3154,9 @@
 
       // Buscar en empresas
       companies.forEach(company => {
-        if (company.name?.toLowerCase().includes(searchTerm) || 
-            company.legalName?.toLowerCase().includes(searchTerm) ||
-            company.cif?.toLowerCase().includes(searchTerm)) {
+        if (company.name?.toLowerCase().includes(searchTerm) ||
+          company.legalName?.toLowerCase().includes(searchTerm) ||
+          company.cif?.toLowerCase().includes(searchTerm)) {
           results.push({
             type: 'Empresa',
             title: company.name,
@@ -3136,8 +3168,8 @@
 
       // Buscar en marcas
       brands.forEach(brand => {
-        if (brand.name?.toLowerCase().includes(searchTerm) || 
-            brand.domain?.toLowerCase().includes(searchTerm)) {
+        if (brand.name?.toLowerCase().includes(searchTerm) ||
+          brand.domain?.toLowerCase().includes(searchTerm)) {
           results.push({
             type: 'Marca',
             title: brand.name,
@@ -3178,13 +3210,13 @@
       if (searchResults) {
         searchResults.style.display = 'none';
       }
-      
+
       // Limpiar búsqueda
       const searchInput = document.getElementById('global-search');
       if (searchInput) {
         searchInput.value = '';
       }
-      
+
       // Navegar a la vista correspondiente
       switch (type) {
         case 'Empresa':
@@ -3200,4 +3232,5 @@
     }
   </script>
 </body>
+
 </html>
