@@ -2728,6 +2728,21 @@
           };
           title.textContent = titles[modalType] || 'Modal';
         }
+        
+        // Llenar selects con datos dinámicos
+        if (modalType === 'marca') {
+          // Llenar select de empresas
+          const companySelect = modal.querySelector('select[name="companyId"]');
+          if (companySelect) {
+            companySelect.innerHTML = '<option value="">Seleccionar empresa...</option>';
+            companies.forEach(company => {
+              const option = document.createElement('option');
+              option.value = company.id;
+              option.textContent = company.name;
+              companySelect.appendChild(option);
+            });
+          }
+        }
       }
     }
 
