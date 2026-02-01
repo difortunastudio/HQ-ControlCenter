@@ -2824,6 +2824,40 @@
             });
           }
         }
+        
+        if (modalType === 'suscripcion' || modalType === 'credencial') {
+          // Llenar select de asociación con empresas y marcas
+          const associationSelect = modal.querySelector('select[name="association"]');
+          if (associationSelect) {
+            associationSelect.innerHTML = '<option value="">Ninguna</option>';
+            
+            // Agregar empresas
+            if (companies.length > 0) {
+              const companiesGroup = document.createElement('optgroup');
+              companiesGroup.label = 'Empresas';
+              companies.forEach(company => {
+                const option = document.createElement('option');
+                option.value = `company:${company.id}`;
+                option.textContent = company.name;
+                companiesGroup.appendChild(option);
+              });
+              associationSelect.appendChild(companiesGroup);
+            }
+            
+            // Agregar marcas
+            if (brands.length > 0) {
+              const brandsGroup = document.createElement('optgroup');
+              brandsGroup.label = 'Marcas';
+              brands.forEach(brand => {
+                const option = document.createElement('option');
+                option.value = `brand:${brand.id}`;
+                option.textContent = brand.name;
+                brandsGroup.appendChild(option);
+              });
+              associationSelect.appendChild(brandsGroup);
+            }
+          }
+        }
       }
     }
 
