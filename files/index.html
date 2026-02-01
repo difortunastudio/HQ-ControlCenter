@@ -974,6 +974,150 @@
       location.reload();
     }
 
+    // ============================================
+    // INICIALIZACIÓN DE SUPABASE
+    // ============================================
+    async function initializeSupabase() {
+      try {
+        // Crear cliente de Supabase
+        supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+        
+        console.log('✅ Supabase inicializado correctamente');
+        console.log('📍 URL:', SUPABASE_CONFIG.url);
+        
+        // Cargar datos desde Supabase
+        await loadFromSupabase();
+        
+        // Si hay realTimeSync habilitado, suscribirse a cambios
+        if (SUPABASE_CONFIG.realTimeSync) {
+          subscribeToRealtimeChanges();
+        }
+        
+        return true;
+      } catch (error) {
+        console.error('❌ Error inicializando Supabase:', error);
+        return false;
+      }
+    }
+
+    // Cargar todos los datos desde Supabase
+    async function loadFromSupabase() {
+      if (!supabase) return;
+      
+      try {
+        console.log('📥 Cargando datos desde Supabase...');
+        
+        // Cargar empresas
+        const { data: companiesData, error: companiesError } = await supabase
+          .from('companies')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (companiesError) throw companiesError;
+        if (companiesData) {
+          companies = companiesData.map(c => ({
+            ...c,
+            tags: c.tags || [],
+            bankAccounts: c.bank_accounts || [],
+            emails: c.emails || [],
+            socialMedia: c.social_media || []
+          }));
+        }
+        
+        // Cargar marcas
+        const { data: brandsData, error: brandsError } = await supabase
+          .from('brands')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (brandsError) throw brandsError;
+        if (brandsData) {
+          brands = brandsData.map(b => ({
+            ...b,
+            companyId: b.company_id,
+            tags: b.tags || [],
+            emails: b.emails || [],
+            socialMedia: b.social_media || []
+          }));
+        }
+        
+        // Cargar tareas
+        const { data: tasksData, error: tasksError } = await supabase
+          .from('tasks')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (tasksError) throw tasksError;
+        if (tasksData) tasks = tasksData;
+        
+        // Cargar suscripciones
+        const { data: subsData, error: subsError } = await supabase
+          .from('subscriptions')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (subsError) throw subsError;
+        if (subsData) subscriptions = subsData;
+        
+        // Cargar credenciales
+        const { data: credsData, error: credsError } = await supabase
+          .from('credentials')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (credsError) throw credsError;
+        if (credsData) credentials = credsData;
+        
+        console.log(`✅ Datos cargados: ${companies.length} empresas, ${brands.length} marcas, ${tasks.length} tareas`);
+        
+      } catch (error) {
+        console.error('❌ Error cargando datos desde Supabase:', error);
+      }
+    }
+
+    // Suscribirse a cambios en tiempo real
+    function subscribeToRealtimeChanges() {
+      if (!supabase) return;
+      
+      console.log('🔔 Suscrito a cambios en tiempo real');
+      
+      // Suscribirse a cambios en companies
+      const companiesChannel = supabase
+        .channel('companies-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'companies' }, async () => {
+          console.log('🔄 Cambio detectado en companies, recargando...');
+          await loadFromSupabase();
+          if (currentView === 'companies') renderCompanies();
+        })
+        .subscribe();
+      
+      supabaseSubscriptions.push(companiesChannel);
+      
+      // Suscribirse a cambios en brands
+      const brandsChannel = supabase
+        .channel('brands-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'brands' }, async () => {
+          console.log('🔄 Cambio detectado en brands, recargando...');
+          await loadFromSupabase();
+          if (currentView === 'brands') renderBrands();
+        })
+        .subscribe();
+      
+      supabaseSubscriptions.push(brandsChannel);
+      
+      // Similar para tasks, subscriptions, credentials
+      const tasksChannel = supabase
+        .channel('tasks-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, async () => {
+          console.log('🔄 Cambio detectado en tasks, recargando...');
+          await loadFromSupabase();
+          if (currentView === 'tasks') renderTasks();
+        })
+        .subscribe();
+      
+      supabaseSubscriptions.push(tasksChannel);
+    }
+
     function showMainApp() {
       // Restaurar el HTML original de la aplicación
       document.body.innerHTML = getMainAppHTML() + getModalsHTML();
