@@ -636,6 +636,8 @@
     <button class="nav-btn" data-view="documentos">Documentos</button>
     <button class="nav-btn" data-view="suscripciones">Suscripciones</button>
     <button class="nav-btn" data-view="credenciales">Credenciales</button>
+    <button class="nav-btn" data-view="memoria">Memoria Contable</button>
+    <button class="nav-btn" data-view="notas">Notas</button>
   </nav>
 
   <main class="content">
@@ -773,6 +775,24 @@
       <div id="credenciales-list"></div>
     </div>
 
+    <!-- MEMORIA CONTABLE -->
+    <div id="memoria" class="view">
+      <div class="section-header">
+        <h2 class="section-title">Memoria Contable</h2>
+        <button class="btn-add" onclick="openModal('memoria')">+ Nueva entrada</button>
+      </div>
+      <div id="memoria-list"></div>
+    </div>
+
+    <!-- NOTAS -->
+    <div id="notas" class="view">
+      <div class="section-header">
+        <h2 class="section-title">Mis Notas</h2>
+        <button class="btn-add" onclick="openModal('nota')">+ Nueva nota</button>
+      </div>
+      <div id="notas-list"></div>
+    </div>
+
   </main>
 
   <script>
@@ -801,6 +821,7 @@
     let credentials = [];
     let documents = [];
     let memoriaContable = [];
+    let notas = [];
 
     // ============================================
     // AUTENTICACIÓN
@@ -1700,6 +1721,51 @@
           </div>
         </div>
 
+        <div id="modal-nota" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title">Nueva nota</h3>
+              <button class="modal-close" onclick="closeModal('nota')">×</button>
+            </div>
+            <form id="form-nota" onsubmit="submitNota(event)">
+              <div class="form-group">
+                <label class="form-label">Título *</label>
+                <input type="text" name="title" class="form-input" required placeholder="Título de la nota">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Contenido *</label>
+                <textarea name="content" class="form-textarea" rows="8" required placeholder="Escribe aquí tu nota..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Categoría</label>
+                <select name="category" class="form-select">
+                  <option value="General">General</option>
+                  <option value="Ideas">Ideas</option>
+                  <option value="Reunión">Reunión</option>
+                  <option value="Importante">Importante</option>
+                  <option value="Pendiente">Pendiente</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Asociada a</label>
+                <select name="association" class="form-select">
+                  <option value="">Ninguna</option>
+                  <optgroup label="Empresas"></optgroup>
+                  <optgroup label="Marcas"></optgroup>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tags (separados por comas)</label>
+                <input type="text" name="tags" class="form-input" placeholder="urgente, revisar, idea">
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('nota')">Cancelar</button>
+                <button type="submit" class="btn-submit">Guardar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
         <div id="modal-documento" class="modal">
           <div class="modal-content">
             <div class="modal-header">
@@ -1855,6 +1921,8 @@
       renderSuscripciones();
       renderCredenciales();
       renderDocumentos();
+      renderNotas();
+      renderMemoria();
 
       // Configurar fecha por defecto en formularios
       const today = new Date().toISOString().split('T')[0];
@@ -2292,6 +2360,213 @@
       } catch (error) {
         console.error('❌ Error guardando documento:', error);
         alert('Error guardando documento. Revisa la consola para más detalles.');
+      }
+    }
+
+    // NOTAS
+    async function submitNota(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+
+      const notaData = {
+        id: form.dataset.editId || 'nota_' + Date.now(),
+        title: formData.get('title'),
+        content: formData.get('content'),
+        category: formData.get('category'),
+        association: formData.get('association'),
+        tags: formData.get('tags') ? formData.get('tags').split(',').map(t => t.trim()) : [],
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        if (form.dataset.editId) {
+          const index = notas.findIndex(n => n.id === form.dataset.editId);
+          if (index !== -1) {
+            notas[index] = { ...notas[index], ...notaData };
+          }
+        } else {
+          notas.push(notaData);
+        }
+
+        saveData();
+        renderNotas();
+        closeModal('nota');
+        form.reset();
+        delete form.dataset.editId;
+
+        console.log('✅ Nota guardada correctamente');
+      } catch (error) {
+        console.error('❌ Error guardando nota:', error);
+        alert('Error guardando nota. Revisa la consola para más detalles.');
+      }
+    }
+
+    function renderNotas() {
+      const container = document.getElementById('notas-list');
+      if (!container) return;
+
+      if (notas.length === 0) {
+        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay notas</p></div>';
+        return;
+      }
+
+      container.innerHTML = notas.map(nota => `
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+            <div style="flex: 1;">
+              <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;">${nota.title}</h3>
+              <p style="margin: 0; font-size: 12px; color: #888;">${nota.category || 'General'}</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button onclick="editNota('${nota.id}')" style="padding: 4px 8px; background: #1A1A1A; border: none; border-radius: 4px; color: #fff; cursor: pointer; font-size: 11px;">Editar</button>
+              <button onclick="deleteNota('${nota.id}')" style="padding: 4px 8px; background: #F87171; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 11px;">Eliminar</button>
+            </div>
+          </div>
+          <p style="margin: 0 0 12px 0; color: #ccc; font-size: 14px; white-space: pre-wrap;">${nota.content}</p>
+          ${nota.tags && nota.tags.length > 0 ? `
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              ${nota.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+            </div>
+          ` : ''}
+          <p style="margin: 12px 0 0 0; font-size: 11px; color: #666;">${new Date(nota.createdAt).toLocaleDateString()}</p>
+        </div>
+      `).join('');
+    }
+
+    function editNota(id) {
+      const nota = notas.find(n => n.id === id);
+      if (!nota) return;
+
+      const form = document.getElementById('form-nota');
+      const modal = document.getElementById('modal-nota');
+      const title = modal.querySelector('.modal-title');
+
+      form.dataset.editId = id;
+      openModal('nota');
+
+      title.textContent = 'Editar nota';
+      form.title.value = nota.title || '';
+      form.content.value = nota.content || '';
+      form.category.value = nota.category || 'General';
+      form.association.value = nota.association || '';
+      form.tags.value = nota.tags ? nota.tags.join(', ') : '';
+    }
+
+    async function deleteNota(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta nota?')) {
+        try {
+          notas = notas.filter(n => n.id !== id);
+          saveData();
+          renderNotas();
+          console.log('✅ Nota eliminada correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando nota:', error);
+          alert('Error eliminando nota. Revisa la consola.');
+        }
+      }
+    }
+
+    // MEMORIA CONTABLE
+    async function submitMemoria(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+
+      const memoriaData = {
+        id: form.dataset.editId || 'memoria_' + Date.now(),
+        title: formData.get('title'),
+        content: formData.get('content'),
+        date: formData.get('date'),
+        ref: formData.get('ref'),
+        tags: formData.get('tags') ? formData.get('tags').split(',').map(t => t.trim()) : [],
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        if (form.dataset.editId) {
+          const index = memoriaContable.findIndex(m => m.id === form.dataset.editId);
+          if (index !== -1) {
+            memoriaContable[index] = { ...memoriaContable[index], ...memoriaData };
+          }
+        } else {
+          memoriaContable.push(memoriaData);
+        }
+
+        saveData();
+        renderMemoria();
+        closeModal('memoria');
+        form.reset();
+        delete form.dataset.editId;
+
+        console.log('✅ Memoria guardada correctamente');
+      } catch (error) {
+        console.error('❌ Error guardando memoria:', error);
+        alert('Error guardando memoria. Revisa la consola para más detalles.');
+      }
+    }
+
+    function renderMemoria() {
+      const container = document.getElementById('memoria-list');
+      if (!container) return;
+
+      if (memoriaContable.length === 0) {
+        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay entradas en la memoria contable</p></div>';
+        return;
+      }
+
+      container.innerHTML = memoriaContable.map(memoria => `
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+            <div style="flex: 1;">
+              <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;">${memoria.title}</h3>
+              <p style="margin: 0; font-size: 12px; color: #888;">${memoria.ref || 'Sin referencia'} · ${new Date(memoria.date).toLocaleDateString()}</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button onclick="editMemoria('${memoria.id}')" style="padding: 4px 8px; background: #1A1A1A; border: none; border-radius: 4px; color: #fff; cursor: pointer; font-size: 11px;">Editar</button>
+              <button onclick="deleteMemoria('${memoria.id}')" style="padding: 4px 8px; background: #F87171; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 11px;">Eliminar</button>
+            </div>
+          </div>
+          <p style="margin: 0 0 12px 0; color: #ccc; font-size: 14px; white-space: pre-wrap;">${memoria.content}</p>
+          ${memoria.tags && memoria.tags.length > 0 ? `
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              ${memoria.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    function editMemoria(id) {
+      const memoria = memoriaContable.find(m => m.id === id);
+      if (!memoria) return;
+
+      const form = document.getElementById('form-memoria');
+      const modal = document.getElementById('modal-memoria');
+      const title = modal.querySelector('.modal-title');
+
+      form.dataset.editId = id;
+      openModal('memoria');
+
+      title.textContent = 'Editar memoria';
+      form.title.value = memoria.title || '';
+      form.content.value = memoria.content || '';
+      form.date.value = memoria.date || '';
+      form.ref.value = memoria.ref || '';
+      form.tags.value = memoria.tags ? memoria.tags.join(', ') : '';
+    }
+
+    async function deleteMemoria(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta entrada?')) {
+        try {
+          memoriaContable = memoriaContable.filter(m => m.id !== id);
+          saveData();
+          renderMemoria();
+          console.log('✅ Memoria eliminada correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando memoria:', error);
+          alert('Error eliminando memoria. Revisa la consola.');
+        }
       }
     }
 
@@ -2864,7 +3139,8 @@
             credencial: 'Nueva credencial',
             documento: 'Nuevo documento',
             config: 'Configuración',
-            memoria: 'Nueva memoria contable'
+            memoria: 'Nueva memoria contable',
+            nota: 'Nueva nota'
           };
           title.textContent = titles[modalType] || 'Modal';
         }
@@ -2884,7 +3160,7 @@
           }
         }
 
-        if (modalType === 'suscripcion' || modalType === 'credencial' || modalType === 'documento' || modalType === 'tarea') {
+        if (modalType === 'suscripcion' || modalType === 'credencial' || modalType === 'documento' || modalType === 'tarea' || modalType === 'nota') {
           // Llenar select de asociación con empresas y marcas
           const associationSelect = modal.querySelector('select[name="association"]');
           if (associationSelect) {
@@ -2956,6 +3232,7 @@
         credentials = JSON.parse(localStorage.getItem('credentials') || '[]');
         documents = JSON.parse(localStorage.getItem('documents') || '[]');
         memoriaContable = JSON.parse(localStorage.getItem('memoriaContable') || '[]');
+        notas = JSON.parse(localStorage.getItem('notas') || '[]');
         console.log('Datos cargados desde localStorage');
       } catch (error) {
         console.error('Error cargando datos:', error);
@@ -2972,6 +3249,7 @@
         localStorage.setItem('credentials', JSON.stringify(credentials));
         localStorage.setItem('documents', JSON.stringify(documents));
         localStorage.setItem('memoriaContable', JSON.stringify(memoriaContable));
+        localStorage.setItem('notas', JSON.stringify(notas));
         console.log('Datos guardados en localStorage');
       } catch (error) {
         console.error('Error guardando datos:', error);
