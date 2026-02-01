@@ -2815,16 +2815,15 @@
       if (modal) {
         modal.style.display = 'flex';
         
-        // Limpiar formulario si existe
+        // Limpiar formulario si existe Y NO es una edición
         const form = modal.querySelector('form');
-        if (form) {
+        if (form && !form.dataset.editId) {
           form.reset();
-          delete form.dataset.editId;
         }
         
-        // Actualizar título del modal
+        // Actualizar título del modal solo si NO es una edición
         const title = modal.querySelector('.modal-title');
-        if (title) {
+        if (title && !form?.dataset.editId) {
           const titles = {
             empresa: 'Nueva empresa',
             marca: 'Nueva marca',
@@ -2893,6 +2892,13 @@
       const modal = document.getElementById('modal-' + modalType);
       if (modal) {
         modal.style.display = 'none';
+        
+        // Limpiar el formulario al cerrar
+        const form = modal.querySelector('form');
+        if (form) {
+          form.reset();
+          delete form.dataset.editId;
+        }
       }
     }
 
