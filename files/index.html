@@ -2735,13 +2735,13 @@
       const form = document.getElementById('form-marca');
       const modal = document.getElementById('modal-marca');
       const title = modal.querySelector('.modal-title');
-      
+
       // Marcar como edición ANTES de abrir el modal
       form.dataset.editId = id;
-      
+
       // Abrir modal (esto poblará los selects)
       openModal('marca');
-      
+
       // Ahora llenar los valores
       title.textContent = 'Editar marca';
 
