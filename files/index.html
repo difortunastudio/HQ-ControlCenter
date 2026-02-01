@@ -2301,6 +2301,86 @@
     }
 
     // FUNCIONES DE SUPABASE
+    
+    // Transformar datos del formato local al formato de Supabase
+    function transformToSupabase(data, type) {
+      const base = {
+        id: data.id,
+        created_at: data.createdAt || new Date().toISOString()
+      };
+
+      switch (type) {
+        case 'company':
+          return {
+            ...base,
+            name: data.name,
+            legal_name: data.legalName || null,
+            cif: data.cif || null,
+            fiscal_address: data.fiscalAddress || null,
+            phone: data.phone || null,
+            email: data.email || null,
+            tags: data.tags || [],
+            bank_accounts: data.bankAccounts || [],
+            emails: data.emails || [],
+            social_media: data.socialMedia || [],
+            notes: data.notes || null
+          };
+
+        case 'brand':
+          return {
+            ...base,
+            name: data.name,
+            type: data.type || null,
+            company_id: data.companyId || null,
+            tags: data.tags || [],
+            services: data.services || null,
+            domain: data.domain || null,
+            domain_provider: data.domainProvider || null,
+            domain_renewal: data.domainRenewal || null,
+            hosting: data.hosting || null,
+            backend: data.backend || null,
+            emails: data.emails || [],
+            social_media: data.socialMedia || [],
+            notes: data.notes || null
+          };
+
+        case 'task':
+          return {
+            ...base,
+            description: data.description,
+            date: data.date || null,
+            completed: data.completed || false,
+            association: data.association || null,
+            notes: data.notes || null
+          };
+
+        case 'subscription':
+          return {
+            ...base,
+            name: data.name,
+            cost: data.cost || null,
+            plan: data.plan || null,
+            url: data.url || null,
+            association: data.association || null,
+            renewal_day: data.renewalDay || null
+          };
+
+        case 'credential':
+          return {
+            ...base,
+            service: data.service,
+            username: data.username || null,
+            email: data.email || null,
+            password: data.password || null,
+            category: data.category || null,
+            association: data.association || null
+          };
+
+        default:
+          return data;
+      }
+    }
+
     async function saveToSupabase(data, table, type) {
       if (!supabase) {
         console.log('Supabase no disponible, guardando solo en localStorage');
