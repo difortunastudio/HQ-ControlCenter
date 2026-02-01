@@ -2,46 +2,51 @@
 
 Sistema de gestión centralizado con Supabase backend.
 
-## 🌐 Deploy en Vercel
+## 🌐 Deploy en Netlify
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/difortunastudio/HQ-ControlCenter)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/difortunastudio/HQ-ControlCenter)
 
 ## 🚀 Deployment Rápido
 
 ### Opción 1: Deploy automático desde GitHub
 
-1. Ve a [vercel.com](https://vercel.com)
-2. Conecta tu GitHub
-3. Importa el repo: `difortunastudio/HQ-ControlCenter`
-4. Click "Deploy"
+1. Ve a [app.netlify.com](https://app.netlify.com)
+2. Click en "Add new site" → "Import an existing project"
+3. Conecta tu GitHub
+4. Selecciona: `difortunastudio/HQ-ControlCenter`
+5. Configuración:
+   - Build command: (dejar vacío)
+   - Publish directory: `.`
+6. Click "Deploy site"
 
 ### Opción 2: Deploy desde CLI
 
 ```bash
-npm i -g vercel
-vercel
+npm i -g netlify-cli
+netlify deploy --prod
 ```
+
+### Opción 3: Drag & Drop
+
+Arrastra la carpeta del proyecto a [app.netlify.com/drop](https://app.netlify.com/drop)
 
 ## 🔧 Configuración de Supabase
 
-Después del deploy, agrega las variables de entorno en Vercel:
+Las credenciales ya están en el código, pero si quieres usar variables de entorno:
 
-```bash
-NEXT_PUBLIC_SUPABASE_URL=tu-proyecto.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key
-```
-
-**Configurar en Vercel:**
-1. Ve a tu proyecto en Vercel
-2. Settings → Environment Variables
-3. Agrega las variables de Supabase
-4. Redeploy
+**En Netlify:**
+1. Ve a Site settings → Environment variables
+2. Agrega (opcional, ya están hardcoded):
+   ```
+   SUPABASE_URL=https://fbhdpwedkdbyectmieeh.supabase.co
+   SUPABASE_ANON_KEY=tu-key
+   ```
 
 ## 📱 Acceso
 
 Una vez deployed, tendrás URLs como:
-- **Production:** `https://hq-control-center.vercel.app`
-- **Custom Domain:** `https://hq.tudominio.com` (opcional)
+- **Production:** `https://hq-control-center.netlify.app`
+- **Custom Domain:** `https://hq.difortuna.com` (opcional)
 
 ## 🎯 Características
 
@@ -72,9 +77,15 @@ git commit -m "Update"
 git push
 ```
 
-Vercel desplegará automáticamente.
+Netlify desplegará automáticamente.
+
+## 🎯 URLs del Proyecto
+
+- **GitHub:** https://github.com/difortunastudio/HQ-ControlCenter
+- **Netlify:** https://app.netlify.com (tu dashboard)
+- **Supabase:** https://supabase.com/dashboard
 
 ---
 
-**Stack:** HTML + Supabase + Vercel  
+**Stack:** HTML + Supabase + Netlify  
 **Última actualización:** Febrero 2026
