@@ -1220,6 +1220,7 @@
           <button class="nav-btn" data-view="tareas">Tareas</button>
           <button class="nav-btn" data-view="empresas">Empresas</button>
           <button class="nav-btn" data-view="marcas">Marcas</button>
+          <button class="nav-btn" data-view="memoria">Memoria Contable</button>
           <button class="nav-btn" data-view="documentos">Documentos</button>
           <button class="nav-btn" data-view="suscripciones">Suscripciones</button>
           <button class="nav-btn" data-view="credenciales">Credenciales</button>
@@ -1358,6 +1359,15 @@
               <button class="btn-add" onclick="openModal('credencial')">+ Nueva credencial</button>
             </div>
             <div id="credenciales-list"></div>
+          </div>
+
+          <!-- MEMORIA CONTABLE -->
+          <div id="memoria" class="view">
+            <div class="section-header">
+              <h2 class="section-title">Memoria Contable</h2>
+              <button class="btn-add" onclick="openModal('memoria')">+ Nueva entrada</button>
+            </div>
+            <div id="memoria-list"></div>
           </div>
 
         </main>
@@ -2802,8 +2812,8 @@
     }
 
     // Funciones para agregar emails a empresas
-    function addCompanyEmail() {
-      const container = document.getElementById('company-emails-container');
+    function addEmail() {
+      const container = document.getElementById('emails-container');
       const emailDiv = document.createElement('div');
       emailDiv.className = 'dynamic-field';
       emailDiv.innerHTML = `
@@ -2814,8 +2824,8 @@
     }
 
     // Funciones para agregar redes sociales a empresas
-    function addCompanySocialMedia() {
-      const container = document.getElementById('company-social-media-container');
+    function addSocialMedia() {
+      const container = document.getElementById('social-media-container');
       const socialDiv = document.createElement('div');
       socialDiv.className = 'dynamic-field';
       socialDiv.innerHTML = `
@@ -2843,6 +2853,25 @@
       const form = event.target;
       const formData = new FormData(form);
 
+      // Recoger cuentas bancarias
+      const bankNames = formData.getAll('bankName[]');
+      const ibans = formData.getAll('iban[]');
+      const bankAccounts = bankNames.map((name, index) => ({
+        bank: name,
+        iban: ibans[index]
+      })).filter(acc => acc.bank || acc.iban);
+
+      // Recoger emails corporativos
+      const companyEmails = formData.getAll('companyEmail[]').filter(e => e);
+
+      // Recoger redes sociales
+      const socialPlatforms = formData.getAll('companySocialPlatform[]');
+      const socialUrls = formData.getAll('companySocialUrl[]');
+      const socialMedia = socialPlatforms.map((platform, index) => ({
+        platform: platform,
+        url: socialUrls[index]
+      })).filter(social => social.url);
+
       const companyData = {
         id: form.dataset.editId || 'comp_' + Date.now(),
         name: formData.get('name'),
@@ -2852,9 +2881,9 @@
         phone: formData.get('phone'),
         email: formData.get('email'),
         tags: formData.get('tags') ? formData.get('tags').split(',').map(t => t.trim()) : [],
-        bankAccounts: [],
-        emails: [],
-        socialMedia: [],
+        bankAccounts: bankAccounts,
+        emails: companyEmails,
+        socialMedia: socialMedia,
         notes: formData.get('notes'),
         createdAt: new Date().toISOString()
       };
@@ -2926,6 +2955,60 @@
         notesField.value = company.notes || '';
       }
 
+      // Limpiar y cargar cuentas bancarias
+      const bankContainer = document.getElementById('bank-accounts-container');
+      bankContainer.innerHTML = '';
+      if (company.bankAccounts && company.bankAccounts.length > 0) {
+        company.bankAccounts.forEach(account => {
+          const bankDiv = document.createElement('div');
+          bankDiv.className = 'dynamic-field';
+          bankDiv.innerHTML = `
+            <input type="text" name="bankName[]" class="form-input" placeholder="Banco" style="flex: 0 0 120px;" value="${account.bank || ''}">
+            <input type="text" name="iban[]" class="form-input" placeholder="IBAN" style="flex: 1;" value="${account.iban || ''}">
+            <button type="button" onclick="this.parentElement.remove()" class="btn-remove">×</button>
+          `;
+          bankContainer.appendChild(bankDiv);
+        });
+      }
+
+      // Limpiar y cargar emails
+      const emailsContainer = document.getElementById('emails-container');
+      emailsContainer.innerHTML = '';
+      if (company.emails && company.emails.length > 0) {
+        company.emails.forEach(email => {
+          const emailDiv = document.createElement('div');
+          emailDiv.className = 'dynamic-field';
+          emailDiv.innerHTML = `
+            <input type="email" name="companyEmail[]" class="form-input" placeholder="contacto@empresa.com" style="flex: 1;" value="${email}">
+            <button type="button" onclick="this.parentElement.remove()" class="btn-remove">×</button>
+          `;
+          emailsContainer.appendChild(emailDiv);
+        });
+      }
+
+      // Limpiar y cargar redes sociales
+      const socialContainer = document.getElementById('social-media-container');
+      socialContainer.innerHTML = '';
+      if (company.socialMedia && company.socialMedia.length > 0) {
+        company.socialMedia.forEach(social => {
+          const socialDiv = document.createElement('div');
+          socialDiv.className = 'dynamic-field';
+          socialDiv.innerHTML = `
+            <select name="companySocialPlatform[]" class="form-select" style="flex: 0 0 120px;">
+              <option value="Instagram" ${social.platform === 'Instagram' ? 'selected' : ''}>Instagram</option>
+              <option value="Facebook" ${social.platform === 'Facebook' ? 'selected' : ''}>Facebook</option>
+              <option value="Twitter" ${social.platform === 'Twitter' ? 'selected' : ''}>Twitter</option>
+              <option value="LinkedIn" ${social.platform === 'LinkedIn' ? 'selected' : ''}>LinkedIn</option>
+              <option value="TikTok" ${social.platform === 'TikTok' ? 'selected' : ''}>TikTok</option>
+              <option value="YouTube" ${social.platform === 'YouTube' ? 'selected' : ''}>YouTube</option>
+            </select>
+            <input type="text" name="companySocialUrl[]" class="form-input" placeholder="@usuario o URL" style="flex: 1;" value="${social.url || ''}">
+            <button type="button" onclick="this.parentElement.remove()" class="btn-remove">×</button>
+          `;
+          socialContainer.appendChild(socialDiv);
+        });
+      }
+
       // Marcar que estamos editando
       form.dataset.editId = id;
       console.log('Editando empresa:', company.name, 'ID:', id);
@@ -2936,6 +3019,17 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
+
+      // Recoger emails de la marca
+      const brandEmails = formData.getAll('brandEmail[]').filter(e => e);
+
+      // Recoger redes sociales de la marca
+      const brandSocialPlatforms = formData.getAll('brandSocialPlatform[]');
+      const brandSocialUrls = formData.getAll('brandSocialUrl[]');
+      const brandSocialMedia = brandSocialPlatforms.map((platform, index) => ({
+        platform: platform,
+        url: brandSocialUrls[index]
+      })).filter(social => social.url);
 
       const brandData = {
         id: form.dataset.editId || 'brand_' + Date.now(),
@@ -2949,8 +3043,8 @@
         domainRenewal: formData.get('domainRenewal'),
         hosting: formData.get('hosting'),
         backend: formData.get('backend'),
-        emails: [],
-        socialMedia: [],
+        emails: brandEmails,
+        socialMedia: brandSocialMedia,
         notes: formData.get('notes'),
         createdAt: new Date().toISOString()
       };
@@ -3109,6 +3203,16 @@
         const form = modal.querySelector('form');
         if (form && !form.dataset.editId) {
           form.reset();
+          
+          // Limpiar contenedores dinámicos de empresas
+          if (modalType === 'empresa') {
+            const bankContainer = document.getElementById('bank-accounts-container');
+            const emailsContainer = document.getElementById('emails-container');
+            const socialContainer = document.getElementById('social-media-container');
+            if (bankContainer) bankContainer.innerHTML = '';
+            if (emailsContainer) emailsContainer.innerHTML = '';
+            if (socialContainer) socialContainer.innerHTML = '';
+          }
         }
 
         // Actualizar título del modal solo si NO es una edición
