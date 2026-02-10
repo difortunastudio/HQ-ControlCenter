@@ -799,7 +799,11 @@
     // ============================================
     // CONFIGURACIÓN DE SUPABASE
     // ============================================
+<<<<<<< HEAD
+    
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
     // Configuración de Supabase
     const SUPABASE_CONFIG = {
       enabled: true, // ✅ Supabase configurado y habilitado
@@ -821,7 +825,10 @@
     let credentials = [];
     let documents = [];
     let memoriaContable = [];
+<<<<<<< HEAD
+=======
     let notas = [];
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
 
     // ============================================
     // AUTENTICACIÓN
@@ -1178,7 +1185,11 @@
       // Restaurar el HTML original de la aplicación
       document.body.innerHTML = getMainAppHTML() + getModalsHTML();
       initializeApp();
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       // Inicializar Supabase si está habilitado (script ya cargado desde el head)
       if (SUPABASE_CONFIG.enabled && SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey) {
         // Verificar que Supabase esté disponible
@@ -1935,9 +1946,15 @@
 
       // Configurar formularios dinámicos
       setupDynamicForms();
+<<<<<<< HEAD
+      
+      // Configurar eventos para cerrar modales con Escape
+      document.addEventListener('keydown', function(e) {
+=======
 
       // Configurar eventos para cerrar modales con Escape
       document.addEventListener('keydown', function (e) {
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         if (e.key === 'Escape') {
           const openModal = document.querySelector('.modal[style*="flex"]');
           if (openModal) {
@@ -1945,9 +1962,15 @@
           }
         }
       });
+<<<<<<< HEAD
+      
+      console.log('✅ Control Center inicializado correctamente');
+      
+=======
 
       console.log('✅ Control Center inicializado correctamente');
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       // Renderizar contenido inicial
       renderDashboard();
       renderTareas();
@@ -1956,7 +1979,11 @@
       renderSuscripciones();
       renderCredenciales();
       renderDocumentos();
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       console.log('✅ Control Center inicializado correctamente');
     }
 
@@ -1970,7 +1997,11 @@
     // ============================================
 
     // Verificar autenticación al cargar la página
+<<<<<<< HEAD
+    document.addEventListener('DOMContentLoaded', function() {
+=======
     document.addEventListener('DOMContentLoaded', function () {
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       checkAuth();
     });
 
@@ -2225,6 +2256,38 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
+<<<<<<< HEAD
+      
+      const subscriptionData = {
+        id: form.dataset.editId || 'sub_' + Date.now(),
+        name: formData.get('name'),
+        cost: formData.get('cost'),
+        plan: formData.get('plan'),
+        url: formData.get('url'),
+        association: formData.get('association'),
+        renewalDay: formData.get('renewalDay'),
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        if (form.dataset.editId) {
+          const index = subscriptions.findIndex(s => s.id === form.dataset.editId);
+          if (index !== -1) {
+            subscriptions[index] = { ...subscriptions[index], ...subscriptionData };
+            
+            if (supabase && SUPABASE_CONFIG.enabled) {
+              await saveToSupabase(subscriptions[index], 'subscriptions', 'subscription');
+            }
+          }
+        } else {
+          subscriptions.push(subscriptionData);
+          
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await saveToSupabase(subscriptionData, 'subscriptions', 'subscription');
+          }
+        }
+
+=======
 
       const subscriptionData = {
         id: form.dataset.editId || 'sub_' + Date.now(),
@@ -2255,12 +2318,17 @@
           }
         }
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         saveData();
         renderSuscripciones();
         closeModal('suscripcion');
         form.reset();
         delete form.dataset.editId;
+<<<<<<< HEAD
+        
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         console.log('✅ Suscripción guardada correctamente');
       } catch (error) {
         console.error('❌ Error guardando suscripción:', error);
@@ -2273,7 +2341,11 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       const credentialData = {
         id: form.dataset.editId || 'cred_' + Date.now(),
         service: formData.get('service'),
@@ -2290,14 +2362,22 @@
           const index = credentials.findIndex(c => c.id === form.dataset.editId);
           if (index !== -1) {
             credentials[index] = { ...credentials[index], ...credentialData };
+<<<<<<< HEAD
+            
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(credentials[index], 'credentials', 'credential');
             }
           }
         } else {
           credentials.push(credentialData);
+<<<<<<< HEAD
+          
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(credentialData, 'credentials', 'credential');
           }
@@ -2308,7 +2388,11 @@
         closeModal('credencial');
         form.reset();
         delete form.dataset.editId;
+<<<<<<< HEAD
+        
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         console.log('✅ Credencial guardada correctamente');
       } catch (error) {
         console.error('❌ Error guardando credencial:', error);
@@ -2321,7 +2405,11 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       const documentData = {
         id: form.dataset.editId || 'doc_' + Date.now(),
         name: formData.get('name'),
@@ -2337,14 +2425,22 @@
           const index = documents.findIndex(d => d.id === form.dataset.editId);
           if (index !== -1) {
             documents[index] = { ...documents[index], ...documentData };
+<<<<<<< HEAD
+            
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(documents[index], 'documents', 'document');
             }
           }
         } else {
           documents.push(documentData);
+<<<<<<< HEAD
+          
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(documentData, 'documents', 'document');
           }
@@ -2355,7 +2451,11 @@
         closeModal('documento');
         form.reset();
         delete form.dataset.editId;
+<<<<<<< HEAD
+        
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         console.log('✅ Documento guardado correctamente');
       } catch (error) {
         console.error('❌ Error guardando documento:', error);
@@ -2363,6 +2463,8 @@
       }
     }
 
+<<<<<<< HEAD
+=======
     // NOTAS
     async function submitNota(event) {
       event.preventDefault();
@@ -2570,12 +2672,17 @@
       }
     }
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
     // CONFIGURACIÓN
     async function submitConfig(event) {
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       const configData = {
         centerName: formData.get('centerName'),
         centerSubtitle: formData.get('centerSubtitle'),
@@ -2588,7 +2695,11 @@
       try {
         // Guardar configuración
         localStorage.setItem('config', JSON.stringify(configData));
+<<<<<<< HEAD
+        
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         // Aplicar cambios inmediatamente
         if (configData.centerName) {
           const nameEl = document.getElementById('center-name');
@@ -2598,10 +2709,17 @@
           const subtitleEl = document.getElementById('center-subtitle');
           if (subtitleEl) subtitleEl.textContent = configData.centerSubtitle;
         }
+<<<<<<< HEAD
+        
+        closeModal('config');
+        form.reset();
+        
+=======
 
         closeModal('config');
         form.reset();
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         alert('✅ Configuración guardada correctamente');
         console.log('✅ Configuración guardada correctamente');
       } catch (error) {
@@ -2611,6 +2729,8 @@
     }
 
     // FUNCIONES DE SUPABASE
+<<<<<<< HEAD
+=======
 
     // Transformar datos del formato local al formato de Supabase
     function transformToSupabase(data, type) {
@@ -2691,6 +2811,7 @@
       }
     }
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
     async function saveToSupabase(data, table, type) {
       if (!supabase) {
         console.log('Supabase no disponible, guardando solo en localStorage');
@@ -2738,6 +2859,8 @@
       } catch (error) {
         console.error('❌ Error en deleteFromSupabase:', error);
         throw error;
+<<<<<<< HEAD
+=======
       }
     }
 
@@ -2766,6 +2889,7 @@
       let hash = 0;
       for (let i = 0; i < id.length; i++) {
         hash = id.charCodeAt(i) + ((hash << 5) - hash);
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       }
       const index = Math.abs(hash) % colors.length;
       const [color1, color2] = colors[index];
@@ -2881,14 +3005,22 @@
           const index = companies.findIndex(c => c.id === form.dataset.editId);
           if (index !== -1) {
             companies[index] = { ...companies[index], ...companyData };
+<<<<<<< HEAD
+            
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(companies[index], 'companies', 'company');
             }
           }
         } else {
           companies.push(companyData);
+<<<<<<< HEAD
+          
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(companyData, 'companies', 'company');
           }
@@ -2917,11 +3049,24 @@
       const form = document.getElementById('form-empresa');
       const modal = document.getElementById('modal-empresa');
       const title = modal.querySelector('.modal-title');
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       if (!form || !modal) {
         console.error('Formulario o modal no encontrado');
         return;
       }
+<<<<<<< HEAD
+      
+      // Mostrar el modal primero
+      modal.style.display = 'flex';
+      
+      // Cambiar el título
+      title.textContent = 'Editar empresa';
+      
+=======
 
       // Mostrar el modal primero
       modal.style.display = 'flex';
@@ -2929,6 +3074,7 @@
       // Cambiar el título
       title.textContent = 'Editar empresa';
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       // Llenar los campos del formulario
       form.querySelector('[name="name"]').value = company.name || '';
       form.querySelector('[name="legalName"]').value = company.legalName || '';
@@ -2937,12 +3083,20 @@
       form.querySelector('[name="phone"]').value = company.phone || '';
       form.querySelector('[name="email"]').value = company.email || '';
       form.querySelector('[name="tags"]').value = company.tags ? company.tags.join(', ') : '';
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       const notesField = form.querySelector('[name="notes"]');
       if (notesField) {
         notesField.value = company.notes || '';
       }
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       // Marcar que estamos editando
       form.dataset.editId = id;
       console.log('Editando empresa:', company.name, 'ID:', id);
@@ -2977,14 +3131,22 @@
           const index = brands.findIndex(b => b.id === form.dataset.editId);
           if (index !== -1) {
             brands[index] = { ...brands[index], ...brandData };
+<<<<<<< HEAD
+            
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(brands[index], 'brands', 'brand');
             }
           }
         } else {
           brands.push(brandData);
+<<<<<<< HEAD
+          
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(brandData, 'brands', 'brand');
           }
@@ -3010,6 +3172,11 @@
       const form = document.getElementById('form-marca');
       const modal = document.getElementById('modal-marca');
       const title = modal.querySelector('.modal-title');
+<<<<<<< HEAD
+      
+      title.textContent = 'Editar marca';
+      
+=======
 
       // Marcar como edición ANTES de abrir el modal
       form.dataset.editId = id;
@@ -3020,6 +3187,7 @@
       // Ahora llenar los valores
       title.textContent = 'Editar marca';
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       form.name.value = brand.name || '';
       form.type.value = brand.type || '';
       form.tags.value = brand.tags ? brand.tags.join(', ') : '';
@@ -3033,9 +3201,25 @@
 
       // Seleccionar la empresa correcta
       const companySelect = form.companyId;
+<<<<<<< HEAD
+      companySelect.innerHTML = '<option value="">Seleccionar empresa...</option>';
+      companies.forEach(company => {
+        const option = document.createElement('option');
+        option.value = company.id;
+        option.textContent = company.name;
+        if (brand.companyId === company.id) {
+          option.selected = true;
+        }
+        companySelect.appendChild(option);
+      });
+      
+      form.dataset.editId = id;
+      openModal('marca');
+=======
       if (companySelect && brand.companyId) {
         companySelect.value = brand.companyId;
       }
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
     }
 
     // TAREAS
@@ -3059,14 +3243,22 @@
           const index = tasks.findIndex(t => t.id === form.dataset.editId);
           if (index !== -1) {
             tasks[index] = { ...tasks[index], ...taskData, completed: tasks[index].completed };
+<<<<<<< HEAD
+            
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(tasks[index], 'tasks', 'task');
             }
           }
         } else {
           tasks.push(taskData);
+<<<<<<< HEAD
+          
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(taskData, 'tasks', 'task');
           }
@@ -3089,7 +3281,11 @@
     // ============================================
     // FUNCIONES DE INTERFAZ DE USUARIO
     // ============================================
+<<<<<<< HEAD
+    
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
     // Función para cambiar entre vistas
     function showView(viewName) {
       // Ocultar todas las vistas
@@ -3121,6 +3317,10 @@
       const modal = document.getElementById('modal-' + modalType);
       if (modal) {
         modal.style.display = 'flex';
+<<<<<<< HEAD
+        
+        // Limpiar formulario si existe
+=======
 
         // Limpiar formulario si existe Y NO es una edición
         const form = modal.querySelector('form');
@@ -3202,14 +3402,55 @@
         modal.style.display = 'none';
 
         // Limpiar el formulario al cerrar
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         const form = modal.querySelector('form');
         if (form) {
           form.reset();
           delete form.dataset.editId;
+<<<<<<< HEAD
+        }
+        
+        // Actualizar título del modal
+        const title = modal.querySelector('.modal-title');
+        if (title) {
+          const titles = {
+            empresa: 'Nueva empresa',
+            marca: 'Nueva marca',
+            tarea: 'Nueva tarea',
+            suscripcion: 'Nueva suscripción',
+            credencial: 'Nueva credencial',
+            documento: 'Nuevo documento',
+            config: 'Configuración',
+            memoria: 'Nueva memoria contable'
+          };
+          title.textContent = titles[modalType] || 'Modal';
+=======
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         }
       }
     }
 
+<<<<<<< HEAD
+    function closeModal(modalType) {
+      const modal = document.getElementById('modal-' + modalType);
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    }
+
+    // Alias para showModal
+    function showModal(modalType) {
+      openModal(modalType);
+    }
+
+    // Cerrar modales al hacer clic fuera
+    window.onclick = function(event) {
+      if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+      }
+    }
+
+=======
     // Alias para showModal
     function showModal(modalType) {
       openModal(modalType);
@@ -3222,6 +3463,7 @@
       }
     }
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
     // Función para cargar datos desde localStorage
     function loadData() {
       try {
@@ -3232,7 +3474,10 @@
         credentials = JSON.parse(localStorage.getItem('credentials') || '[]');
         documents = JSON.parse(localStorage.getItem('documents') || '[]');
         memoriaContable = JSON.parse(localStorage.getItem('memoriaContable') || '[]');
+<<<<<<< HEAD
+=======
         notas = JSON.parse(localStorage.getItem('notas') || '[]');
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         console.log('Datos cargados desde localStorage');
       } catch (error) {
         console.error('Error cargando datos:', error);
@@ -3249,7 +3494,10 @@
         localStorage.setItem('credentials', JSON.stringify(credentials));
         localStorage.setItem('documents', JSON.stringify(documents));
         localStorage.setItem('memoriaContable', JSON.stringify(memoriaContable));
+<<<<<<< HEAD
+=======
         localStorage.setItem('notas', JSON.stringify(notas));
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         console.log('Datos guardados en localStorage');
       } catch (error) {
         console.error('Error guardando datos:', error);
@@ -3260,7 +3508,11 @@
     function loadConfig() {
       try {
         config = JSON.parse(localStorage.getItem('config') || '{}');
+<<<<<<< HEAD
+        
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         // Aplicar configuración si existe
         if (config.centerName) {
           const nameEl = document.getElementById('center-name');
@@ -3286,6 +3538,14 @@
       }
     }
 
+<<<<<<< HEAD
+    function deleteTask(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta tarea?')) {
+        tasks = tasks.filter(t => t.id !== id);
+        saveData();
+        renderTareas();
+        renderDashboard();
+=======
     async function deleteTask(id) {
       if (confirm('¿Estás seguro de que deseas eliminar esta tarea?')) {
         try {
@@ -3301,10 +3561,18 @@
           console.error('❌ Error eliminando tarea:', error);
           alert('Error eliminando tarea. Revisa la consola.');
         }
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       }
     }
 
     // Funciones básicas para empresas
+<<<<<<< HEAD
+    function deleteEmpresa(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta empresa?')) {
+        companies = companies.filter(c => c.id !== id);
+        saveData();
+        renderEmpresas();
+=======
     async function deleteEmpresa(id) {
       if (confirm('¿Estás seguro de que deseas eliminar esta empresa?')) {
         try {
@@ -3323,10 +3591,18 @@
           console.error('❌ Error eliminando empresa:', error);
           alert('Error eliminando empresa. Revisa la consola.');
         }
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       }
     }
 
     // Funciones básicas para marcas
+<<<<<<< HEAD
+    function deleteMarca(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta marca?')) {
+        brands = brands.filter(b => b.id !== id);
+        saveData();
+        renderMarcas();
+=======
     async function deleteMarca(id) {
       if (confirm('¿Estás seguro de que deseas eliminar esta marca?')) {
         try {
@@ -3345,10 +3621,18 @@
           console.error('❌ Error eliminando marca:', error);
           alert('Error eliminando marca. Revisa la consola.');
         }
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       }
     }
 
     // Funciones básicas para suscripciones
+<<<<<<< HEAD
+    function deleteSubscription(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta suscripción?')) {
+        subscriptions = subscriptions.filter(s => s.id !== id);
+        saveData();
+        renderSuscripciones();
+=======
     async function deleteSubscription(id) {
       if (confirm('¿Estás seguro de que deseas eliminar esta suscripción?')) {
         try {
@@ -3363,10 +3647,18 @@
           console.error('❌ Error eliminando suscripción:', error);
           alert('Error eliminando suscripción. Revisa la consola.');
         }
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       }
     }
 
     // Funciones básicas para credenciales
+<<<<<<< HEAD
+    function deleteCredential(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta credencial?')) {
+        credentials = credentials.filter(c => c.id !== id);
+        saveData();
+        renderCredenciales();
+=======
     async function deleteCredential(id) {
       if (confirm('¿Estás seguro de que deseas eliminar esta credencial?')) {
         try {
@@ -3381,6 +3673,7 @@
           console.error('❌ Error eliminando credencial:', error);
           alert('Error eliminando credencial. Revisa la consola.');
         }
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       }
     }
 
@@ -3400,6 +3693,13 @@
     }
 
     // Funciones básicas para documentos
+<<<<<<< HEAD
+    function deleteDocument(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar este documento?')) {
+        documents = documents.filter(d => d.id !== id);
+        saveData();
+        renderDocumentos();
+=======
     async function deleteDocument(id) {
       if (confirm('¿Estás seguro de que deseas eliminar este documento?')) {
         try {
@@ -3414,6 +3714,7 @@
           console.error('❌ Error eliminando documento:', error);
           alert('Error eliminando documento. Revisa la consola.');
         }
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       }
     }
 
@@ -3432,9 +3733,15 @@
 
       // Buscar en empresas
       companies.forEach(company => {
+<<<<<<< HEAD
+        if (company.name?.toLowerCase().includes(searchTerm) || 
+            company.legalName?.toLowerCase().includes(searchTerm) ||
+            company.cif?.toLowerCase().includes(searchTerm)) {
+=======
         if (company.name?.toLowerCase().includes(searchTerm) ||
           company.legalName?.toLowerCase().includes(searchTerm) ||
           company.cif?.toLowerCase().includes(searchTerm)) {
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
           results.push({
             type: 'Empresa',
             title: company.name,
@@ -3446,8 +3753,13 @@
 
       // Buscar en marcas
       brands.forEach(brand => {
+<<<<<<< HEAD
+        if (brand.name?.toLowerCase().includes(searchTerm) || 
+            brand.domain?.toLowerCase().includes(searchTerm)) {
+=======
         if (brand.name?.toLowerCase().includes(searchTerm) ||
           brand.domain?.toLowerCase().includes(searchTerm)) {
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
           results.push({
             type: 'Marca',
             title: brand.name,
@@ -3488,13 +3800,21 @@
       if (searchResults) {
         searchResults.style.display = 'none';
       }
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       // Limpiar búsqueda
       const searchInput = document.getElementById('global-search');
       if (searchInput) {
         searchInput.value = '';
       }
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       // Navegar a la vista correspondiente
       switch (type) {
         case 'Empresa':
