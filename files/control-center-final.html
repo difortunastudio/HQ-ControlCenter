@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Control Center - HQ Completo</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Supabase CDN - cargado desde el head para garantizar disponibilidad -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -740,6 +742,32 @@
 
   <script>
     // ============================================
+    // CONFIGURACIÓN DE SUPABASE
+    // ============================================
+    
+    // Configuración de Supabase
+    const SUPABASE_CONFIG = {
+      enabled: true, // ✅ Supabase configurado y habilitado
+      url: 'https://fbhdpwedkdbyectmieeh.supabase.co', // Tu URL de Supabase
+      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiaGRwd2Vka2RieWVjdG1pZWVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2OTgwMzYsImV4cCI6MjA4NTI3NDAzNn0.bCwnZNNM4o1N_WC-8M0t_1eaID_pxszgRrZNflxBaLk', // Tu clave anónima de Supabase
+      realTimeSync: true // Sincronización en tiempo real
+    };
+
+    let supabase = null;
+    let supabaseSubscriptions = [];
+
+    // ============================================
+    // VARIABLES GLOBALES DE DATOS
+    // ============================================
+    let companies = [];
+    let brands = [];
+    let tasks = [];
+    let subscriptions = [];
+    let credentials = [];
+    let documents = [];
+    let memoriaContable = [];
+
+    // ============================================
     // AUTENTICACIÓN
     // ============================================
     const authConfig = {
@@ -950,6 +978,18 @@
       // Restaurar el HTML original de la aplicación
       document.body.innerHTML = getMainAppHTML() + getModalsHTML();
       initializeApp();
+      
+      // Inicializar Supabase si está habilitado (script ya cargado desde el head)
+      if (SUPABASE_CONFIG.enabled && SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey) {
+        // Verificar que Supabase esté disponible
+        if (typeof window.supabase === 'object' && window.supabase.createClient) {
+          console.log('📦 Supabase disponible, inicializando...');
+          initializeSupabase();
+        } else {
+          console.error('❌ Supabase no disponible, usando localStorage');
+          console.log('🔍 window.supabase:', window.supabase);
+        }
+      }
     }
 
     function getMainAppHTML() {
@@ -1684,61 +1724,8 @@
     
     // Verificar autenticación al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
-      // Verificar si Supabase está habilitado
-      if (SUPABASE_CONFIG.enabled && SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey) {
-        // Cargar Supabase primero, luego inicializar la app
-        const script = document.createElement('script');
-        script.src = 'https://unpkg.com/@supabase/supabase-js@2';
-        script.onload = () => {
-          console.log('📦 Script de Supabase cargado');
-          initializeSupabase();
-          initializeApp();
-        };
-        script.onerror = () => {
-          console.error('❌ Error cargando Supabase, usando localStorage');
-          initializeApp();
-        };
-        document.head.appendChild(script);
-      } else {
-        // Sin Supabase, inicializar directamente
-        console.log('📱 Inicializando sin Supabase');
-        initializeApp();
-      }
+      checkAuth();
     });
-
-    function initializeApp() {
-      try {
-        // Cargar datos guardados
-        loadData();
-        loadConfig();
-        
-        // Renderizar contenido inicial
-        renderDashboard();
-        renderTareas();
-        renderEmpresas();
-        renderMarcas();
-        renderSuscripciones();
-        renderCredenciales();
-        renderDocumentos();
-        
-        // Configurar fecha por defecto en formularios
-        const today = new Date().toISOString().split('T')[0];
-        const dateInputs = document.querySelectorAll('input[type="date"]');
-        dateInputs.forEach(input => {
-          if (!input.value) {
-            input.value = today;
-          }
-        });
-
-        // Configurar formularios dinámicos
-        setupDynamicForms();
-        
-        console.log('✅ Control Center inicializado correctamente');
-      } catch (error) {
-        console.error('❌ Error inicializando la aplicación:', error);
-        alert('Error iniciando la aplicación. Verifica la consola para más detalles.');
-      }
-    }
 
     // Funciones renderizado (placeholders - las implementarías según tus necesidades)
     function renderDashboard() {
@@ -1792,7 +1779,7 @@
             <div style="display: flex; gap: 8px;">
               <button onclick="toggleTask('${task.id}')" style="padding: 6px 12px; background: ${task.completed ? '#4ADE80' : '#1A1A1A'}; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
                 ${task.completed ? 'Completada' : 'Pendiente'}
-              </button>
+                           </button>
               <button onclick="deleteTask('${task.id}')" style="padding: 6px 12px; background: #F87171; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
                 Eliminar
               </button>
@@ -1988,17 +1975,6 @@
     // SUPABASE INTEGRATION
     // ============================================
     
-    // Configuración de Supabase
-    const SUPABASE_CONFIG = {
-      enabled: true, // ✅ Supabase configurado y habilitado
-      url: 'https://fbhdpwedkdbyectmieeh.supabase.co', // Tu URL de Supabase
-      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiaGRwd2Vka2RieWVjdG1pZWVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2OTgwMzYsImV4cCI6MjA4NTI3NDAzNn0.bCwnZNNM4o1N_WC-8M0t_1eaID_pxszgRrZNflxBaLk', // Tu clave anónima de Supabase
-      realTimeSync: true // Sincronización en tiempo real
-    };
-
-    let supabase = null;
-    let supabaseSubscriptions = [];
-
     // Inicializar Supabase
     function initializeSupabase() {
       if (!SUPABASE_CONFIG.enabled || !SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey) {
@@ -2006,14 +1982,27 @@
         return false;
       }
 
-      if (!window.supabase) {
-        console.error('❌ Supabase script no está cargado');
+      // Verificar múltiples formas de acceso a Supabase
+      let supabaseLib = null;
+      if (window.supabase && window.supabase.createClient) {
+        supabaseLib = window.supabase;
+      } else if (window.Supabase && window.Supabase.createClient) {
+        supabaseLib = window.Supabase;
+      } else if (typeof supabase !== 'undefined') {
+        supabaseLib = { createClient: window.supabase };
+      }
+
+      if (!supabaseLib) {
+        console.error('❌ Supabase script no está cargado o no está disponible');
+        console.log('🔍 window.supabase:', window.supabase);
+        console.log('🔍 window.Supabase:', window.Supabase);
         return false;
       }
 
       try {
-        supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+        supabase = supabaseLib.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
         console.log('✅ Supabase inicializado correctamente');
+        console.log('🔗 URL:', SUPABASE_CONFIG.url);
         
         if (SUPABASE_CONFIG.realTimeSync) {
           setupRealtimeSync();
