@@ -1050,14 +1050,23 @@
       try {
         console.log('📥 Cargando datos desde Supabase...');
 
+        // Primero cargar datos locales como respaldo
+        const localCompanies = JSON.parse(localStorage.getItem('companies') || '[]');
+        const localBrands = JSON.parse(localStorage.getItem('brands') || '[]');
+        const localTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+        const localSubscriptions = JSON.parse(localStorage.getItem('subscriptions') || '[]');
+        const localCredentials = JSON.parse(localStorage.getItem('credentials') || '[]');
+
         // Cargar empresas
         const { data: companiesData, error: companiesError } = await supabase
           .from('companies')
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (companiesError) throw companiesError;
-        if (companiesData) {
+        if (companiesError) {
+          console.warn('⚠️ Error cargando empresas desde Supabase:', companiesError);
+          companies = localCompanies;
+        } else if (companiesData) {
           companies = companiesData.map(c => ({
             ...c,
             tags: c.tags || [],
@@ -1065,6 +1074,11 @@
             emails: c.emails || [],
             socialMedia: c.social_media || []
           }));
+          // Si Supabase está vacío pero localStorage tiene datos, usar localStorage
+          if (companies.length === 0 && localCompanies.length > 0) {
+            console.log('⚠️ Supabase vacío, usando datos de localStorage para empresas');
+            companies = localCompanies;
+          }
         }
 
         // Cargar marcas
@@ -1073,8 +1087,10 @@
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (brandsError) throw brandsError;
-        if (brandsData) {
+        if (brandsError) {
+          console.warn('⚠️ Error cargando marcas desde Supabase:', brandsError);
+          brands = localBrands;
+        } else if (brandsData) {
           brands = brandsData.map(b => ({
             ...b,
             companyId: b.company_id,
@@ -1082,6 +1098,16 @@
             emails: b.emails || [],
             socialMedia: b.social_media || []
           }));
+          // Si Supabase está vacío pero localStorage tiene datos, usar localStorage
+          if (brands.length === 0 && localBrands.length > 0) {
+            console.log('⚠️ Supabase vacío, usando datos de localStorage para marcas');
+            brands = localBrands;
+            // Sincronizar a Supabase
+            console.log('🔄 Sincronizando marcas locales a Supabase...');
+            for (const brand of brands) {
+              await saveToSupabase(brand, 'brands', 'brand');
+            }
+          }
         }
 
         // Cargar tareas
@@ -1090,8 +1116,16 @@
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (tasksError) throw tasksError;
-        if (tasksData) tasks = tasksData;
+        if (tasksError) {
+          console.warn('⚠️ Error cargando tareas desde Supabase:', tasksError);
+          tasks = localTasks;
+        } else if (tasksData) {
+          tasks = tasksData;
+          if (tasks.length === 0 && localTasks.length > 0) {
+            console.log('⚠️ Supabase vacío, usando datos de localStorage para tareas');
+            tasks = localTasks;
+          }
+        }
 
         // Cargar suscripciones
         const { data: subsData, error: subsError } = await supabase
@@ -1099,8 +1133,16 @@
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (subsError) throw subsError;
-        if (subsData) subscriptions = subsData;
+        if (subsError) {
+          console.warn('⚠️ Error cargando suscripciones desde Supabase:', subsError);
+          subscriptions = localSubscriptions;
+        } else if (subsData) {
+          subscriptions = subsData;
+          if (subscriptions.length === 0 && localSubscriptions.length > 0) {
+            console.log('⚠️ Supabase vacío, usando datos de localStorage para suscripciones');
+            subscriptions = localSubscriptions;
+          }
+        }
 
         // Cargar credenciales
         const { data: credsData, error: credsError } = await supabase
@@ -1108,13 +1150,30 @@
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (credsError) throw credsError;
-        if (credsData) credentials = credsData;
+        if (credsError) {
+          console.warn('⚠️ Error cargando credenciales desde Supabase:', credsError);
+          credentials = localCredentials;
+        } else if (credsData) {
+          credentials = credsData;
+          if (credentials.length === 0 && localCredentials.length > 0) {
+            console.log('⚠️ Supabase vacío, usando datos de localStorage para credenciales');
+            credentials = localCredentials;
+          }
+        }
 
         console.log(`✅ Datos cargados: ${companies.length} empresas, ${brands.length} marcas, ${tasks.length} tareas`);
+        console.log(`📊 Supabase: ${companiesData?.length || 0} empresas, ${brandsData?.length || 0} marcas en la nube`);
+        console.log(`💾 localStorage: ${localCompanies.length} empresas, ${localBrands.length} marcas locales`);
 
       } catch (error) {
         console.error('❌ Error cargando datos desde Supabase:', error);
+        // En caso de error, cargar desde localStorage
+        companies = JSON.parse(localStorage.getItem('companies') || '[]');
+        brands = JSON.parse(localStorage.getItem('brands') || '[]');
+        tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+        subscriptions = JSON.parse(localStorage.getItem('subscriptions') || '[]');
+        credentials = JSON.parse(localStorage.getItem('credentials') || '[]');
+        console.log('⚠️ Usando datos de localStorage por error en Supabase');
       }
     }
 
