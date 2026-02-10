@@ -870,6 +870,8 @@
     }
 
     function showLoginScreen() {
+      // Hacer visible el body y reemplazar contenido con login
+      document.body.style.visibility = 'visible';
       document.body.innerHTML = `
         <div style="
           display: flex;
@@ -1194,6 +1196,7 @@
 
     function showMainApp() {
       // Mostrar el contenido de la app
+      document.body.style.visibility = 'visible';
       document.body.classList.add('authenticated');
       
       // Restaurar el HTML original de la aplicación (ya está en el DOM)
