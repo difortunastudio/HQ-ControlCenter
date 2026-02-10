@@ -23,14 +23,19 @@ password: 'SH2026_SecureAccess!'
 
 ---
 
-## 🚨 ACCIÓN REQUERIDA: Rotar Supabase Key
+## ✅ Supabase Key - NO REQUIERE ROTACIÓN
 
-### ¿Por qué?
-- El repositorio puede haber sido compartido
-- La anon key está expuesta en el código fuente
-- Buena práctica de seguridad
+### Estado: SEGURO
+- ✅ La anon key NO ha sido compartida
+- ✅ El repositorio es privado
+- ✅ Puedes mantener la key actual
 
-### Cómo rotar la key:
+### ⚠️ Solo rotar si:
+- Compartes el repositorio públicamente
+- Sospechas de acceso no autorizado
+- Como buena práctica cada 6-12 meses
+
+### Cómo rotar la key (si fuera necesario):
 
 1. **Ve a Supabase Dashboard:**
    ```
@@ -124,7 +129,7 @@ const { data, error } = await supabase.auth.signInWithPassword({
 ### Seguridad Mínima (IMPRESCINDIBLE)
 
 - [x] ✅ Cambiar usuario/contraseña de login
-- [ ] 🔒 Rotar Supabase anon key
+- [x] ✅ Verificar que anon key no esté compartida
 - [ ] 🔐 Configurar RLS básico en Supabase
 - [ ] 🔍 Verificar que las políticas funcionen
 
@@ -193,18 +198,16 @@ CREATE POLICY "temp_policy" ON documents FOR ALL USING (true);
 
 ## 🚨 RIESGOS ACTUALES
 
-### 🔴 ALTO RIESGO
-- **Anon key expuesta en GitHub** → Cualquiera puede acceder a tu Supabase
-- **Sin RLS activo** → Datos accesibles públicamente
-- **Credenciales simples** → Fáciles de adivinar
-
-### 🟡 MEDIO RIESGO
+### � MEDIO RIESGO
+- **Sin RLS activo** → Datos accesibles con la anon key (pero key no compartida)
 - **Sin 2FA** → Una sola barrera de seguridad
 - **Sin rate limiting** → Vulnerable a brute force
 - **Sin logs de auditoría** → No sabes quién accede
 
 ### 🟢 BAJO RIESGO (ya mitigado)
 - ✅ Credenciales actualizadas
+- ✅ Anon key NO compartida (solo tú la tienes)
+- ✅ Repositorio privado
 - ✅ Conexión HTTPS con Supabase
 - ✅ No hay SQL injection (usamos ORM de Supabase)
 
@@ -215,18 +218,16 @@ CREATE POLICY "temp_policy" ON documents FOR ALL USING (true);
 ### ANTES de hacer deploy:
 
 ```bash
-# 1. Rotar la key de Supabase
-# (hazlo manualmente en el dashboard)
+# 1. Configurar RLS básico
+# (ejecutar SQL en Supabase - ver supabase-rls-setup.sql)
 
-# 2. Actualizar el código con la nueva key
-# (editar control-center-final.html línea ~808)
+# 2. Probar localmente
+# Usuario: silenthub_admin
+# Password: SH2026_SecureAccess!
 
-# 3. Configurar RLS básico
-# (ejecutar SQL en Supabase)
-
-# 4. Commit y push
+# 3. Commit (si hiciste cambios)
 git add .
-git commit -m "🔒 Security: Update credentials and prepare for production"
+git commit -m "🔒 Security: Configure RLS policies"
 git push origin main
 ```
 
