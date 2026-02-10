@@ -130,8 +130,8 @@ const { data, error } = await supabase.auth.signInWithPassword({
 
 - [x] ✅ Cambiar usuario/contraseña de login
 - [x] ✅ Verificar que anon key no esté compartida
-- [ ] 🔐 Configurar RLS básico en Supabase
-- [ ] 🔍 Verificar que las políticas funcionen
+- [x] ✅ Configurar RLS básico en Supabase
+- [ ] 🔍 Verificar que las políticas funcionen (probar Control Center)
 
 ### Seguridad Adicional (RECOMENDADO)
 
@@ -269,6 +269,6 @@ vercel --prod
 
 ---
 
-**Última actualización:** 10 de febrero de 2026, 12:15 PM  
-**Estado:** 🚨 REQUIERE ACCIÓN - Rotar key y configurar RLS
-**Prioridad:** 🔴 ALTA - Hacer antes del deploy
+**Última actualización:** 10 de febrero de 2026, 13:00 PM  
+**Estado:** ✅ RLS CONFIGURADO - Verificar funcionamiento
+**Prioridad:** � MEDIA - Probar que todo funcione correctamente
