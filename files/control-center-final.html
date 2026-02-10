@@ -4,6 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Prevenir caché del navegador -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Control Center - HQ Completo</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Supabase CDN - cargado desde el head para garantizar disponibilidad -->
@@ -2023,8 +2027,6 @@
             <div style="display: flex; gap: 8px;">
               <button onclick="toggleTask('${task.id}')" style="padding: 6px 12px; background: ${task.completed ? '#4ADE80' : '#1A1A1A'}; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
                 ${task.completed ? 'Completada' : 'Pendiente'}
-             
-
               </button>
               <button onclick="deleteTask('${task.id}')" style="padding: 6px 12px; background: #F87171; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
                 Eliminar

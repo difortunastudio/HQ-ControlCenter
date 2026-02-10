@@ -1,1 +1,5 @@
-Force rebuild trigger - $(date)
+Force rebuild: 2025-01-28 - Configuración Netlify corregida
+- Cambiado publish de "." a "files"
+- Añadido force=true en redirects
+- Añadidas meta tags anti-caché en HTML
+- Añadidos headers Cache-Control en netlify.toml

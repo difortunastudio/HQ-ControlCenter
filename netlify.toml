@@ -1,22 +1,22 @@
 # Build settings
 [build]
-  publish = "."
+  publish = "files"
   command = ""
 
-# Redirect rules
+# Redirect rules - Redirect root to the main app
 [[redirects]]
   from = "/"
-  to = "/files/control-center-final.html"
+  to = "/control-center-final.html"
   status = 200
-  force = false
+  force = true
 
 [[redirects]]
   from = "/*"
-  to = "/files/control-center-final.html"
+  to = "/control-center-final.html"
   status = 200
-  force = false
+  force = true
 
-# Headers for security
+# Headers for security and cache control
 [[headers]]
   for = "/*"
   [headers.values]
@@ -24,3 +24,6 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "no-referrer-when-downgrade"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
