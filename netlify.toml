@@ -6,13 +6,13 @@
 # Redirect rules
 [[redirects]]
   from = "/"
-  to = "/files/index.html"
+  to = "/files/control-center-final.html"
   status = 200
   force = false
 
 [[redirects]]
   from = "/*"
-  to = "/files/index.html"
+  to = "/files/control-center-final.html"
   status = 200
   force = false
 
