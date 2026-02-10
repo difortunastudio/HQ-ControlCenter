@@ -20,6 +20,12 @@
       background: #000;
       color: #fff;
       min-height: 100vh;
+      /* Ocultar contenido hasta que checkAuth() lo muestre */
+      visibility: hidden;
+    }
+
+    body.authenticated {
+      visibility: visible;
     }
 
     .header {
@@ -1175,8 +1181,10 @@
     }
 
     function showMainApp() {
-      // Restaurar el HTML original de la aplicación
-      document.body.innerHTML = getMainAppHTML() + getModalsHTML();
+      // Mostrar el contenido de la app
+      document.body.classList.add('authenticated');
+      
+      // Restaurar el HTML original de la aplicación (ya está en el DOM)
       initializeApp();
 
       // Inicializar Supabase si está habilitado (script ya cargado desde el head)
