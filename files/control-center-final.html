@@ -4,10 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Prevenir caché del navegador -->
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
   <title>Control Center - HQ Completo</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Supabase CDN - cargado desde el head para garantizar disponibilidad -->
@@ -851,11 +847,23 @@
         // Sesión válida por 24 horas
         if (authData.timestamp && (now - authData.timestamp) < 24 * 60 * 60 * 1000) {
           isAuthenticated = true;
-          showMainApp();
+          // Si el DOM ya está listo, mostrar app inmediatamente
+          // Si no, esperar a que esté listo
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', showMainApp);
+          } else {
+            showMainApp();
+          }
+          return;
         } else {
           localStorage.removeItem('controlCenterAuth');
-          showLoginScreen();
         }
+      }
+      
+      // No autenticado: ocultar contenido y mostrar login cuando el DOM esté listo
+      if (document.readyState === 'loading') {
+        // El DOM aún no está listo, ocultar inmediatamente con CSS inline
+        document.addEventListener('DOMContentLoaded', showLoginScreen);
       } else {
         showLoginScreen();
       }
@@ -1970,10 +1978,9 @@
     // INICIALIZACIÓN CUANDO ESTÁ AUTENTICADO
     // ============================================
 
-    // Verificar autenticación al cargar la página
-    document.addEventListener('DOMContentLoaded', function () {
-      checkAuth();
-    });
+    // Verificar autenticación INMEDIATAMENTE (no esperar a DOMContentLoaded)
+    // Si esperamos a DOMContentLoaded, el contenido ya estará visible
+    checkAuth();
 
     // Funciones renderizado (placeholders - las implementarías según tus necesidades)
     function renderDashboard() {
@@ -2027,6 +2034,8 @@
             <div style="display: flex; gap: 8px;">
               <button onclick="toggleTask('${task.id}')" style="padding: 6px 12px; background: ${task.completed ? '#4ADE80' : '#1A1A1A'}; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
                 ${task.completed ? 'Completada' : 'Pendiente'}
+             
+
               </button>
               <button onclick="deleteTask('${task.id}')" style="padding: 6px 12px; background: #F87171; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
                 Eliminar
