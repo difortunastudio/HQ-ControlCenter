@@ -900,6 +900,10 @@
     }
 
     function showLoginScreen() {
+      // Remover overlay si existe
+      const overlay = document.getElementById('auth-overlay');
+      if (overlay) overlay.remove();
+      
       document.body.innerHTML = `
         <div style="
           display: flex;
