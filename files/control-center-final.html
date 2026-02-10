@@ -2071,28 +2071,63 @@
         return;
       }
 
-      container.innerHTML = tasks.map(task => `
-        <div class="card" style="margin-bottom: 16px;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-            <h3 style="font-size: 16px; margin: 0; ${task.completed ? 'text-decoration: line-through; color: #888;' : ''}">${task.description}</h3>
-            <div style="display: flex; gap: 8px;">
-              <button onclick="toggleTask('${task.id}')" style="padding: 6px 12px; background: ${task.completed ? '#4ADE80' : '#1A1A1A'}; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
-                ${task.completed ? 'Completada' : 'Pendiente'}
-             
+      container.innerHTML = tasks.map(task => {
+        // Buscar la entidad asociada
+        let entityCard = '';
+        if (task.association) {
+          const entity = [...companies, ...brands].find(e => 
+            e.name === task.association || 
+            e.id === task.association ||
+            (e.legalName && e.legalName === task.association)
+          );
+          
+          if (entity) {
+            const entityColor = getColorFromId(entity.id);
+            const entityInitial = entity.name.charAt(0).toUpperCase();
+            const entityType = companies.includes(entity) ? 'Empresa' : 'Marca';
+            
+            entityCard = `
+              <div style="display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; padding: 8px 12px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div style="width: 32px; height: 32px; border-radius: 6px; background: ${entityColor}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; flex-shrink: 0;">
+                  ${entityInitial}
+                </div>
+                <div style="display: flex; flex-direction: column; min-width: 0;">
+                  <div style="font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    ${entity.name}
+                  </div>
+                  <div style="font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px;">
+                    ${entityType}
+                  </div>
+                </div>
+              </div>
+            `;
+          } else {
+            // Si no se encuentra la entidad, mostrar solo el texto
+            entityCard = `<div style="margin-top: 8px; font-size: 12px; color: #888;">Asociada a: ${task.association}</div>`;
+          }
+        }
 
-              </button>
-              <button onclick="deleteTask('${task.id}')" style="padding: 6px 12px; background: #F87171; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
-                Eliminar
-              </button>
+        return `
+          <div class="card" style="margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <h3 style="font-size: 16px; margin: 0; ${task.completed ? 'text-decoration: line-through; color: #888;' : ''}">${task.description}</h3>
+              <div style="display: flex; gap: 8px;">
+                <button onclick="toggleTask('${task.id}')" style="padding: 6px 12px; background: ${task.completed ? '#4ADE80' : '#1A1A1A'}; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
+                  ${task.completed ? 'Completada' : 'Pendiente'}
+                </button>
+                <button onclick="deleteTask('${task.id}')" style="padding: 6px 12px; background: #F87171; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
+                  Eliminar
+                </button>
+              </div>
             </div>
+            <div style="font-size: 13px; color: #888;">
+              Fecha: ${new Date(task.date).toLocaleDateString('es-ES')}
+            </div>
+            ${entityCard}
+            ${task.notes ? `<div style="margin-top: 8px; font-size: 13px; color: #C8C8C8; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.05);">${task.notes}</div>` : ''}
           </div>
-          <div style="font-size: 13px; color: #888;">
-            Fecha: ${new Date(task.date).toLocaleDateString('es-ES')}
-            ${task.association ? ` • Asociada a: ${task.association}` : ''}
-          </div>
-          ${task.notes ? `<div style="margin-top: 8px; font-size: 13px; color: #C8C8C8;">${task.notes}</div>` : ''}
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function renderEmpresas() {
@@ -2337,6 +2372,8 @@
         createdAt: new Date().toISOString()
       };
 
+      console.log('📝 Guardando credencial:', credentialData);
+
       try {
         if (form.dataset.editId) {
           const index = credentials.findIndex(c => c.id === form.dataset.editId);
@@ -2344,24 +2381,31 @@
             credentials[index] = { ...credentials[index], ...credentialData };
 
             if (supabase && SUPABASE_CONFIG.enabled) {
+              console.log('☁️ Sincronizando credencial editada con Supabase...');
               await saveToSupabase(credentials[index], 'credentials', 'credential');
+              console.log('✅ Credencial editada sincronizada con Supabase');
             }
           }
         } else {
           credentials.push(credentialData);
 
           if (supabase && SUPABASE_CONFIG.enabled) {
+            console.log('☁️ Guardando nueva credencial en Supabase...');
             await saveToSupabase(credentialData, 'credentials', 'credential');
+            console.log('✅ Nueva credencial guardada en Supabase');
           }
         }
 
+        // Guardar en localStorage
         saveData();
+        console.log('💾 Credencial guardada en localStorage');
+        
         renderCredenciales();
         closeModal('credencial');
         form.reset();
         delete form.dataset.editId;
 
-        console.log('✅ Credencial guardada correctamente');
+        console.log('✅ Credencial guardada correctamente en todos los sistemas');
       } catch (error) {
         console.error('❌ Error guardando credencial:', error);
         alert('Error guardando credencial. Revisa la consola para más detalles.');
@@ -3379,9 +3423,18 @@
         documents = JSON.parse(localStorage.getItem('documents') || '[]');
         memoriaContable = JSON.parse(localStorage.getItem('memoriaContable') || '[]');
         notas = JSON.parse(localStorage.getItem('notas') || '[]');
-        console.log('Datos cargados desde localStorage');
+        
+        console.log('📂 Datos cargados desde localStorage:');
+        console.log(`  • ${companies.length} empresas`);
+        console.log(`  • ${brands.length} marcas`);
+        console.log(`  • ${tasks.length} tareas`);
+        console.log(`  • ${subscriptions.length} suscripciones`);
+        console.log(`  • ${credentials.length} credenciales`);
+        console.log(`  • ${documents.length} documentos`);
+        console.log(`  • ${memoriaContable.length} entradas de memoria contable`);
+        console.log(`  • ${notas.length} notas`);
       } catch (error) {
-        console.error('Error cargando datos:', error);
+        console.error('❌ Error cargando datos:', error);
       }
     }
 
@@ -3396,9 +3449,18 @@
         localStorage.setItem('documents', JSON.stringify(documents));
         localStorage.setItem('memoriaContable', JSON.stringify(memoriaContable));
         localStorage.setItem('notas', JSON.stringify(notas));
-        console.log('Datos guardados en localStorage');
+        
+        console.log('💾 Datos guardados en localStorage:');
+        console.log(`  • ${companies.length} empresas`);
+        console.log(`  • ${brands.length} marcas`);
+        console.log(`  • ${tasks.length} tareas`);
+        console.log(`  • ${subscriptions.length} suscripciones`);
+        console.log(`  • ${credentials.length} credenciales`);
+        console.log(`  • ${documents.length} documentos`);
+        console.log(`  • ${memoriaContable.length} entradas de memoria contable`);
+        console.log(`  • ${notas.length} notas`);
       } catch (error) {
-        console.error('Error guardando datos:', error);
+        console.error('❌ Error guardando datos:', error);
       }
     }
 
