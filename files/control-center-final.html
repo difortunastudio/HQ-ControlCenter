@@ -649,36 +649,12 @@
 
     let isAuthenticated = false;
 
-    // Crear overlay de carga/bloqueante INMEDIATAMENTE
-    (function() {
-      const overlay = document.createElement('div');
-      overlay.id = 'auth-overlay';
-      overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #000;
-        z-index: 999999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      `;
-      overlay.innerHTML = '<div style="color: #fff; font-size: 18px;">Cargando...</div>';
-      
-      // Añadir overlay AHORA (antes de que nada se vea)
-      if (document.body) {
-        document.body.appendChild(overlay);
-      } else {
-        document.addEventListener('DOMContentLoaded', () => {
-          document.body.appendChild(overlay);
-        });
-      }
-    })();
-
+    // ============================================
+    // FUNCIÓN DE AUTENTICACIÓN (MINIMALISTA)
+    // ============================================
     function checkAuth() {
       const savedAuth = localStorage.getItem('controlCenterAuth');
+      
       if (savedAuth) {
         try {
           const authData = JSON.parse(savedAuth);
@@ -686,40 +662,23 @@
           // Sesión válida por 24 horas
           if (authData.timestamp && (now - authData.timestamp) < 24 * 60 * 60 * 1000) {
             isAuthenticated = true;
-            // Esperar a que el DOM esté listo y luego quitar overlay
-            if (document.readyState === 'loading') {
-              document.addEventListener('DOMContentLoaded', () => {
-                const overlay = document.getElementById('auth-overlay');
-                if (overlay) overlay.remove();
-                showMainApp();
-              });
-            } else {
-              const overlay = document.getElementById('auth-overlay');
-              if (overlay) overlay.remove();
-              showMainApp();
-            }
+            showMainApp();
             return;
           } else {
+            // Sesión expirada
             localStorage.removeItem('controlCenterAuth');
           }
         } catch(e) {
+          // Datos corruptos
           localStorage.removeItem('controlCenterAuth');
         }
       }
       
-      // No autenticado: mostrar login
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', showLoginScreen);
-      } else {
-        showLoginScreen();
-      }
+      // No autenticado o sesión inválida: mostrar login
+      showLoginScreen();
     }
 
     function showLoginScreen() {
-      // Remover overlay si existe
-      const overlay = document.getElementById('auth-overlay');
-      if (overlay) overlay.remove();
-      
       // Obtener contenedor de la app
       const app = document.getElementById('app');
       if (!app) return;
@@ -1048,10 +1007,6 @@
     }
 
     function showMainApp() {
-      // Remover overlay si existe
-      const overlay = document.getElementById('auth-overlay');
-      if (overlay) overlay.remove();
-      
       // Obtener contenedor de la app
       const app = document.getElementById('app');
       if (!app) return;
@@ -1839,12 +1794,11 @@
     }
 
     // ============================================
-    // INICIALIZACIÓN CUANDO ESTÁ AUTENTICADO
+    // INICIALIZACIÓN AL CARGAR EL DOM
     // ============================================
-
-    // Verificar autenticación INMEDIATAMENTE (no esperar a DOMContentLoaded)
-    // Si esperamos a DOMContentLoaded, el contenido ya estará visible
-    checkAuth();
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuth();
+    });
 
     // Funciones renderizado (placeholders - las implementarías según tus necesidades)
     function renderDashboard() {
