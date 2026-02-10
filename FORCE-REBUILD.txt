@@ -1,5 +1,6 @@
-Force rebuild: 2025-01-28 - Configuración Netlify corregida
-- Cambiado publish de "." a "files"
-- Añadido force=true en redirects
-- Añadidas meta tags anti-caché en HTML
-- Añadidos headers Cache-Control en netlify.toml
+Force rebuild: 2025-01-28 23:58 - FIX CRÍTICO: checkAuth() inmediato
+- Eliminado DOMContentLoaded listener
+- checkAuth() se ejecuta INMEDIATAMENTE al cargar el script
+- CSS body{visibility:hidden} ahora funciona correctamente
+- El contenido NO será visible antes de autenticación
+- Este es el fix definitivo del problema
