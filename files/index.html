@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +9,12 @@
   <!-- Supabase CDN - cargado desde el head para garantizar disponibilidad -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Inter', -apple-system, sans-serif;
       background: #000;
@@ -46,7 +51,9 @@
       border-bottom: 1px solid #1F1F1F;
     }
 
-    .nav::-webkit-scrollbar { display: none; }
+    .nav::-webkit-scrollbar {
+      display: none;
+    }
 
     .nav-btn {
       background: transparent;
@@ -83,8 +90,15 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .section-header {
@@ -155,8 +169,13 @@
     }
 
     @media (min-width: 600px) {
-      .grid-2 { grid-template-columns: repeat(2, 1fr); }
-      .grid-3 { grid-template-columns: repeat(3, 1fr); }
+      .grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
     }
 
     .card {
@@ -196,7 +215,8 @@
       font-weight: 700;
     }
 
-    .company-logo, .brand-logo {
+    .company-logo,
+    .brand-logo {
       width: 60px;
       height: 60px;
       border-radius: 12px;
@@ -257,10 +277,25 @@
       font-weight: 500;
     }
 
-    .status-activa { background: rgba(74, 222, 128, 0.15); color: #4ADE80; }
-    .status-desarrollo { background: rgba(251, 191, 36, 0.15); color: #FBBF24; }
-    .status-concepto { background: rgba(167, 139, 250, 0.15); color: #A78BFA; }
-    .status-pausa { background: rgba(248, 113, 113, 0.15); color: #F87171; }
+    .status-activa {
+      background: rgba(74, 222, 128, 0.15);
+      color: #4ADE80;
+    }
+
+    .status-desarrollo {
+      background: rgba(251, 191, 36, 0.15);
+      color: #FBBF24;
+    }
+
+    .status-concepto {
+      background: rgba(167, 139, 250, 0.15);
+      color: #A78BFA;
+    }
+
+    .status-pausa {
+      background: rgba(248, 113, 113, 0.15);
+      color: #F87171;
+    }
 
     .cost-badge {
       padding: 6px 12px;
@@ -569,6 +604,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <header class="header">
@@ -578,16 +614,15 @@
         <p class="header-subtitle" id="center-subtitle">Empresas · Marcas · Suscripciones · Credenciales</p>
       </div>
       <div style="position: relative; margin-right: 16px;">
-        <input 
-          type="text" 
-          id="global-search" 
-          placeholder="🔍 Buscar..."
+        <input type="text" id="global-search" placeholder="🔍 Buscar..."
           style="padding: 10px 16px; background: #1A1A1A; border: 1px solid #252525; border-radius: 8px; color: #fff; font-size: 14px; width: 300px;"
-          onkeyup="globalSearch(this.value)"
-        >
-        <div id="search-results" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: #0D0D0D; border: 1px solid #1A1A1A; border-radius: 8px; width: 400px; max-height: 400px; overflow-y: auto; z-index: 100;"></div>
+          onkeyup="globalSearch(this.value)">
+        <div id="search-results"
+          style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: #0D0D0D; border: 1px solid #1A1A1A; border-radius: 8px; width: 400px; max-height: 400px; overflow-y: auto; z-index: 100;">
+        </div>
       </div>
-      <button onclick="openModal('config')" style="padding: 10px 16px; background: #1A1A1A; border: 1px solid #252525; border-radius: 8px; color: #fff; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+      <button onclick="openModal('config')"
+        style="padding: 10px 16px; background: #1A1A1A; border: 1px solid #252525; border-radius: 8px; color: #fff; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
         ⚙️ Mi perfil
       </button>
     </div>
@@ -601,13 +636,15 @@
     <button class="nav-btn" data-view="documentos">Documentos</button>
     <button class="nav-btn" data-view="suscripciones">Suscripciones</button>
     <button class="nav-btn" data-view="credenciales">Credenciales</button>
+    <button class="nav-btn" data-view="memoria">Memoria Contable</button>
+    <button class="nav-btn" data-view="notas">Notas</button>
   </nav>
 
   <main class="content">
 
     <!-- DASHBOARD -->
     <div id="dashboard" class="view active">
-      
+
       <!-- Alertas de renovación -->
       <div class="alert-box">
         <div class="alert-title">
@@ -738,13 +775,35 @@
       <div id="credenciales-list"></div>
     </div>
 
+    <!-- MEMORIA CONTABLE -->
+    <div id="memoria" class="view">
+      <div class="section-header">
+        <h2 class="section-title">Memoria Contable</h2>
+        <button class="btn-add" onclick="openModal('memoria')">+ Nueva entrada</button>
+      </div>
+      <div id="memoria-list"></div>
+    </div>
+
+    <!-- NOTAS -->
+    <div id="notas" class="view">
+      <div class="section-header">
+        <h2 class="section-title">Mis Notas</h2>
+        <button class="btn-add" onclick="openModal('nota')">+ Nueva nota</button>
+      </div>
+      <div id="notas-list"></div>
+    </div>
+
   </main>
 
   <script>
     // ============================================
     // CONFIGURACIÓN DE SUPABASE
     // ============================================
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
     // Configuración de Supabase
     const SUPABASE_CONFIG = {
       enabled: true, // ✅ Supabase configurado y habilitado
@@ -766,6 +825,10 @@
     let credentials = [];
     let documents = [];
     let memoriaContable = [];
+<<<<<<< HEAD
+=======
+    let notas = [];
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
 
     // ============================================
     // AUTENTICACIÓN
@@ -954,13 +1017,13 @@
           timestamp: new Date().getTime()
         };
         localStorage.setItem('controlCenterAuth', JSON.stringify(authData));
-        
+
         isAuthenticated = true;
         showMainApp();
       } else {
         errorDiv.textContent = 'Usuario o contraseña incorrectos';
         errorDiv.style.display = 'block';
-        
+
         // Limpiar error después de 3 segundos
         setTimeout(() => {
           errorDiv.style.display = 'none';
@@ -974,11 +1037,159 @@
       location.reload();
     }
 
+    // ============================================
+    // INICIALIZACIÓN DE SUPABASE
+    // ============================================
+    async function initializeSupabase() {
+      try {
+        // Crear cliente de Supabase
+        supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+
+        console.log('✅ Supabase inicializado correctamente');
+        console.log('📍 URL:', SUPABASE_CONFIG.url);
+
+        // Cargar datos desde Supabase
+        await loadFromSupabase();
+
+        // Si hay realTimeSync habilitado, suscribirse a cambios
+        if (SUPABASE_CONFIG.realTimeSync) {
+          subscribeToRealtimeChanges();
+        }
+
+        return true;
+      } catch (error) {
+        console.error('❌ Error inicializando Supabase:', error);
+        return false;
+      }
+    }
+
+    // Cargar todos los datos desde Supabase
+    async function loadFromSupabase() {
+      if (!supabase) return;
+
+      try {
+        console.log('📥 Cargando datos desde Supabase...');
+
+        // Cargar empresas
+        const { data: companiesData, error: companiesError } = await supabase
+          .from('companies')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (companiesError) throw companiesError;
+        if (companiesData) {
+          companies = companiesData.map(c => ({
+            ...c,
+            tags: c.tags || [],
+            bankAccounts: c.bank_accounts || [],
+            emails: c.emails || [],
+            socialMedia: c.social_media || []
+          }));
+        }
+
+        // Cargar marcas
+        const { data: brandsData, error: brandsError } = await supabase
+          .from('brands')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (brandsError) throw brandsError;
+        if (brandsData) {
+          brands = brandsData.map(b => ({
+            ...b,
+            companyId: b.company_id,
+            tags: b.tags || [],
+            emails: b.emails || [],
+            socialMedia: b.social_media || []
+          }));
+        }
+
+        // Cargar tareas
+        const { data: tasksData, error: tasksError } = await supabase
+          .from('tasks')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (tasksError) throw tasksError;
+        if (tasksData) tasks = tasksData;
+
+        // Cargar suscripciones
+        const { data: subsData, error: subsError } = await supabase
+          .from('subscriptions')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (subsError) throw subsError;
+        if (subsData) subscriptions = subsData;
+
+        // Cargar credenciales
+        const { data: credsData, error: credsError } = await supabase
+          .from('credentials')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (credsError) throw credsError;
+        if (credsData) credentials = credsData;
+
+        console.log(`✅ Datos cargados: ${companies.length} empresas, ${brands.length} marcas, ${tasks.length} tareas`);
+
+      } catch (error) {
+        console.error('❌ Error cargando datos desde Supabase:', error);
+      }
+    }
+
+    // Suscribirse a cambios en tiempo real
+    function subscribeToRealtimeChanges() {
+      if (!supabase) return;
+
+      console.log('🔔 Suscrito a cambios en tiempo real');
+
+      // Suscribirse a cambios en companies
+      const companiesChannel = supabase
+        .channel('companies-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'companies' }, async () => {
+          console.log('🔄 Cambio detectado en companies, recargando...');
+          await loadFromSupabase();
+          if (currentView === 'companies') renderCompanies();
+        })
+        .subscribe();
+
+      supabaseSubscriptions.push(companiesChannel);
+
+      // Suscribirse a cambios en brands
+      const brandsChannel = supabase
+        .channel('brands-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'brands' }, async () => {
+          console.log('🔄 Cambio detectado en brands, recargando...');
+          await loadFromSupabase();
+          if (currentView === 'brands') renderBrands();
+        })
+        .subscribe();
+
+      supabaseSubscriptions.push(brandsChannel);
+
+      // Similar para tasks, subscriptions, credentials
+      const tasksChannel = supabase
+        .channel('tasks-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, async () => {
+          console.log('🔄 Cambio detectado en tasks, recargando...');
+          await loadFromSupabase();
+          if (currentView === 'tasks') renderTasks();
+        })
+        .subscribe();
+
+      supabaseSubscriptions.push(tasksChannel);
+    }
+
     function showMainApp() {
       // Restaurar el HTML original de la aplicación
       document.body.innerHTML = getMainAppHTML() + getModalsHTML();
       initializeApp();
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       // Inicializar Supabase si está habilitado (script ya cargado desde el head)
       if (SUPABASE_CONFIG.enabled && SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey) {
         // Verificar que Supabase esté disponible
@@ -1521,6 +1732,51 @@
           </div>
         </div>
 
+        <div id="modal-nota" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title">Nueva nota</h3>
+              <button class="modal-close" onclick="closeModal('nota')">×</button>
+            </div>
+            <form id="form-nota" onsubmit="submitNota(event)">
+              <div class="form-group">
+                <label class="form-label">Título *</label>
+                <input type="text" name="title" class="form-input" required placeholder="Título de la nota">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Contenido *</label>
+                <textarea name="content" class="form-textarea" rows="8" required placeholder="Escribe aquí tu nota..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Categoría</label>
+                <select name="category" class="form-select">
+                  <option value="General">General</option>
+                  <option value="Ideas">Ideas</option>
+                  <option value="Reunión">Reunión</option>
+                  <option value="Importante">Importante</option>
+                  <option value="Pendiente">Pendiente</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Asociada a</label>
+                <select name="association" class="form-select">
+                  <option value="">Ninguna</option>
+                  <optgroup label="Empresas"></optgroup>
+                  <optgroup label="Marcas"></optgroup>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tags (separados por comas)</label>
+                <input type="text" name="tags" class="form-input" placeholder="urgente, revisar, idea">
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('nota')">Cancelar</button>
+                <button type="submit" class="btn-submit">Guardar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
         <div id="modal-documento" class="modal">
           <div class="modal-content">
             <div class="modal-header">
@@ -1649,12 +1905,12 @@
       // Configurar búsqueda global
       const searchInput = document.getElementById('global-search');
       if (searchInput) {
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', function () {
           globalSearch(this.value);
         });
-        
+
         // Ocultar resultados al hacer clic fuera
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
           if (!searchInput.contains(e.target)) {
             const searchResults = document.getElementById('search-results');
             if (searchResults) {
@@ -1667,7 +1923,7 @@
       // Cargar datos guardados
       loadData();
       loadConfig();
-      
+
       // Renderizar contenido inicial
       renderDashboard();
       renderTareas();
@@ -1676,7 +1932,9 @@
       renderSuscripciones();
       renderCredenciales();
       renderDocumentos();
-      
+      renderNotas();
+      renderMemoria();
+
       // Configurar fecha por defecto en formularios
       const today = new Date().toISOString().split('T')[0];
       const dateInputs = document.querySelectorAll('input[type="date"]');
@@ -1688,9 +1946,15 @@
 
       // Configurar formularios dinámicos
       setupDynamicForms();
+<<<<<<< HEAD
       
       // Configurar eventos para cerrar modales con Escape
       document.addEventListener('keydown', function(e) {
+=======
+
+      // Configurar eventos para cerrar modales con Escape
+      document.addEventListener('keydown', function (e) {
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         if (e.key === 'Escape') {
           const openModal = document.querySelector('.modal[style*="flex"]');
           if (openModal) {
@@ -1698,9 +1962,15 @@
           }
         }
       });
+<<<<<<< HEAD
       
       console.log('✅ Control Center inicializado correctamente');
       
+=======
+
+      console.log('✅ Control Center inicializado correctamente');
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       // Renderizar contenido inicial
       renderDashboard();
       renderTareas();
@@ -1709,7 +1979,11 @@
       renderSuscripciones();
       renderCredenciales();
       renderDocumentos();
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       console.log('✅ Control Center inicializado correctamente');
     }
 
@@ -1721,9 +1995,13 @@
     // ============================================
     // INICIALIZACIÓN CUANDO ESTÁ AUTENTICADO
     // ============================================
-    
+
     // Verificar autenticación al cargar la página
+<<<<<<< HEAD
     document.addEventListener('DOMContentLoaded', function() {
+=======
+    document.addEventListener('DOMContentLoaded', function () {
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       checkAuth();
     });
 
@@ -1808,7 +2086,7 @@
       container.innerHTML = companies.map(company => `
         <div class="card card-clickable" onclick="showCompanyDetail('${company.id}')">
           <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-            <div class="company-logo" style="background: linear-gradient(135deg, #4ADE80 0%, #22C55E 100%);">
+            <div class="company-logo" style="background: ${getColorFromId(company.id)};">
               ${company.name.charAt(0).toUpperCase()}
             </div>
             <div style="flex: 1;">
@@ -1846,7 +2124,7 @@
         return `
           <div class="card card-clickable" onclick="showBrandDetail('${brand.id}')">
             <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-              <div class="brand-logo" style="background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%);">
+              <div class="brand-logo" style="background: ${getColorFromId(brand.id)};">
                 ${brand.name.charAt(0).toUpperCase()}
               </div>
               <div style="flex: 1;">
@@ -1978,6 +2256,7 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
+<<<<<<< HEAD
       
       const subscriptionData = {
         id: form.dataset.editId || 'sub_' + Date.now(),
@@ -2008,12 +2287,48 @@
           }
         }
 
+=======
+
+      const subscriptionData = {
+        id: form.dataset.editId || 'sub_' + Date.now(),
+        name: formData.get('name'),
+        cost: formData.get('cost'),
+        plan: formData.get('plan'),
+        url: formData.get('url'),
+        association: formData.get('association'),
+        renewalDay: formData.get('renewalDay'),
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        if (form.dataset.editId) {
+          const index = subscriptions.findIndex(s => s.id === form.dataset.editId);
+          if (index !== -1) {
+            subscriptions[index] = { ...subscriptions[index], ...subscriptionData };
+
+            if (supabase && SUPABASE_CONFIG.enabled) {
+              await saveToSupabase(subscriptions[index], 'subscriptions', 'subscription');
+            }
+          }
+        } else {
+          subscriptions.push(subscriptionData);
+
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await saveToSupabase(subscriptionData, 'subscriptions', 'subscription');
+          }
+        }
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         saveData();
         renderSuscripciones();
         closeModal('suscripcion');
         form.reset();
         delete form.dataset.editId;
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         console.log('✅ Suscripción guardada correctamente');
       } catch (error) {
         console.error('❌ Error guardando suscripción:', error);
@@ -2026,7 +2341,11 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       const credentialData = {
         id: form.dataset.editId || 'cred_' + Date.now(),
         service: formData.get('service'),
@@ -2043,14 +2362,22 @@
           const index = credentials.findIndex(c => c.id === form.dataset.editId);
           if (index !== -1) {
             credentials[index] = { ...credentials[index], ...credentialData };
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(credentials[index], 'credentials', 'credential');
             }
           }
         } else {
           credentials.push(credentialData);
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(credentialData, 'credentials', 'credential');
           }
@@ -2061,7 +2388,11 @@
         closeModal('credencial');
         form.reset();
         delete form.dataset.editId;
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         console.log('✅ Credencial guardada correctamente');
       } catch (error) {
         console.error('❌ Error guardando credencial:', error);
@@ -2074,7 +2405,11 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       const documentData = {
         id: form.dataset.editId || 'doc_' + Date.now(),
         name: formData.get('name'),
@@ -2090,14 +2425,22 @@
           const index = documents.findIndex(d => d.id === form.dataset.editId);
           if (index !== -1) {
             documents[index] = { ...documents[index], ...documentData };
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(documents[index], 'documents', 'document');
             }
           }
         } else {
           documents.push(documentData);
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(documentData, 'documents', 'document');
           }
@@ -2108,7 +2451,11 @@
         closeModal('documento');
         form.reset();
         delete form.dataset.editId;
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         console.log('✅ Documento guardado correctamente');
       } catch (error) {
         console.error('❌ Error guardando documento:', error);
@@ -2116,12 +2463,226 @@
       }
     }
 
+<<<<<<< HEAD
+=======
+    // NOTAS
+    async function submitNota(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+
+      const notaData = {
+        id: form.dataset.editId || 'nota_' + Date.now(),
+        title: formData.get('title'),
+        content: formData.get('content'),
+        category: formData.get('category'),
+        association: formData.get('association'),
+        tags: formData.get('tags') ? formData.get('tags').split(',').map(t => t.trim()) : [],
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        if (form.dataset.editId) {
+          const index = notas.findIndex(n => n.id === form.dataset.editId);
+          if (index !== -1) {
+            notas[index] = { ...notas[index], ...notaData };
+          }
+        } else {
+          notas.push(notaData);
+        }
+
+        saveData();
+        renderNotas();
+        closeModal('nota');
+        form.reset();
+        delete form.dataset.editId;
+
+        console.log('✅ Nota guardada correctamente');
+      } catch (error) {
+        console.error('❌ Error guardando nota:', error);
+        alert('Error guardando nota. Revisa la consola para más detalles.');
+      }
+    }
+
+    function renderNotas() {
+      const container = document.getElementById('notas-list');
+      if (!container) return;
+
+      if (notas.length === 0) {
+        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay notas</p></div>';
+        return;
+      }
+
+      container.innerHTML = notas.map(nota => `
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+            <div style="flex: 1;">
+              <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;">${nota.title}</h3>
+              <p style="margin: 0; font-size: 12px; color: #888;">${nota.category || 'General'}</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button onclick="editNota('${nota.id}')" style="padding: 4px 8px; background: #1A1A1A; border: none; border-radius: 4px; color: #fff; cursor: pointer; font-size: 11px;">Editar</button>
+              <button onclick="deleteNota('${nota.id}')" style="padding: 4px 8px; background: #F87171; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 11px;">Eliminar</button>
+            </div>
+          </div>
+          <p style="margin: 0 0 12px 0; color: #ccc; font-size: 14px; white-space: pre-wrap;">${nota.content}</p>
+          ${nota.tags && nota.tags.length > 0 ? `
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              ${nota.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+            </div>
+          ` : ''}
+          <p style="margin: 12px 0 0 0; font-size: 11px; color: #666;">${new Date(nota.createdAt).toLocaleDateString()}</p>
+        </div>
+      `).join('');
+    }
+
+    function editNota(id) {
+      const nota = notas.find(n => n.id === id);
+      if (!nota) return;
+
+      const form = document.getElementById('form-nota');
+      const modal = document.getElementById('modal-nota');
+      const title = modal.querySelector('.modal-title');
+
+      form.dataset.editId = id;
+      openModal('nota');
+
+      title.textContent = 'Editar nota';
+      form.title.value = nota.title || '';
+      form.content.value = nota.content || '';
+      form.category.value = nota.category || 'General';
+      form.association.value = nota.association || '';
+      form.tags.value = nota.tags ? nota.tags.join(', ') : '';
+    }
+
+    async function deleteNota(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta nota?')) {
+        try {
+          notas = notas.filter(n => n.id !== id);
+          saveData();
+          renderNotas();
+          console.log('✅ Nota eliminada correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando nota:', error);
+          alert('Error eliminando nota. Revisa la consola.');
+        }
+      }
+    }
+
+    // MEMORIA CONTABLE
+    async function submitMemoria(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+
+      const memoriaData = {
+        id: form.dataset.editId || 'memoria_' + Date.now(),
+        title: formData.get('title'),
+        content: formData.get('content'),
+        date: formData.get('date'),
+        ref: formData.get('ref'),
+        tags: formData.get('tags') ? formData.get('tags').split(',').map(t => t.trim()) : [],
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        if (form.dataset.editId) {
+          const index = memoriaContable.findIndex(m => m.id === form.dataset.editId);
+          if (index !== -1) {
+            memoriaContable[index] = { ...memoriaContable[index], ...memoriaData };
+          }
+        } else {
+          memoriaContable.push(memoriaData);
+        }
+
+        saveData();
+        renderMemoria();
+        closeModal('memoria');
+        form.reset();
+        delete form.dataset.editId;
+
+        console.log('✅ Memoria guardada correctamente');
+      } catch (error) {
+        console.error('❌ Error guardando memoria:', error);
+        alert('Error guardando memoria. Revisa la consola para más detalles.');
+      }
+    }
+
+    function renderMemoria() {
+      const container = document.getElementById('memoria-list');
+      if (!container) return;
+
+      if (memoriaContable.length === 0) {
+        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay entradas en la memoria contable</p></div>';
+        return;
+      }
+
+      container.innerHTML = memoriaContable.map(memoria => `
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+            <div style="flex: 1;">
+              <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;">${memoria.title}</h3>
+              <p style="margin: 0; font-size: 12px; color: #888;">${memoria.ref || 'Sin referencia'} · ${new Date(memoria.date).toLocaleDateString()}</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button onclick="editMemoria('${memoria.id}')" style="padding: 4px 8px; background: #1A1A1A; border: none; border-radius: 4px; color: #fff; cursor: pointer; font-size: 11px;">Editar</button>
+              <button onclick="deleteMemoria('${memoria.id}')" style="padding: 4px 8px; background: #F87171; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 11px;">Eliminar</button>
+            </div>
+          </div>
+          <p style="margin: 0 0 12px 0; color: #ccc; font-size: 14px; white-space: pre-wrap;">${memoria.content}</p>
+          ${memoria.tags && memoria.tags.length > 0 ? `
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              ${memoria.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    function editMemoria(id) {
+      const memoria = memoriaContable.find(m => m.id === id);
+      if (!memoria) return;
+
+      const form = document.getElementById('form-memoria');
+      const modal = document.getElementById('modal-memoria');
+      const title = modal.querySelector('.modal-title');
+
+      form.dataset.editId = id;
+      openModal('memoria');
+
+      title.textContent = 'Editar memoria';
+      form.title.value = memoria.title || '';
+      form.content.value = memoria.content || '';
+      form.date.value = memoria.date || '';
+      form.ref.value = memoria.ref || '';
+      form.tags.value = memoria.tags ? memoria.tags.join(', ') : '';
+    }
+
+    async function deleteMemoria(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta entrada?')) {
+        try {
+          memoriaContable = memoriaContable.filter(m => m.id !== id);
+          saveData();
+          renderMemoria();
+          console.log('✅ Memoria eliminada correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando memoria:', error);
+          alert('Error eliminando memoria. Revisa la consola.');
+        }
+      }
+    }
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
     // CONFIGURACIÓN
     async function submitConfig(event) {
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       const configData = {
         centerName: formData.get('centerName'),
         centerSubtitle: formData.get('centerSubtitle'),
@@ -2134,7 +2695,11 @@
       try {
         // Guardar configuración
         localStorage.setItem('config', JSON.stringify(configData));
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         // Aplicar cambios inmediatamente
         if (configData.centerName) {
           const nameEl = document.getElementById('center-name');
@@ -2144,10 +2709,17 @@
           const subtitleEl = document.getElementById('center-subtitle');
           if (subtitleEl) subtitleEl.textContent = configData.centerSubtitle;
         }
+<<<<<<< HEAD
         
         closeModal('config');
         form.reset();
         
+=======
+
+        closeModal('config');
+        form.reset();
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         alert('✅ Configuración guardada correctamente');
         console.log('✅ Configuración guardada correctamente');
       } catch (error) {
@@ -2157,6 +2729,89 @@
     }
 
     // FUNCIONES DE SUPABASE
+<<<<<<< HEAD
+=======
+
+    // Transformar datos del formato local al formato de Supabase
+    function transformToSupabase(data, type) {
+      const base = {
+        id: data.id,
+        created_at: data.createdAt || new Date().toISOString()
+      };
+
+      switch (type) {
+        case 'company':
+          return {
+            ...base,
+            name: data.name,
+            legal_name: data.legalName || null,
+            cif: data.cif || null,
+            fiscal_address: data.fiscalAddress || null,
+            phone: data.phone || null,
+            email: data.email || null,
+            tags: data.tags || [],
+            bank_accounts: data.bankAccounts || [],
+            emails: data.emails || [],
+            social_media: data.socialMedia || [],
+            notes: data.notes || null
+          };
+
+        case 'brand':
+          return {
+            ...base,
+            name: data.name,
+            type: data.type || null,
+            company_id: data.companyId || null,
+            tags: data.tags || [],
+            services: data.services || null,
+            domain: data.domain || null,
+            domain_provider: data.domainProvider || null,
+            domain_renewal: data.domainRenewal || null,
+            hosting: data.hosting || null,
+            backend: data.backend || null,
+            emails: data.emails || [],
+            social_media: data.socialMedia || [],
+            notes: data.notes || null
+          };
+
+        case 'task':
+          return {
+            ...base,
+            description: data.description,
+            date: data.date || null,
+            completed: data.completed || false,
+            association: data.association || null,
+            notes: data.notes || null
+          };
+
+        case 'subscription':
+          return {
+            ...base,
+            name: data.name,
+            cost: data.cost || null,
+            plan: data.plan || null,
+            url: data.url || null,
+            association: data.association || null,
+            renewal_day: data.renewalDay || null
+          };
+
+        case 'credential':
+          return {
+            ...base,
+            service: data.service,
+            username: data.username || null,
+            email: data.email || null,
+            password: data.password || null,
+            category: data.category || null,
+            association: data.association || null
+          };
+
+        default:
+          return data;
+      }
+    }
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
     async function saveToSupabase(data, table, type) {
       if (!supabase) {
         console.log('Supabase no disponible, guardando solo en localStorage');
@@ -2204,7 +2859,119 @@
       } catch (error) {
         console.error('❌ Error en deleteFromSupabase:', error);
         throw error;
+<<<<<<< HEAD
+=======
       }
+    }
+
+    // ============================================
+    // FUNCIONES PARA AGREGAR CAMPOS DINÁMICOS
+    // ============================================
+
+    // Generar color aleatorio basado en un ID
+    function getColorFromId(id) {
+      const colors = [
+        ['#4ADE80', '#22C55E'], // Verde
+        ['#60A5FA', '#3B82F6'], // Azul
+        ['#A78BFA', '#7C3AED'], // Púrpura
+        ['#F472B6', '#EC4899'], // Rosa
+        ['#FBBF24', '#F59E0B'], // Amarillo
+        ['#FB923C', '#F97316'], // Naranja
+        ['#34D399', '#10B981'], // Esmeralda
+        ['#F87171', '#EF4444'], // Rojo
+        ['#38BDF8', '#0EA5E9'], // Azul cielo
+        ['#C084FC', '#A855F7'], // Violeta
+        ['#FCD34D', '#FBBF24'], // Ámbar
+        ['#6EE7B7', '#34D399'], // Verde menta
+      ];
+
+      // Usar el ID para seleccionar un color de forma consistente
+      let hash = 0;
+      for (let i = 0; i < id.length; i++) {
+        hash = id.charCodeAt(i) + ((hash << 5) - hash);
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
+      }
+      const index = Math.abs(hash) % colors.length;
+      const [color1, color2] = colors[index];
+
+      return `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`;
+    }
+
+    // Funciones para agregar emails a marcas
+    function addBrandEmail() {
+      const container = document.getElementById('brand-emails-container');
+      const emailDiv = document.createElement('div');
+      emailDiv.className = 'dynamic-field';
+      emailDiv.innerHTML = `
+        <input type="email" name="brandEmail[]" class="form-input" placeholder="hola@marca.com" style="flex: 1;">
+        <button type="button" onclick="this.parentElement.remove()" class="btn-remove">×</button>
+      `;
+      container.appendChild(emailDiv);
+    }
+
+    // Funciones para agregar redes sociales a marcas
+    function addBrandSocialMedia() {
+      const container = document.getElementById('brand-social-media-container');
+      const socialDiv = document.createElement('div');
+      socialDiv.className = 'dynamic-field';
+      socialDiv.innerHTML = `
+        <select name="brandSocialPlatform[]" class="form-select" style="flex: 0 0 120px;">
+          <option value="Instagram">Instagram</option>
+          <option value="Facebook">Facebook</option>
+          <option value="Twitter">Twitter</option>
+          <option value="LinkedIn">LinkedIn</option>
+          <option value="TikTok">TikTok</option>
+          <option value="YouTube">YouTube</option>
+        </select>
+        <input type="text" name="brandSocialUrl[]" class="form-input" placeholder="@usuario o URL" style="flex: 1;">
+        <button type="button" onclick="this.parentElement.remove()" class="btn-remove">×</button>
+      `;
+      container.appendChild(socialDiv);
+    }
+
+    // Funciones para agregar cuentas bancarias a empresas
+    function addBankAccount() {
+      const container = document.getElementById('bank-accounts-container');
+      const bankDiv = document.createElement('div');
+      bankDiv.className = 'dynamic-field';
+      bankDiv.innerHTML = `
+        <input type="text" name="bankName[]" class="form-input" placeholder="Banco" style="flex: 0 0 120px;">
+        <input type="text" name="iban[]" class="form-input" placeholder="IBAN" style="flex: 1;">
+        <button type="button" onclick="this.parentElement.remove()" class="btn-remove">×</button>
+      `;
+      container.appendChild(bankDiv);
+    }
+
+    // Funciones para agregar emails a empresas
+    function addCompanyEmail() {
+      const container = document.getElementById('company-emails-container');
+      const emailDiv = document.createElement('div');
+      emailDiv.className = 'dynamic-field';
+      emailDiv.innerHTML = `
+        <input type="email" name="companyEmail[]" class="form-input" placeholder="contacto@empresa.com" style="flex: 1;">
+        <button type="button" onclick="this.parentElement.remove()" class="btn-remove">×</button>
+      `;
+      container.appendChild(emailDiv);
+    }
+
+    // Funciones para agregar redes sociales a empresas
+    function addCompanySocialMedia() {
+      const container = document.getElementById('company-social-media-container');
+      const socialDiv = document.createElement('div');
+      socialDiv.className = 'dynamic-field';
+      socialDiv.innerHTML = `
+        <select name="companySocialPlatform[]" class="form-select" style="flex: 0 0 120px;">
+          <option value="Instagram">Instagram</option>
+          <option value="Facebook">Facebook</option>
+          <option value="Twitter">Twitter</option>
+          <option value="LinkedIn">LinkedIn</option>
+          <option value="TikTok">TikTok</option>
+          <option value="YouTube">YouTube</option>
+        </select>
+        <input type="text" name="companySocialUrl[]" class="form-input" placeholder="@usuario o URL" style="flex: 1;">
+        <button type="button" onclick="this.parentElement.remove()" class="btn-remove">×</button>
+      `;
+      container.appendChild(socialDiv);
     }
 
     // ============================================
@@ -2216,7 +2983,7 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
-      
+
       const companyData = {
         id: form.dataset.editId || 'comp_' + Date.now(),
         name: formData.get('name'),
@@ -2238,14 +3005,22 @@
           const index = companies.findIndex(c => c.id === form.dataset.editId);
           if (index !== -1) {
             companies[index] = { ...companies[index], ...companyData };
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(companies[index], 'companies', 'company');
             }
           }
         } else {
           companies.push(companyData);
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(companyData, 'companies', 'company');
           }
@@ -2256,7 +3031,7 @@
         closeModal('empresa');
         form.reset();
         delete form.dataset.editId;
-        
+
         console.log('✅ Empresa guardada correctamente');
       } catch (error) {
         console.error('❌ Error guardando empresa:', error);
@@ -2274,11 +3049,16 @@
       const form = document.getElementById('form-empresa');
       const modal = document.getElementById('modal-empresa');
       const title = modal.querySelector('.modal-title');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       if (!form || !modal) {
         console.error('Formulario o modal no encontrado');
         return;
       }
+<<<<<<< HEAD
       
       // Mostrar el modal primero
       modal.style.display = 'flex';
@@ -2286,6 +3066,15 @@
       // Cambiar el título
       title.textContent = 'Editar empresa';
       
+=======
+
+      // Mostrar el modal primero
+      modal.style.display = 'flex';
+
+      // Cambiar el título
+      title.textContent = 'Editar empresa';
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       // Llenar los campos del formulario
       form.querySelector('[name="name"]').value = company.name || '';
       form.querySelector('[name="legalName"]').value = company.legalName || '';
@@ -2294,12 +3083,20 @@
       form.querySelector('[name="phone"]').value = company.phone || '';
       form.querySelector('[name="email"]').value = company.email || '';
       form.querySelector('[name="tags"]').value = company.tags ? company.tags.join(', ') : '';
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       const notesField = form.querySelector('[name="notes"]');
       if (notesField) {
         notesField.value = company.notes || '';
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       // Marcar que estamos editando
       form.dataset.editId = id;
       console.log('Editando empresa:', company.name, 'ID:', id);
@@ -2310,7 +3107,7 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
-      
+
       const brandData = {
         id: form.dataset.editId || 'brand_' + Date.now(),
         name: formData.get('name'),
@@ -2334,14 +3131,22 @@
           const index = brands.findIndex(b => b.id === form.dataset.editId);
           if (index !== -1) {
             brands[index] = { ...brands[index], ...brandData };
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(brands[index], 'brands', 'brand');
             }
           }
         } else {
           brands.push(brandData);
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(brandData, 'brands', 'brand');
           }
@@ -2352,7 +3157,7 @@
         closeModal('marca');
         form.reset();
         delete form.dataset.editId;
-        
+
         console.log('✅ Marca guardada correctamente');
       } catch (error) {
         console.error('❌ Error guardando marca:', error);
@@ -2367,9 +3172,22 @@
       const form = document.getElementById('form-marca');
       const modal = document.getElementById('modal-marca');
       const title = modal.querySelector('.modal-title');
+<<<<<<< HEAD
       
       title.textContent = 'Editar marca';
       
+=======
+
+      // Marcar como edición ANTES de abrir el modal
+      form.dataset.editId = id;
+
+      // Abrir modal (esto poblará los selects)
+      openModal('marca');
+
+      // Ahora llenar los valores
+      title.textContent = 'Editar marca';
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       form.name.value = brand.name || '';
       form.type.value = brand.type || '';
       form.tags.value = brand.tags ? brand.tags.join(', ') : '';
@@ -2380,9 +3198,10 @@
       form.hosting.value = brand.hosting || '';
       form.backend.value = brand.backend || '';
       form.notes.value = brand.notes || '';
-      
-      // Poblar select de empresa
+
+      // Seleccionar la empresa correcta
       const companySelect = form.companyId;
+<<<<<<< HEAD
       companySelect.innerHTML = '<option value="">Seleccionar empresa...</option>';
       companies.forEach(company => {
         const option = document.createElement('option');
@@ -2396,6 +3215,11 @@
       
       form.dataset.editId = id;
       openModal('marca');
+=======
+      if (companySelect && brand.companyId) {
+        companySelect.value = brand.companyId;
+      }
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
     }
 
     // TAREAS
@@ -2403,7 +3227,7 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
-      
+
       const taskData = {
         id: form.dataset.editId || 'task_' + Date.now(),
         description: formData.get('description'),
@@ -2419,14 +3243,22 @@
           const index = tasks.findIndex(t => t.id === form.dataset.editId);
           if (index !== -1) {
             tasks[index] = { ...tasks[index], ...taskData, completed: tasks[index].completed };
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
             if (supabase && SUPABASE_CONFIG.enabled) {
               await saveToSupabase(tasks[index], 'tasks', 'task');
             }
           }
         } else {
           tasks.push(taskData);
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
           if (supabase && SUPABASE_CONFIG.enabled) {
             await saveToSupabase(taskData, 'tasks', 'task');
           }
@@ -2438,7 +3270,7 @@
         closeModal('tarea');
         form.reset();
         delete form.dataset.editId;
-        
+
         console.log('✅ Tarea guardada correctamente');
       } catch (error) {
         console.error('❌ Error guardando tarea:', error);
@@ -2449,7 +3281,11 @@
     // ============================================
     // FUNCIONES DE INTERFAZ DE USUARIO
     // ============================================
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
     // Función para cambiar entre vistas
     function showView(viewName) {
       // Ocultar todas las vistas
@@ -2481,12 +3317,97 @@
       const modal = document.getElementById('modal-' + modalType);
       if (modal) {
         modal.style.display = 'flex';
+<<<<<<< HEAD
         
         // Limpiar formulario si existe
+=======
+
+        // Limpiar formulario si existe Y NO es una edición
+        const form = modal.querySelector('form');
+        if (form && !form.dataset.editId) {
+          form.reset();
+        }
+
+        // Actualizar título del modal solo si NO es una edición
+        const title = modal.querySelector('.modal-title');
+        if (title && !form?.dataset.editId) {
+          const titles = {
+            empresa: 'Nueva empresa',
+            marca: 'Nueva marca',
+            tarea: 'Nueva tarea',
+            suscripcion: 'Nueva suscripción',
+            credencial: 'Nueva credencial',
+            documento: 'Nuevo documento',
+            config: 'Configuración',
+            memoria: 'Nueva memoria contable',
+            nota: 'Nueva nota'
+          };
+          title.textContent = titles[modalType] || 'Modal';
+        }
+
+        // Llenar selects con datos dinámicos
+        if (modalType === 'marca') {
+          // Llenar select de empresas
+          const companySelect = modal.querySelector('select[name="companyId"]');
+          if (companySelect) {
+            companySelect.innerHTML = '<option value="">Seleccionar empresa...</option>';
+            companies.forEach(company => {
+              const option = document.createElement('option');
+              option.value = company.id;
+              option.textContent = company.name;
+              companySelect.appendChild(option);
+            });
+          }
+        }
+
+        if (modalType === 'suscripcion' || modalType === 'credencial' || modalType === 'documento' || modalType === 'tarea' || modalType === 'nota') {
+          // Llenar select de asociación con empresas y marcas
+          const associationSelect = modal.querySelector('select[name="association"]');
+          if (associationSelect) {
+            associationSelect.innerHTML = '<option value="">Ninguna</option>';
+
+            // Agregar empresas
+            if (companies.length > 0) {
+              const companiesGroup = document.createElement('optgroup');
+              companiesGroup.label = 'Empresas';
+              companies.forEach(company => {
+                const option = document.createElement('option');
+                option.value = `company:${company.id}`;
+                option.textContent = company.name;
+                companiesGroup.appendChild(option);
+              });
+              associationSelect.appendChild(companiesGroup);
+            }
+
+            // Agregar marcas
+            if (brands.length > 0) {
+              const brandsGroup = document.createElement('optgroup');
+              brandsGroup.label = 'Marcas';
+              brands.forEach(brand => {
+                const option = document.createElement('option');
+                option.value = `brand:${brand.id}`;
+                option.textContent = brand.name;
+                brandsGroup.appendChild(option);
+              });
+              associationSelect.appendChild(brandsGroup);
+            }
+          }
+        }
+      }
+    }
+
+    function closeModal(modalType) {
+      const modal = document.getElementById('modal-' + modalType);
+      if (modal) {
+        modal.style.display = 'none';
+
+        // Limpiar el formulario al cerrar
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         const form = modal.querySelector('form');
         if (form) {
           form.reset();
           delete form.dataset.editId;
+<<<<<<< HEAD
         }
         
         // Actualizar título del modal
@@ -2503,10 +3424,13 @@
             memoria: 'Nueva memoria contable'
           };
           title.textContent = titles[modalType] || 'Modal';
+=======
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         }
       }
     }
 
+<<<<<<< HEAD
     function closeModal(modalType) {
       const modal = document.getElementById('modal-' + modalType);
       if (modal) {
@@ -2526,6 +3450,20 @@
       }
     }
 
+=======
+    // Alias para showModal
+    function showModal(modalType) {
+      openModal(modalType);
+    }
+
+    // Cerrar modales al hacer clic fuera
+    window.onclick = function (event) {
+      if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+      }
+    }
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
     // Función para cargar datos desde localStorage
     function loadData() {
       try {
@@ -2536,6 +3474,10 @@
         credentials = JSON.parse(localStorage.getItem('credentials') || '[]');
         documents = JSON.parse(localStorage.getItem('documents') || '[]');
         memoriaContable = JSON.parse(localStorage.getItem('memoriaContable') || '[]');
+<<<<<<< HEAD
+=======
+        notas = JSON.parse(localStorage.getItem('notas') || '[]');
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         console.log('Datos cargados desde localStorage');
       } catch (error) {
         console.error('Error cargando datos:', error);
@@ -2552,6 +3494,10 @@
         localStorage.setItem('credentials', JSON.stringify(credentials));
         localStorage.setItem('documents', JSON.stringify(documents));
         localStorage.setItem('memoriaContable', JSON.stringify(memoriaContable));
+<<<<<<< HEAD
+=======
+        localStorage.setItem('notas', JSON.stringify(notas));
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         console.log('Datos guardados en localStorage');
       } catch (error) {
         console.error('Error guardando datos:', error);
@@ -2562,7 +3508,11 @@
     function loadConfig() {
       try {
         config = JSON.parse(localStorage.getItem('config') || '{}');
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
         // Aplicar configuración si existe
         if (config.centerName) {
           const nameEl = document.getElementById('center-name');
@@ -2588,48 +3538,142 @@
       }
     }
 
+<<<<<<< HEAD
     function deleteTask(id) {
       if (confirm('¿Estás seguro de que deseas eliminar esta tarea?')) {
         tasks = tasks.filter(t => t.id !== id);
         saveData();
         renderTareas();
         renderDashboard();
+=======
+    async function deleteTask(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta tarea?')) {
+        try {
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await deleteFromSupabase(id, 'tasks');
+          }
+          tasks = tasks.filter(t => t.id !== id);
+          saveData();
+          renderTareas();
+          renderDashboard();
+          console.log('✅ Tarea eliminada correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando tarea:', error);
+          alert('Error eliminando tarea. Revisa la consola.');
+        }
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       }
     }
 
     // Funciones básicas para empresas
+<<<<<<< HEAD
     function deleteEmpresa(id) {
       if (confirm('¿Estás seguro de que deseas eliminar esta empresa?')) {
         companies = companies.filter(c => c.id !== id);
         saveData();
         renderEmpresas();
+=======
+    async function deleteEmpresa(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta empresa?')) {
+        try {
+          // Eliminar de Supabase primero
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await deleteFromSupabase(id, 'companies');
+          }
+
+          // Eliminar del array local
+          companies = companies.filter(c => c.id !== id);
+          saveData();
+          renderEmpresas();
+
+          console.log('✅ Empresa eliminada correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando empresa:', error);
+          alert('Error eliminando empresa. Revisa la consola.');
+        }
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       }
     }
 
     // Funciones básicas para marcas
+<<<<<<< HEAD
     function deleteMarca(id) {
       if (confirm('¿Estás seguro de que deseas eliminar esta marca?')) {
         brands = brands.filter(b => b.id !== id);
         saveData();
         renderMarcas();
+=======
+    async function deleteMarca(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta marca?')) {
+        try {
+          // Eliminar de Supabase primero
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await deleteFromSupabase(id, 'brands');
+          }
+
+          // Eliminar del array local
+          brands = brands.filter(b => b.id !== id);
+          saveData();
+          renderMarcas();
+
+          console.log('✅ Marca eliminada correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando marca:', error);
+          alert('Error eliminando marca. Revisa la consola.');
+        }
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       }
     }
 
     // Funciones básicas para suscripciones
+<<<<<<< HEAD
     function deleteSubscription(id) {
       if (confirm('¿Estás seguro de que deseas eliminar esta suscripción?')) {
         subscriptions = subscriptions.filter(s => s.id !== id);
         saveData();
         renderSuscripciones();
+=======
+    async function deleteSubscription(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta suscripción?')) {
+        try {
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await deleteFromSupabase(id, 'subscriptions');
+          }
+          subscriptions = subscriptions.filter(s => s.id !== id);
+          saveData();
+          renderSuscripciones();
+          console.log('✅ Suscripción eliminada correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando suscripción:', error);
+          alert('Error eliminando suscripción. Revisa la consola.');
+        }
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       }
     }
 
     // Funciones básicas para credenciales
+<<<<<<< HEAD
     function deleteCredential(id) {
       if (confirm('¿Estás seguro de que deseas eliminar esta credencial?')) {
         credentials = credentials.filter(c => c.id !== id);
         saveData();
         renderCredenciales();
+=======
+    async function deleteCredential(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta credencial?')) {
+        try {
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await deleteFromSupabase(id, 'credentials');
+          }
+          credentials = credentials.filter(c => c.id !== id);
+          saveData();
+          renderCredenciales();
+          console.log('✅ Credencial eliminada correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando credencial:', error);
+          alert('Error eliminando credencial. Revisa la consola.');
+        }
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       }
     }
 
@@ -2649,11 +3693,28 @@
     }
 
     // Funciones básicas para documentos
+<<<<<<< HEAD
     function deleteDocument(id) {
       if (confirm('¿Estás seguro de que deseas eliminar este documento?')) {
         documents = documents.filter(d => d.id !== id);
         saveData();
         renderDocumentos();
+=======
+    async function deleteDocument(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar este documento?')) {
+        try {
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await deleteFromSupabase(id, 'documents');
+          }
+          documents = documents.filter(d => d.id !== id);
+          saveData();
+          renderDocumentos();
+          console.log('✅ Documento eliminado correctamente');
+        } catch (error) {
+          console.error('❌ Error eliminando documento:', error);
+          alert('Error eliminando documento. Revisa la consola.');
+        }
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       }
     }
 
@@ -2672,9 +3733,15 @@
 
       // Buscar en empresas
       companies.forEach(company => {
+<<<<<<< HEAD
         if (company.name?.toLowerCase().includes(searchTerm) || 
             company.legalName?.toLowerCase().includes(searchTerm) ||
             company.cif?.toLowerCase().includes(searchTerm)) {
+=======
+        if (company.name?.toLowerCase().includes(searchTerm) ||
+          company.legalName?.toLowerCase().includes(searchTerm) ||
+          company.cif?.toLowerCase().includes(searchTerm)) {
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
           results.push({
             type: 'Empresa',
             title: company.name,
@@ -2686,8 +3753,13 @@
 
       // Buscar en marcas
       brands.forEach(brand => {
+<<<<<<< HEAD
         if (brand.name?.toLowerCase().includes(searchTerm) || 
             brand.domain?.toLowerCase().includes(searchTerm)) {
+=======
+        if (brand.name?.toLowerCase().includes(searchTerm) ||
+          brand.domain?.toLowerCase().includes(searchTerm)) {
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
           results.push({
             type: 'Marca',
             title: brand.name,
@@ -2728,13 +3800,21 @@
       if (searchResults) {
         searchResults.style.display = 'none';
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       // Limpiar búsqueda
       const searchInput = document.getElementById('global-search');
       if (searchInput) {
         searchInput.value = '';
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> 6e847eea8fd83a6598eb6665878a2a0628e64bc1
       // Navegar a la vista correspondiente
       switch (type) {
         case 'Empresa':
@@ -2750,4 +3830,5 @@
     }
   </script>
 </body>
+
 </html>

@@ -974,9 +974,15 @@
       location.reload();
     }
 
-    function showMainApp() {
+    async function showMainApp() {
       // Restaurar el HTML original de la aplicación
       document.body.innerHTML = getMainAppHTML() + getModalsHTML();
+      
+      // Cargar datos desde localStorage primero (rápido)
+      loadData();
+      loadConfig();
+      
+      // Inicializar la interfaz
       initializeApp();
       
       // Inicializar Supabase si está habilitado (script ya cargado desde el head)
@@ -984,9 +990,26 @@
         // Verificar que Supabase esté disponible
         if (typeof window.supabase === 'object' && window.supabase.createClient) {
           console.log('📦 Supabase disponible, inicializando...');
-          initializeSupabase();
+          const supabaseInitialized = initializeSupabase();
+          
+          // Si Supabase se inicializó correctamente, cargar datos desde la nube
+          if (supabaseInitialized && supabase) {
+            console.log('🌐 Cargando datos desde Supabase...');
+            await loadFromSupabase();
+            
+            // Re-renderizar con los datos actualizados
+            renderDashboard();
+            renderTareas();
+            renderEmpresas();
+            renderMarcas();
+            renderSuscripciones();
+            renderCredenciales();
+            renderDocumentos();
+            
+            console.log('✅ Aplicación sincronizada con Supabase');
+          }
         } else {
-          console.error('❌ Supabase no disponible, usando localStorage');
+          console.error('❌ Supabase no disponible, usando solo localStorage');
           console.log('🔍 window.supabase:', window.supabase);
         }
       }
@@ -1631,674 +1654,6 @@
       `;
     }
 
-    // ============================================
-    // FUNCIÓN DE INICIALIZACIÓN
-    // ============================================
-    function initializeApp() {
-      // Configurar navegación
-      const navButtons = document.querySelectorAll('.nav-btn');
-      navButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const view = btn.dataset.view;
-          if (view) {
-            showView(view);
-          }
-        });
-      });
-
-      // Configurar búsqueda global
-      const searchInput = document.getElementById('global-search');
-      if (searchInput) {
-        searchInput.addEventListener('input', function() {
-          globalSearch(this.value);
-        });
-        
-        // Ocultar resultados al hacer clic fuera
-        document.addEventListener('click', function(e) {
-          if (!searchInput.contains(e.target)) {
-            const searchResults = document.getElementById('search-results');
-            if (searchResults) {
-              searchResults.style.display = 'none';
-            }
-          }
-        });
-      }
-
-      // Cargar datos guardados
-      loadData();
-      loadConfig();
-      
-      // Renderizar contenido inicial
-      renderDashboard();
-      renderTareas();
-      renderEmpresas();
-      renderMarcas();
-      renderSuscripciones();
-      renderCredenciales();
-      renderDocumentos();
-      
-      // Configurar fecha por defecto en formularios
-      const today = new Date().toISOString().split('T')[0];
-      const dateInputs = document.querySelectorAll('input[type="date"]');
-      dateInputs.forEach(input => {
-        if (!input.value) {
-          input.value = today;
-        }
-      });
-
-      // Configurar formularios dinámicos
-      setupDynamicForms();
-      
-      // Configurar eventos para cerrar modales con Escape
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-          const openModal = document.querySelector('.modal[style*="flex"]');
-          if (openModal) {
-            openModal.style.display = 'none';
-          }
-        }
-      });
-      
-      console.log('✅ Control Center inicializado correctamente');
-      
-      // Renderizar contenido inicial
-      renderDashboard();
-      renderTareas();
-      renderEmpresas();
-      renderMarcas();
-      renderSuscripciones();
-      renderCredenciales();
-      renderDocumentos();
-      
-      console.log('✅ Control Center inicializado correctamente');
-    }
-
-    function setupDynamicForms() {
-      // Esta función configurará los formularios dinámicos cuando sea necesario
-      // Por ahora es un placeholder para futuras funcionalidades
-    }
-
-    // ============================================
-    // INICIALIZACIÓN CUANDO ESTÁ AUTENTICADO
-    // ============================================
-    
-    // Verificar autenticación al cargar la página
-    document.addEventListener('DOMContentLoaded', function() {
-      checkAuth();
-    });
-
-    // Funciones renderizado (placeholders - las implementarías según tus necesidades)
-    function renderDashboard() {
-      const tasksToday = tasks.filter(task => {
-        if (!task.date) return false;
-        const taskDate = new Date(task.date);
-        const today = new Date();
-        return taskDate.toDateString() === today.toDateString();
-      });
-
-      const tasksCompleted = tasksToday.filter(task => task.completed);
-      const tasksPending = tasksToday.filter(task => !task.completed);
-
-      document.getElementById('tasks-today').textContent = tasksToday.length;
-      document.getElementById('tasks-completed').textContent = tasksCompleted.length;
-      document.getElementById('tasks-pending').textContent = tasksPending.length;
-
-      // Renderizar tareas de hoy
-      const dashboardTasksContainer = document.getElementById('dashboard-tasks-today');
-      if (dashboardTasksContainer) {
-        if (tasksToday.length === 0) {
-          dashboardTasksContainer.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay tareas para hoy</p></div>';
-        } else {
-          dashboardTasksContainer.innerHTML = tasksToday.map(task => `
-            <div class="card" style="margin-bottom: 8px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="${task.completed ? 'text-decoration: line-through; color: #888;' : ''}">${task.description}</span>
-                <button onclick="toggleTask('${task.id}')" style="padding: 4px 8px; background: ${task.completed ? '#4ADE80' : '#1A1A1A'}; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 12px;">
-                  ${task.completed ? '✓' : '□'}
-                </button>
-              </div>
-            </div>
-          `).join('');
-        }
-      }
-    }
-
-    function renderTareas() {
-      const container = document.getElementById('tareas-list');
-      if (!container) return;
-
-      if (tasks.length === 0) {
-        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay tareas registradas</p></div>';
-        return;
-      }
-
-      container.innerHTML = tasks.map(task => `
-        <div class="card" style="margin-bottom: 16px;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-            <h3 style="font-size: 16px; margin: 0; ${task.completed ? 'text-decoration: line-through; color: #888;' : ''}">${task.description}</h3>
-            <div style="display: flex; gap: 8px;">
-              <button onclick="toggleTask('${task.id}')" style="padding: 6px 12px; background: ${task.completed ? '#4ADE80' : '#1A1A1A'}; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
-                ${task.completed ? 'Completada' : 'Pendiente'}
-                           </button>
-              <button onclick="deleteTask('${task.id}')" style="padding: 6px 12px; background: #F87171; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
-                Eliminar
-              </button>
-            </div>
-          </div>
-          <div style="font-size: 13px; color: #888;">
-            Fecha: ${new Date(task.date).toLocaleDateString('es-ES')}
-            ${task.association ? ` • Asociada a: ${task.association}` : ''}
-          </div>
-          ${task.notes ? `<div style="margin-top: 8px; font-size: 13px; color: #C8C8C8;">${task.notes}</div>` : ''}
-        </div>
-      `).join('');
-    }
-
-    function renderEmpresas() {
-      const container = document.getElementById('empresas-list');
-      if (!container) return;
-
-      if (companies.length === 0) {
-        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay empresas registradas</p></div>';
-        return;
-      }
-
-      container.innerHTML = companies.map(company => `
-        <div class="card card-clickable" onclick="showCompanyDetail('${company.id}')">
-          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-            <div class="company-logo" style="background: linear-gradient(135deg, #4ADE80 0%, #22C55E 100%);">
-              ${company.name.charAt(0).toUpperCase()}
-            </div>
-            <div style="flex: 1;">
-              <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;">${company.name}</h3>
-              <p style="margin: 0; font-size: 12px; color: #888;">${company.legalName || 'Sin razón social'}</p>
-            </div>
-          </div>
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 12px; color: #666;">${company.cif || 'Sin CIF'}</span>
-            <div style="display: flex; gap: 8px;">
-              <button onclick="event.stopPropagation(); editEmpresa('${company.id}')" style="padding: 4px 8px; background: #1A1A1A; border: none; border-radius: 4px; color: #fff; cursor: pointer; font-size: 11px;">Editar</button>
-              <button onclick="event.stopPropagation(); deleteEmpresa('${company.id}')" style="padding: 4px 8px; background: #F87171; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 11px;">Eliminar</button>
-            </div>
-          </div>
-          ${company.tags && company.tags.length > 0 ? `
-            <div style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 4px;">
-              ${company.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-            </div>
-          ` : ''}
-        </div>
-      `).join('');
-    }
-
-    function renderMarcas() {
-      const container = document.getElementById('marcas-list');
-      if (!container) return;
-
-      if (brands.length === 0) {
-        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay marcas registradas</p></div>';
-        return;
-      }
-
-      container.innerHTML = brands.map(brand => {
-        const company = companies.find(c => c.id === brand.companyId);
-        return `
-          <div class="card card-clickable" onclick="showBrandDetail('${brand.id}')">
-            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-              <div class="brand-logo" style="background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%);">
-                ${brand.name.charAt(0).toUpperCase()}
-              </div>
-              <div style="flex: 1;">
-                <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;">${brand.name}</h3>
-                <p style="margin: 0; font-size: 12px; color: #888;">${brand.type || 'Sin tipo definido'}</p>
-              </div>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <span style="font-size: 12px; color: #666;">Facturada por: ${company ? company.name : 'No asignada'}</span>
-              <div style="display: flex; gap: 8px;">
-                <button onclick="event.stopPropagation(); editMarca('${brand.id}')" style="padding: 4px 8px; background: #1A1A1A; border: none; border-radius: 4px; color: #fff; cursor: pointer; font-size: 11px;">Editar</button>
-                <button onclick="event.stopPropagation(); deleteMarca('${brand.id}')" style="padding: 4px 8px; background: #F87171; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 11px;">Eliminar</button>
-              </div>
-            </div>
-            ${brand.domain ? `<div style="font-size: 12px; color: #4ADE80; margin-bottom: 8px;">🌐 ${brand.domain}</div>` : ''}
-            ${brand.tags && brand.tags.length > 0 ? `
-              <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-                ${brand.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-              </div>
-            ` : ''}
-          </div>
-        `;
-      }).join('');
-    }
-
-    function renderSuscripciones() {
-      const container = document.getElementById('suscripciones-list');
-      if (!container) return;
-
-      if (subscriptions.length === 0) {
-        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay suscripciones registradas</p></div>';
-        return;
-      }
-
-      container.innerHTML = subscriptions.map(sub => `
-        <div class="card" style="margin-bottom: 16px;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-            <div style="flex: 1;">
-              <h3 style="margin: 0 0 4px 0; font-size: 16px;">${sub.name}</h3>
-              <div style="font-size: 13px; color: #888;">
-                ${sub.cost || sub.plan || 'Coste no especificado'}
-                ${sub.renewalDay ? ` • Renueva día ${sub.renewalDay}` : ''}
-              </div>
-              ${sub.association ? `<div style="font-size: 12px; color: #666; margin-top: 4px;">Asociada a: ${sub.association}</div>` : ''}
-            </div>
-            <div style="display: flex; gap: 8px;">
-              <a href="${sub.url}" target="_blank" style="padding: 6px 12px; background: #4ADE80; border: none; border-radius: 6px; color: white; text-decoration: none; font-size: 12px;">
-                Abrir
-              </a>
-              <button onclick="deleteSubscription('${sub.id}')" style="padding: 6px 12px; background: #F87171; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
-                Eliminar
-              </button>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function renderCredenciales() {
-      const container = document.getElementById('credenciales-list');
-      if (!container) return;
-
-      if (credentials.length === 0) {
-        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay credenciales registradas</p></div>';
-        return;
-      }
-
-      container.innerHTML = credentials.map(cred => `
-        <div class="card" style="margin-bottom: 16px;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-            <div style="flex: 1;">
-              <h3 style="margin: 0 0 4px 0; font-size: 16px;">${cred.service}</h3>
-              <div style="font-size: 13px; color: #888;">
-                ${cred.username || cred.email || 'Usuario no especificado'}
-                ${cred.category ? ` • ${cred.category}` : ''}
-              </div>
-              ${cred.association ? `<div style="font-size: 12px; color: #666; margin-top: 4px;">Asociada a: ${cred.association}</div>` : ''}
-            </div>
-            <div style="display: flex; gap: 8px;">
-              <button onclick="copyToClipboard('${cred.password}')" style="padding: 6px 12px; background: #4ADE80; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
-                Copiar
-              </button>
-              <button onclick="deleteCredential('${cred.id}')" style="padding: 6px 12px; background: #F87171; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
-                Eliminar
-              </button>
-            </div>
-          </div>
-          <div style="font-size: 12px; color: #666; font-family: monospace; background: #1A1A1A; padding: 8px; border-radius: 4px; word-break: break-all;">
-            ${cred.password}
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function renderDocumentos() {
-      const container = document.getElementById('documentos-list');
-      if (!container) return;
-
-      if (documents.length === 0) {
-        container.innerHTML = '<div class="card"><p style="color: #888; text-align: center;">No hay documentos registrados</p></div>';
-        return;
-      }
-
-      container.innerHTML = documents.map(doc => `
-        <div class="card" style="margin-bottom: 16px;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-            <div style="flex: 1;">
-              <h3 style="margin: 0 0 4px 0; font-size: 16px;">${doc.name}</h3>
-              <div style="font-size: 13px; color: #888;">
-                ${doc.type || 'Archivo'} • ${doc.platform || 'Plataforma no especificada'}
-              </div>
-              ${doc.association ? `<div style="font-size: 12px; color: #666; margin-top: 4px;">Asociado a: ${doc.association}</div>` : ''}
-            </div>
-            <div style="display: flex; gap: 8px;">
-              <a href="${doc.url}" target="_blank" style="padding: 6px 12px; background: #4ADE80; border: none; border-radius: 6px; color: white; text-decoration: none; font-size: 12px;">
-                Abrir
-              </a>
-              <button onclick="deleteDocument('${doc.id}')" style="padding: 6px 12px; background: #F87171; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">
-                Eliminar
-              </button>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // ============================================
-    // SUPABASE INTEGRATION
-    // ============================================
-    
-    // Inicializar Supabase
-    function initializeSupabase() {
-      if (!SUPABASE_CONFIG.enabled || !SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey) {
-        console.log('Supabase no configurado - usando localStorage');
-        return false;
-      }
-
-      // Verificar múltiples formas de acceso a Supabase
-      let supabaseLib = null;
-      if (window.supabase && window.supabase.createClient) {
-        supabaseLib = window.supabase;
-      } else if (window.Supabase && window.Supabase.createClient) {
-        supabaseLib = window.Supabase;
-      } else if (typeof supabase !== 'undefined') {
-        supabaseLib = { createClient: window.supabase };
-      }
-
-      if (!supabaseLib) {
-        console.error('❌ Supabase script no está cargado o no está disponible');
-        console.log('🔍 window.supabase:', window.supabase);
-        console.log('🔍 window.Supabase:', window.Supabase);
-        return false;
-      }
-
-      try {
-        supabase = supabaseLib.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
-        console.log('✅ Supabase inicializado correctamente');
-        console.log('🔗 URL:', SUPABASE_CONFIG.url);
-        
-        if (SUPABASE_CONFIG.realTimeSync) {
-          setupRealtimeSync();
-        }
-        return true;
-      } catch (error) {
-        console.error('❌ Error inicializando Supabase:', error);
-        return false;
-      }
-    }
-
-    // Configurar sincronización en tiempo real
-    function setupRealtimeSync() {
-      if (!supabase) return;
-
-      console.log('🔄 Configurando sincronización en tiempo real...');
-
-      // Escuchar cambios en todas las tablas
-      const tables = ['companies', 'brands', 'tasks', 'subscriptions', 'credentials', 'documents', 'memoria_contable'];
-      
-      tables.forEach(table => {
-        const subscription = supabase
-          .channel(`public:${table}`)
-          .on('postgres_changes', 
-            { 
-              event: '*', 
-              schema: 'public', 
-              table: table 
-            }, 
-            (payload) => {
-              console.log(`🔄 Cambio en ${table}:`, payload);
-              handleRealtimeUpdate(table, payload);
-            }
-          )
-          .subscribe();
-
-        supabaseSubscriptions.push(subscription);
-      });
-    }
-
-    // Manejar actualizaciones en tiempo real
-    function handleRealtimeUpdate(table, payload) {
-      const { eventType, new: newRecord, old: oldRecord } = payload;
-      
-      switch (table) {
-        case 'companies':
-          if (eventType === 'INSERT') {
-            if (!companies.find(c => c.id === newRecord.id)) {
-              companies.push(transformFromSupabase(newRecord, 'company'));
-              renderEmpresas();
-            }
-          } else if (eventType === 'UPDATE') {
-            const index = companies.findIndex(c => c.id === newRecord.id);
-            if (index !== -1) {
-              companies[index] = transformFromSupabase(newRecord, 'company');
-              renderEmpresas();
-            }
-          } else if (eventType === 'DELETE') {
-            const index = companies.findIndex(c => c.id === oldRecord.id);
-            if (index !== -1) {
-              companies.splice(index, 1);
-              renderEmpresas();
-            }
-          }
-          break;
-
-        case 'brands':
-          if (eventType === 'INSERT') {
-            if (!brands.find(b => b.id === newRecord.id)) {
-              brands.push(transformFromSupabase(newRecord, 'brand'));
-              renderMarcas();
-            }
-          } else if (eventType === 'UPDATE') {
-            const index = brands.findIndex(b => b.id === newRecord.id);
-            if (index !== -1) {
-              brands[index] = transformFromSupabase(newRecord, 'brand');
-              renderMarcas();
-            }
-          } else if (eventType === 'DELETE') {
-            const index = brands.findIndex(b => b.id === oldRecord.id);
-            if (index !== -1) {
-              brands.splice(index, 1);
-              renderMarcas();
-            }
-          }
-          break;
-
-        case 'tasks':
-          if (eventType === 'INSERT') {
-            if (!tasks.find(t => t.id === newRecord.id)) {
-              tasks.push(transformFromSupabase(newRecord, 'task'));
-              renderTareas();
-              renderDashboard();
-            }
-          } else if (eventType === 'UPDATE') {
-            const index = tasks.findIndex(t => t.id === newRecord.id);
-            if (index !== -1) {
-              tasks[index] = transformFromSupabase(newRecord, 'task');
-              renderTareas();
-              renderDashboard();
-            }
-          } else if (eventType === 'DELETE') {
-            const index = tasks.findIndex(t => t.id === oldRecord.id);
-            if (index !== -1) {
-              tasks.splice(index, 1);
-              renderTareas();
-              renderDashboard();
-            }
-          }
-          break;
-
-        case 'subscriptions':
-          if (eventType === 'INSERT') {
-            if (!subscriptions.find(s => s.id === newRecord.id)) {
-              subscriptions.push(transformFromSupabase(newRecord, 'subscription'));
-              renderSuscripciones();
-            }
-          } else if (eventType === 'UPDATE') {
-            const index = subscriptions.findIndex(s => s.id === newRecord.id);
-            if (index !== -1) {
-              subscriptions[index] = transformFromSupabase(newRecord, 'subscription');
-              renderSuscripciones();
-            }
-          } else if (eventType === 'DELETE') {
-            const index = subscriptions.findIndex(s => s.id === oldRecord.id);
-            if (index !== -1) {
-              subscriptions.splice(index, 1);
-              renderSuscripciones();
-            }
-          }
-          break;
-
-        case 'credentials':
-          if (eventType === 'INSERT') {
-            if (!credentials.find(c => c.id === newRecord.id)) {
-              credentials.push(transformFromSupabase(newRecord, 'credential'));
-              renderCredenciales();
-            }
-          } else if (eventType === 'UPDATE') {
-            const index = credentials.findIndex(c => c.id === newRecord.id);
-            if (index !== -1) {
-              credentials[index] = transformFromSupabase(newRecord, 'credential');
-              renderCredenciales();
-            }
-          } else if (eventType === 'DELETE') {
-            const index = credentials.findIndex(c => c.id === oldRecord.id);
-            if (index !== -1) {
-              credentials.splice(index, 1);
-              renderCredenciales();
-            }
-          }
-          break;
-
-        case 'documents':
-          if (eventType === 'INSERT') {
-            if (!documents.find(d => d.id === newRecord.id)) {
-              documents.push(transformFromSupabase(newRecord, 'document'));
-              renderDocumentos();
-            }
-          } else if (eventType === 'UPDATE') {
-            const index = documents.findIndex(d => d.id === newRecord.id);
-            if (index !== -1) {
-              documents[index] = transformFromSupabase(newRecord, 'document');
-              renderDocumentos();
-            }
-          } else if (eventType === 'DELETE') {
-            const index = documents.findIndex(d => d.id === oldRecord.id);
-            if (index !== -1) {
-              documents.splice(index, 1);
-              renderDocumentos();
-            }
-          }
-          break;
-
-        case 'memoria_contable':
-          if (eventType === 'INSERT' || eventType === 'UPDATE' || eventType === 'DELETE') {
-            // Actualizar memoria contable si estamos viendo el detalle de una empresa
-            const currentView = document.querySelector('.view.active');
-            if (currentView && currentView.id === 'empresa-detalle') {
-              // Recargar el detalle de la empresa para mostrar la nueva memoria
-              const companyId = currentView.dataset.companyId;
-              if (companyId) {
-                showCompanyDetail(companyId);
-              }
-            }
-          }
-          break;
-      }
-      
-      // Guardar también en localStorage como respaldo
-      saveData();
-    }
-
-    // Transformar datos de Supabase al formato local
-    function transformFromSupabase(data, type) {
-      switch (type) {
-        case 'company':
-          return {
-            id: data.id,
-            name: data.name,
-            legalName: data.legal_name,
-            cif: data.cif,
-            fiscalAddress: data.fiscal_address,
-            phone: data.phone,
-            email: data.email,
-            tags: data.tags || [],
-            bankAccounts: data.bank_accounts || [],
-            emails: data.emails || [],
-            socialMedia: data.social_media || [],
-            notes: data.notes,
-            createdAt: data.created_at
-          };
-
-        case 'brand':
-          return {
-            id: data.id,
-            name: data.name,
-            type: data.type,
-            companyId: data.company_id,
-            tags: data.tags || [],
-            services: data.services,
-            domain: data.domain,
-            domainProvider: data.domain_provider,
-            domainRenewal: data.domain_renewal,
-            hosting: data.hosting,
-            backend: data.backend,
-            emails: data.emails || [],
-            socialMedia: data.social_media || [],
-            notes: data.notes,
-            createdAt: data.created_at
-          };
-
-        case 'task':
-          return {
-            id: data.id,
-            description: data.description,
-            date: data.date,
-            completed: data.completed,
-            association: data.association,
-            notes: data.notes,
-            createdAt: data.created_at
-          };
-
-        case 'subscription':
-          return {
-            id: data.id,
-            name: data.name,
-            cost: data.cost,
-            plan: data.plan,
-            url: data.url,
-            association: data.association,
-            renewalDay: data.renewal_day,
-            createdAt: data.created_at
-          };
-
-        case 'credential':
-          return {
-            id: data.id,
-            service: data.service,
-            username: data.username,
-            email: data.email,
-            password: data.password,
-            category: data.category,
-            association: data.association,
-            createdAt: data.created_at
-          };
-
-        case 'document':
-          return {
-            id: data.id,
-            name: data.name,
-            type: data.type,
-            url: data.url,
-            platform: data.platform,
-            association: data.association,
-            createdAt: data.created_at
-          };
-
-        case 'memoria':
-          return {
-            id: data.id,
-            companyId: data.company_id,
-            type: data.type,
-            title: data.title,
-            content: data.content,
-            date: data.date,
-            ref: data.ref,
-            tags: data.tags || [],
-            createdAt: data.created_at
-          };
-
-        default:
-          return data;
-      }
-    }
-
     // Transformar datos locales al formato de Supabase
     function transformToSupabase(data, type) {
       switch (type) {
@@ -2399,6 +1754,195 @@
 
         default:
           return data;
+      }
+    }
+
+    // ============================================
+    // FUNCIONES DE GUARDADO Y ELIMINACIÓN EN SUPABASE
+    // ============================================
+
+    /**
+     * Guarda o actualiza un registro en Supabase
+     * @param {Object} data - Los datos a guardar
+     * @param {string} table - Nombre de la tabla (companies, brands, tasks, etc.)
+     * @param {string} type - Tipo de datos para transformación (company, brand, task, etc.)
+     */
+    async function saveToSupabase(data, table, type) {
+      if (!supabase) {
+        console.warn('⚠️ Supabase no inicializado, guardando solo en localStorage');
+        return false;
+      }
+
+      try {
+        // Transformar datos al formato de Supabase
+        const supabaseData = transformToSupabase(data, type);
+        
+        console.log(`💾 Guardando en Supabase [${table}]:`, supabaseData);
+
+        // Intentar hacer upsert (insertar o actualizar)
+        const { data: result, error } = await supabase
+          .from(table)
+          .upsert(supabaseData, {
+            onConflict: 'id',
+            returning: 'minimal'
+          });
+
+        if (error) {
+          console.error(`❌ Error guardando en ${table}:`, error);
+          return false;
+        }
+
+        console.log(`✅ Datos guardados exitosamente en ${table}`);
+        return true;
+      } catch (error) {
+        console.error(`❌ Error guardando en Supabase:`, error);
+        return false;
+      }
+    }
+
+    /**
+     * Elimina un registro de Supabase
+     * @param {string} id - ID del registro a eliminar
+     * @param {string} table - Nombre de la tabla
+     */
+    async function deleteFromSupabase(id, table) {
+      if (!supabase) {
+        console.warn('⚠️ Supabase no inicializado, eliminando solo de localStorage');
+        return false;
+      }
+
+      try {
+        console.log(`🗑️ Eliminando de Supabase [${table}]: ${id}`);
+
+        const { error } = await supabase
+          .from(table)
+          .delete()
+          .eq('id', id);
+
+        if (error) {
+          console.error(`❌ Error eliminando de ${table}:`, error);
+          return false;
+        }
+
+        console.log(`✅ Registro eliminado exitosamente de ${table}`);
+        return true;
+      } catch (error) {
+        console.error(`❌ Error eliminando de Supabase:`, error);
+        return false;
+      }
+    }
+
+    /**
+     * Carga todos los datos desde Supabase
+     */
+    async function loadFromSupabase() {
+      if (!supabase) {
+        console.warn('⚠️ Supabase no inicializado, cargando solo desde localStorage');
+        return false;
+      }
+
+      try {
+        console.log('📥 Cargando datos desde Supabase...');
+
+        // Cargar empresas
+        const { data: companiesData, error: companiesError } = await supabase
+          .from('companies')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (companiesError) {
+          console.error('❌ Error cargando empresas:', companiesError);
+        } else if (companiesData) {
+          companies = companiesData.map(c => transformFromSupabase(c, 'company'));
+          console.log(`✅ ${companies.length} empresas cargadas`);
+        }
+
+        // Cargar marcas
+        const { data: brandsData, error: brandsError } = await supabase
+          .from('brands')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (brandsError) {
+          console.error('❌ Error cargando marcas:', brandsError);
+        } else if (brandsData) {
+          brands = brandsData.map(b => transformFromSupabase(b, 'brand'));
+          console.log(`✅ ${brands.length} marcas cargadas`);
+        }
+
+        // Cargar tareas
+        const { data: tasksData, error: tasksError } = await supabase
+          .from('tasks')
+          .select('*')
+          .order('date', { ascending: false });
+
+        if (tasksError) {
+          console.error('❌ Error cargando tareas:', tasksError);
+        } else if (tasksData) {
+          tasks = tasksData.map(t => transformFromSupabase(t, 'task'));
+          console.log(`✅ ${tasks.length} tareas cargadas`);
+        }
+
+        // Cargar suscripciones
+        const { data: subscriptionsData, error: subscriptionsError } = await supabase
+          .from('subscriptions')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (subscriptionsError) {
+          console.error('❌ Error cargando suscripciones:', subscriptionsError);
+        } else if (subscriptionsData) {
+          subscriptions = subscriptionsData.map(s => transformFromSupabase(s, 'subscription'));
+          console.log(`✅ ${subscriptions.length} suscripciones cargadas`);
+        }
+
+        // Cargar credenciales
+        const { data: credentialsData, error: credentialsError } = await supabase
+          .from('credentials')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (credentialsError) {
+          console.error('❌ Error cargando credenciales:', credentialsError);
+        } else if (credentialsData) {
+          credentials = credentialsData.map(c => transformFromSupabase(c, 'credential'));
+          console.log(`✅ ${credentials.length} credenciales cargadas`);
+        }
+
+        // Cargar documentos
+        const { data: documentsData, error: documentsError } = await supabase
+          .from('documents')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (documentsError) {
+          console.error('❌ Error cargando documentos:', documentsError);
+        } else if (documentsData) {
+          documents = documentsData.map(d => transformFromSupabase(d, 'document'));
+          console.log(`✅ ${documents.length} documentos cargados`);
+        }
+
+        // Cargar memoria contable
+        const { data: memoriaData, error: memoriaError } = await supabase
+          .from('memoria_contable')
+          .select('*')
+          .order('date', { ascending: false });
+
+        if (memoriaError) {
+          console.error('❌ Error cargando memoria contable:', memoriaError);
+        } else if (memoriaData) {
+          memoriaContable = memoriaData.map(m => transformFromSupabase(m, 'memoria'));
+          console.log(`✅ ${memoriaContable.length} notas de memoria contable cargadas`);
+        }
+
+        // Guardar también en localStorage como respaldo
+        saveData();
+        
+        console.log('✅ Todos los datos cargados desde Supabase');
+        return true;
+      } catch (error) {
+        console.error('❌ Error cargando desde Supabase:', error);
+        return false;
       }
     }
 
@@ -2710,6 +2254,350 @@
       }
     }
 
+    // SUSCRIPCIONES
+    async function submitSuscripcion(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      
+      const subscriptionData = {
+        id: form.dataset.editId || 'sub_' + Date.now(),
+        name: formData.get('name'),
+        cost: formData.get('cost'),
+        plan: formData.get('plan'),
+        url: formData.get('url'),
+        association: formData.get('association'),
+        renewalDay: formData.get('renewalDay'),
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        if (form.dataset.editId) {
+          // Editar suscripción existente
+          const index = subscriptions.findIndex(s => s.id === form.dataset.editId);
+          if (index !== -1) {
+            subscriptions[index] = { ...subscriptions[index], ...subscriptionData };
+            
+            if (supabase && SUPABASE_CONFIG.enabled) {
+              await saveToSupabase(subscriptions[index], 'subscriptions', 'subscription');
+            }
+          }
+        } else {
+          // Nueva suscripción
+          subscriptions.push(subscriptionData);
+          
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await saveToSupabase(subscriptionData, 'subscriptions', 'subscription');
+          }
+        }
+
+        saveData();
+        renderSuscripciones();
+        closeModal('suscripcion');
+        form.reset();
+        delete form.dataset.editId;
+        
+        console.log('✅ Suscripción guardada correctamente');
+      } catch (error) {
+        console.error('❌ Error guardando suscripción:', error);
+        alert('Error guardando suscripción. Revisa la consola para más detalles.');
+      }
+    }
+
+    async function deleteSubscription(id) {
+      if (!confirm('¿Estás seguro de que deseas eliminar esta suscripción?')) return;
+      
+      try {
+        const index = subscriptions.findIndex(s => s.id === id);
+        if (index !== -1) {
+          subscriptions.splice(index, 1);
+        }
+
+        if (supabase && SUPABASE_CONFIG.enabled) {
+          await deleteFromSupabase(id, 'subscriptions');
+        }
+
+        saveData();
+        renderSuscripciones();
+        
+        console.log('✅ Suscripción eliminada correctamente');
+      } catch (error) {
+        console.error('❌ Error eliminando suscripción:', error);
+        alert('Error eliminando suscripción. Revisa la consola para más detalles.');
+      }
+    }
+
+    // CREDENCIALES
+    async function submitCredencial(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      
+      const credentialData = {
+        id: form.dataset.editId || 'cred_' + Date.now(),
+        service: formData.get('service'),
+        username: formData.get('username'),
+        email: formData.get('email'),
+        password: formData.get('password'),
+        category: formData.get('category'),
+        association: formData.get('association'),
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        if (form.dataset.editId) {
+          // Editar credencial existente
+          const index = credentials.findIndex(c => c.id === form.dataset.editId);
+          if (index !== -1) {
+            credentials[index] = { ...credentials[index], ...credentialData };
+            
+            if (supabase && SUPABASE_CONFIG.enabled) {
+              await saveToSupabase(credentials[index], 'credentials', 'credential');
+            }
+          }
+        } else {
+          // Nueva credencial
+          credentials.push(credentialData);
+          
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await saveToSupabase(credentialData, 'credentials', 'credential');
+          }
+        }
+
+        saveData();
+        renderCredenciales();
+        closeModal('credencial');
+        form.reset();
+        delete form.dataset.editId;
+        
+        console.log('✅ Credencial guardada correctamente');
+      } catch (error) {
+        console.error('❌ Error guardando credencial:', error);
+        alert('Error guardando credencial. Revisa la consola para más detalles.');
+      }
+    }
+
+    async function deleteCredential(id) {
+      if (!confirm('¿Estás seguro de que deseas eliminar esta credencial?')) return;
+      
+      try {
+        const index = credentials.findIndex(c => c.id === id);
+        if (index !== -1) {
+          credentials.splice(index, 1);
+        }
+
+        if (supabase && SUPABASE_CONFIG.enabled) {
+          await deleteFromSupabase(id, 'credentials');
+        }
+
+        saveData();
+        renderCredenciales();
+        
+        console.log('✅ Credencial eliminada correctamente');
+      } catch (error) {
+        console.error('❌ Error eliminando credencial:', error);
+        alert('Error eliminando credencial. Revisa la consola para más detalles.');
+      }
+    }
+
+    // DOCUMENTOS
+    async function submitDocumento(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      
+      const documentData = {
+        id: form.dataset.editId || 'doc_' + Date.now(),
+        name: formData.get('name'),
+        type: formData.get('type'),
+        url: formData.get('url'),
+        platform: formData.get('platform'),
+        association: formData.get('association'),
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        if (form.dataset.editId) {
+          // Editar documento existente
+          const index = documents.findIndex(d => d.id === form.dataset.editId);
+          if (index !== -1) {
+            documents[index] = { ...documents[index], ...documentData };
+            
+            if (supabase && SUPABASE_CONFIG.enabled) {
+              await saveToSupabase(documents[index], 'documents', 'document');
+            }
+          }
+        } else {
+          // Nuevo documento
+          documents.push(documentData);
+          
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await saveToSupabase(documentData, 'documents', 'document');
+          }
+        }
+
+        saveData();
+        renderDocumentos();
+        closeModal('documento');
+        form.reset();
+        delete form.dataset.editId;
+        
+        console.log('✅ Documento guardado correctamente');
+      } catch (error) {
+        console.error('❌ Error guardando documento:', error);
+        alert('Error guardando documento. Revisa la consola para más detalles.');
+      }
+    }
+
+    async function deleteDocument(id) {
+      if (!confirm('¿Estás seguro de que deseas eliminar este documento?')) return;
+      
+      try {
+        const index = documents.findIndex(d => d.id === id);
+        if (index !== -1) {
+          documents.splice(index, 1);
+        }
+
+        if (supabase && SUPABASE_CONFIG.enabled) {
+          await deleteFromSupabase(id, 'documents');
+        }
+
+        saveData();
+        renderDocumentos();
+        
+        console.log('✅ Documento eliminado correctamente');
+      } catch (error) {
+        console.error('❌ Error eliminando documento:', error);
+        alert('Error eliminando documento. Revisa la consola para más detalles.');
+      }
+    }
+
+    // MEMORIA CONTABLE
+    async function submitMemoria(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      
+      const memoriaData = {
+        id: form.dataset.editId || 'mem_' + Date.now(),
+        companyId: formData.get('companyId'),
+        type: formData.get('type'),
+        title: formData.get('title'),
+        content: formData.get('content'),
+        date: formData.get('date'),
+        ref: formData.get('ref'),
+        tags: formData.get('tags') ? formData.get('tags').split(',').map(t => t.trim()) : [],
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        if (form.dataset.editId) {
+          // Editar memoria existente
+          const index = memoriaContable.findIndex(m => m.id === form.dataset.editId);
+          if (index !== -1) {
+            memoriaContable[index] = { ...memoriaContable[index], ...memoriaData };
+            
+            if (supabase && SUPABASE_CONFIG.enabled) {
+              await saveToSupabase(memoriaContable[index], 'memoria_contable', 'memoria');
+            }
+          }
+        } else {
+          // Nueva memoria
+          memoriaContable.push(memoriaData);
+          
+          if (supabase && SUPABASE_CONFIG.enabled) {
+            await saveToSupabase(memoriaData, 'memoria_contable', 'memoria');
+          }
+        }
+
+        saveData();
+        closeModal('memoria');
+        form.reset();
+        delete form.dataset.editId;
+        
+        // Si estamos viendo el detalle de una empresa, recargar
+        const currentView = document.querySelector('.view.active');
+        if (currentView && currentView.id === 'empresa-detalle') {
+          const companyId = document.getElementById('memoria-company-id').value;
+          if (companyId) {
+            showCompanyDetail(companyId);
+          }
+        }
+        
+        console.log('✅ Memoria contable guardada correctamente');
+      } catch (error) {
+        console.error('❌ Error guardando memoria contable:', error);
+        alert('Error guardando memoria contable. Revisa la consola para más detalles.');
+      }
+    }
+
+    async function deleteMemoria(id) {
+      if (!confirm('¿Estás seguro de que deseas eliminar esta nota de memoria contable?')) return;
+      
+      try {
+        const index = memoriaContable.findIndex(m => m.id === id);
+        if (index !== -1) {
+          memoriaContable.splice(index, 1);
+        }
+
+        if (supabase && SUPABASE_CONFIG.enabled) {
+          await deleteFromSupabase(id, 'memoria_contable');
+        }
+
+        saveData();
+        
+        // Si estamos viendo el detalle de una empresa, recargar
+        const currentView = document.querySelector('.view.active');
+        if (currentView && currentView.id === 'empresa-detalle') {
+          const companyId = currentView.dataset.companyId;
+          if (companyId) {
+            showCompanyDetail(companyId);
+          }
+        }
+        
+        console.log('✅ Memoria contable eliminada correctamente');
+      } catch (error) {
+        console.error('❌ Error eliminando memoria contable:', error);
+        alert('Error eliminando memoria contable. Revisa la consola para más detalles.');
+      }
+    }
+
+    // CONFIGURACIÓN
+    async function submitConfig(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      
+      config = {
+        centerName: formData.get('centerName'),
+        centerSubtitle: formData.get('centerSubtitle'),
+        userName: formData.get('userName'),
+        userEmail: formData.get('userEmail'),
+        userPhone: formData.get('userPhone'),
+        userLocation: formData.get('userLocation')
+      };
+
+      try {
+        // Guardar en localStorage
+        localStorage.setItem('config', JSON.stringify(config));
+        
+        // Aplicar cambios inmediatamente
+        const nameEl = document.getElementById('center-name');
+        if (nameEl && config.centerName) nameEl.textContent = config.centerName;
+        
+        const subtitleEl = document.getElementById('center-subtitle');
+        if (subtitleEl && config.centerSubtitle) subtitleEl.textContent = config.centerSubtitle;
+        
+        closeModal('config');
+        
+        alert('✅ Configuración guardada correctamente');
+        console.log('✅ Configuración guardada');
+      } catch (error) {
+        console.error('❌ Error guardando configuración:', error);
+        alert('Error guardando configuración. Revisa la consola para más detalles.');
+      }
+    }
+
     // ============================================
     // FUNCIONES DE INTERFAZ DE USUARIO
     // ============================================
@@ -2794,8 +2682,8 @@
         subscriptions = JSON.parse(localStorage.getItem('subscriptions') || '[]');
         credentials = JSON.parse(localStorage.getItem('credentials') || '[]');
         documents = JSON.parse(localStorage.getItem('documents') || '[]');
-        memoria = JSON.parse(localStorage.getItem('memoria') || '[]');
-        console.log('Datos cargados desde localStorage');
+        memoriaContable = JSON.parse(localStorage.getItem('memoriaContable') || '[]');
+        console.log('📦 Datos cargados desde localStorage');
       } catch (error) {
         console.error('Error cargando datos:', error);
       }
@@ -2810,8 +2698,8 @@
         localStorage.setItem('subscriptions', JSON.stringify(subscriptions));
         localStorage.setItem('credentials', JSON.stringify(credentials));
         localStorage.setItem('documents', JSON.stringify(documents));
-        localStorage.setItem('memoria', JSON.stringify(memoria));
-        console.log('Datos guardados en localStorage');
+        localStorage.setItem('memoriaContable', JSON.stringify(memoriaContable));
+        console.log('💾 Datos guardados en localStorage');
       } catch (error) {
         console.error('Error guardando datos:', error);
       }
@@ -2856,42 +2744,6 @@
       }
     }
 
-    // Funciones básicas para empresas
-    function deleteEmpresa(id) {
-      if (confirm('¿Estás seguro de que deseas eliminar esta empresa?')) {
-        companies = companies.filter(c => c.id !== id);
-        saveData();
-        renderEmpresas();
-      }
-    }
-
-    // Funciones básicas para marcas
-    function deleteMarca(id) {
-      if (confirm('¿Estás seguro de que deseas eliminar esta marca?')) {
-        brands = brands.filter(b => b.id !== id);
-        saveData();
-        renderMarcas();
-      }
-    }
-
-    // Funciones básicas para suscripciones
-    function deleteSubscription(id) {
-      if (confirm('¿Estás seguro de que deseas eliminar esta suscripción?')) {
-        subscriptions = subscriptions.filter(s => s.id !== id);
-        saveData();
-        renderSuscripciones();
-      }
-    }
-
-    // Funciones básicas para credenciales
-    function deleteCredential(id) {
-      if (confirm('¿Estás seguro de que deseas eliminar esta credencial?')) {
-        credentials = credentials.filter(c => c.id !== id);
-        saveData();
-        renderCredenciales();
-      }
-    }
-
     function copyToClipboard(text) {
       navigator.clipboard.writeText(text).then(() => {
         alert('Credencial copiada al portapapeles');
@@ -2905,15 +2757,6 @@
         document.body.removeChild(textArea);
         alert('Credencial copiada al portapapeles');
       });
-    }
-
-    // Funciones básicas para documentos
-    function deleteDocument(id) {
-      if (confirm('¿Estás seguro de que deseas eliminar este documento?')) {
-        documents = documents.filter(d => d.id !== id);
-        saveData();
-        renderDocumentos();
-      }
     }
 
     // Función de búsqueda global
