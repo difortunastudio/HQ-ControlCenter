@@ -20,12 +20,6 @@
       background: #000;
       color: #fff;
       min-height: 100vh;
-      /* Ocultar contenido hasta que checkAuth() lo muestre */
-      visibility: hidden;
-    }
-
-    body.authenticated {
-      visibility: visible;
     }
 
     .header {
@@ -839,30 +833,66 @@
 
     let isAuthenticated = false;
 
+    // Crear overlay de carga/bloqueante INMEDIATAMENTE
+    (function() {
+      const overlay = document.createElement('div');
+      overlay.id = 'auth-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        z-index: 999999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
+      overlay.innerHTML = '<div style="color: #fff; font-size: 18px;">Cargando...</div>';
+      
+      // Añadir overlay AHORA (antes de que nada se vea)
+      if (document.body) {
+        document.body.appendChild(overlay);
+      } else {
+        document.addEventListener('DOMContentLoaded', () => {
+          document.body.appendChild(overlay);
+        });
+      }
+    })();
+
     function checkAuth() {
       const savedAuth = localStorage.getItem('controlCenterAuth');
       if (savedAuth) {
-        const authData = JSON.parse(savedAuth);
-        const now = new Date().getTime();
-        // Sesión válida por 24 horas
-        if (authData.timestamp && (now - authData.timestamp) < 24 * 60 * 60 * 1000) {
-          isAuthenticated = true;
-          // Si el DOM ya está listo, mostrar app inmediatamente
-          // Si no, esperar a que esté listo
-          if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', showMainApp);
+        try {
+          const authData = JSON.parse(savedAuth);
+          const now = new Date().getTime();
+          // Sesión válida por 24 horas
+          if (authData.timestamp && (now - authData.timestamp) < 24 * 60 * 60 * 1000) {
+            isAuthenticated = true;
+            // Esperar a que el DOM esté listo y luego quitar overlay
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', () => {
+                const overlay = document.getElementById('auth-overlay');
+                if (overlay) overlay.remove();
+                showMainApp();
+              });
+            } else {
+              const overlay = document.getElementById('auth-overlay');
+              if (overlay) overlay.remove();
+              showMainApp();
+            }
+            return;
           } else {
-            showMainApp();
+            localStorage.removeItem('controlCenterAuth');
           }
-          return;
-        } else {
+        } catch(e) {
           localStorage.removeItem('controlCenterAuth');
         }
       }
       
-      // No autenticado: ocultar contenido y mostrar login cuando el DOM esté listo
+      // No autenticado: mostrar login
       if (document.readyState === 'loading') {
-        // El DOM aún no está listo, ocultar inmediatamente con CSS inline
         document.addEventListener('DOMContentLoaded', showLoginScreen);
       } else {
         showLoginScreen();
@@ -870,8 +900,6 @@
     }
 
     function showLoginScreen() {
-      // Hacer visible el body y reemplazar contenido con login
-      document.body.style.visibility = 'visible';
       document.body.innerHTML = `
         <div style="
           display: flex;
@@ -1196,7 +1224,6 @@
 
     function showMainApp() {
       // Mostrar el contenido de la app
-      document.body.style.visibility = 'visible';
       document.body.classList.add('authenticated');
       
       // Restaurar el HTML original de la aplicación (ya está en el DOM)
